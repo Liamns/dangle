@@ -7,7 +7,9 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
-import "./tailwind.css";
+import "./styles.css";
+import { ThemeProvider } from "styled-components";
+import theme from "./shared/styles/theme";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -41,5 +43,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <ThemeProvider theme={theme}>
+      <Outlet />
+    </ThemeProvider>
+  );
 }
