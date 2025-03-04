@@ -46,3 +46,29 @@ select,
 button {
   font: inherit;
 }
+
+/* 바깥 margin */
+.ol {
+  margin-left: calc(100dvw / 12);
+}
+
+.or {
+  margin-right: calc(100dvw / 12);
+}
+
+.ox {
+  margin: 0 calc(100dvw / 12);
+}
+@media (min-width: 1200px) {
+  .ol {
+    margin-left: 100px;
+  }
+
+  .or {
+    margin-right: 100px;
+  }
+
+  .ox {
+    margin: 0 100px;
+  }
+}

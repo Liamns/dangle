@@ -1,8 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
-import { useNavigate } from "@remix-run/react";
-import { useEffect } from "react";
+
+import { Container } from "../../shared/layouts/container";
 import { Gradients } from "~/shared/consts/colors";
-import { Container } from "~/shared/layouts/container";
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,20 +15,9 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const navi = useNavigate();
-
-  useEffect(() => {
-    // const isLogin = localStorage.getItem("isLogin");
-    // if (!isLogin) {
-    //   navi("/onboarding", { replace: true });
-    // }
-  }, [navi]);
-
   return (
     <>
-      <Container $background={Gradients}>
-        <h1>main</h1>
-      </Container>
+      <Container $background={Gradients}></Container>
     </>
   );
 }
