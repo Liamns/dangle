@@ -3,13 +3,14 @@ import wrappers from "@/shared/styles/wrapper.module.css";
 import styles from "./page.module.css";
 import gradients from "@/shared/styles/gradients.module.css";
 import classNames from "classnames";
+import { InnerWrapper } from "@/shared/components/wrapper";
 
 export default function Home() {
-  const outer = classNames(wrappers.innerWrapper, gradients.mainGradient);
-
   return (
-    <div className={outer}>
-      <h1>name</h1>
-    </div>
+    <InnerWrapper>
+      <div className="flex flex-row items-center justify-center h-screen">
+        main
+      </div>
+    </InnerWrapper>
   );
 }

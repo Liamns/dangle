@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import styles from "@/shared/styles/wrapper.module.css";
 import classNames from "classnames";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { Wrapper } from "@/shared/components/wrapper";
 
 const inter = Inter({
   variable: "--inter",
@@ -36,17 +26,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const className = classNames(
-    styles.wrapper,
-    inter.variable,
-    geistSans.variable,
-    geistMono.variable,
-    jalnan.variable
-  );
+  const className = classNames(inter.variable, jalnan.variable);
 
   return (
     <html lang="en">
-      <body className={className}>{children}</body>
+      <body className={className}>
+        <Wrapper>{children}</Wrapper>
+      </body>
     </html>
   );
 }
