@@ -3,6 +3,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --brown: #7f4c2f;
+  --primary: #ffdb6d;
+  --secondary: #ffec85;
+  --tertiary: #fff5b1;
+  --black: #303030;
 }
 
 html,

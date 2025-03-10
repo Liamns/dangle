@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import classNames from "classnames";
-import { Wrapper } from "@/shared/components/wrapper";
+import { InnerWrapper, Wrapper } from "@/shared/components/layout";
 
 const inter = Inter({
   variable: "--inter",

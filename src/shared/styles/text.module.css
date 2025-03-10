@@ -1,0 +1,6 @@
+.dangle {
+  font-family: var(--jalnan);
+  font-size: var(--font-size, 16px);
+  font-weight: var(--font-weight, 700);
+  color: var(--color, var(--brown));
+}
