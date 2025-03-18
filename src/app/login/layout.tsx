@@ -20,8 +20,10 @@ export default function LoginLayout({
           width={5}
           height={8}
           style={{ objectFit: "cover" }}
+          onClick={() => router.back()}
         />
       </ArrowButton>
+      <Spacer height="48" />
       {children}
     </InnerWrapper>
   );

@@ -1,0 +1,24 @@
+@mixin spacing($mt: 0, $mr: 0, $mb: 0, $ml: 0, $pt: 0, $pr: 0, $pb: 0, $pl: 0) {
+  margin-top: calc(100dvh / 740 * var(#{$mt}));
+  margin-right: calc(100dvw / 360 * var(#{$mr}));
+  margin-bottom: calc(100dvh / 740 * var(#{$mb}));
+  margin-left: calc(100dvw / 360 * var(#{$ml}));
+  padding-top: calc(100dvh / 740 * var(#{$pt}));
+  padding-right: calc(100dvw / 360 * var(#{$pr}));
+  padding-bottom: calc(100dvh / 740 * var(#{$pb}));
+  padding-left: calc(100dvw / 360 * var(#{$pl}));
+}
+
+@mixin margin($mt: 0, $mr: 0, $mb: 0, $ml: 0) {
+  margin-top: calc(100dvh / 740 * var(#{$mt}));
+  margin-right: calc(100dvw / 360 * var(#{$mr}));
+  margin-bottom: calc(100dvh / 740 * var(#{$mb}));
+  margin-left: calc(100dvw / 360 * var(#{$ml}));
+}
+
+@mixin padding($pt: 0, $pr: 0, $pb: 0, $pl: 0) {
+  padding-top: calc(100dvh / 740 * var(#{$pt}));
+  padding-right: calc(100dvw / 360 * var(#{$pr}));
+  padding-bottom: calc(100dvh / 740 * var(#{$pb}));
+  padding-left: calc(100dvw / 360 * var(#{$pl}));
+}

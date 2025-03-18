@@ -32,9 +32,7 @@ export default function Home() {
       </div>
       <BottomModal>
         <Link href="/login" style={{ width: "100%" }}>
-          <Button fontWeight="700" margin="0 0 20px 0">
-            이메일 로그인 하기
-          </Button>
+          <Button fontWeight="700">로그인 하기</Button>
         </Link>
         <Button fontWeight="700" color="white" textColor={Colors.black}>
           <DangleText text="댕글" color={Colors.brown} />

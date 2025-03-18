@@ -1,3 +1,5 @@
+@import "./common.scss";
+
 .wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -13,4 +15,35 @@
 .spacer {
   width: calc(100dvw / 360 * var(--width, 0));
   height: calc(100dvh / 740 * var(--height, 0));
+}
+
+.card {
+  background-color: var(--color, var(--background));
+  border-radius: var(--radius, 10px);
+  box-shadow: 0px -6px 12px -6px rgba(0, 0, 0, 0.1);
+  padding-top: calc(100dvh / 740 * var(--pt, 28));
+  padding-right: calc(100dvw / 360 * var(--pr, 30));
+  padding-bottom: calc(100dvh / 740 * var(--pb, 30));
+  padding-left: calc(100dvw / 360 * var(--pl, 28));
+  margin-top: calc(100dvh / 740 * var(--mt, 0));
+  margin-right: calc(100dvw / 360 * var(--mr, 30));
+  margin-bottom: calc(100dvh / 740 * var(--mb, 0));
+  margin-left: calc(100dvw / 360 * var(--ml, 30));
+  width: calc(100dvw / 360 * var(--width, 300));
+  height: calc(100dvh / 740 * var(--height, 580));
+}
+
+.textField {
+  background-color: var(--background-color, var(--background));
+  border: 1px solid var(--border, var(--primary));
+  border-radius: var(--radius, 10px);
+  color: var(--color, var(--foreground));
+  font-size: var(--font-size, 12px);
+  height: calc(100dvh / 740 * var(--height, 38));
+  width: calc(100dvw / 360 * var(--width, 240));
+  padding-left: calc(100dvw / 360 * var(--pl, 16));
+  margin-top: calc(100dvh / 740 * var(--mt, 0));
+  margin-right: calc(100dvw / 360 * var(--mr, 0));
+  margin-bottom: calc(100dvh / 740 * var(--mb, 0));
+  margin-left: calc(100dvw / 360 * var(--ml, 0));
 }
