@@ -12,7 +12,7 @@ export default function LoginLayout({
 
   return (
     <InnerWrapper>
-      <Spacer height="39" />
+      <Spacer height="40" />
       <ArrowButton ml="30">
         <Image
           src="/images/white-bracket.png"
@@ -23,7 +23,7 @@ export default function LoginLayout({
           onClick={() => router.back()}
         />
       </ArrowButton>
-      <Spacer height="48" />
+      <Spacer height="40" />
       {children}
     </InnerWrapper>
   );

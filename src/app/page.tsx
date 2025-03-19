@@ -3,7 +3,7 @@ import styles from "./page.module.css";
 import { BottomModal } from "@/shared/components/modals";
 import { Button } from "@/shared/components/buttons";
 import { Colors } from "@/shared/consts/colors";
-import { InnerWrapper } from "@/shared/components/layout";
+import { InnerWrapper, Spacer } from "@/shared/components/layout";
 import { DangleText } from "@/shared/components/texts";
 import Link from "next/link";
 
@@ -34,6 +34,7 @@ export default function Home() {
         <Link href="/login" style={{ width: "100%" }}>
           <Button fontWeight="700">로그인 하기</Button>
         </Link>
+        <Spacer height="20" />
         <Button fontWeight="700" color="white" textColor={Colors.black}>
           <DangleText text="댕글" color={Colors.brown} />
           <span>&nbsp;둘러보기</span>

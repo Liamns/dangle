@@ -8,6 +8,8 @@
   --secondary: #ffec85;
   --tertiary: #fff5b1;
   --black: #303030;
+  --error: #ff0000;
+  --invalid: #d9d9d9;
 }
 
 html,
@@ -33,6 +35,9 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+a:hover {
+  cursor: pointer;
 }
 
 .jalnan {

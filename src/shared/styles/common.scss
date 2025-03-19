@@ -1,24 +1,64 @@
 @mixin spacing($mt: 0, $mr: 0, $mb: 0, $ml: 0, $pt: 0, $pr: 0, $pb: 0, $pl: 0) {
-  margin-top: calc(100dvh / 740 * var(#{$mt}));
-  margin-right: calc(100dvw / 360 * var(#{$mr}));
-  margin-bottom: calc(100dvh / 740 * var(#{$mb}));
-  margin-left: calc(100dvw / 360 * var(#{$ml}));
-  padding-top: calc(100dvh / 740 * var(#{$pt}));
-  padding-right: calc(100dvw / 360 * var(#{$pr}));
-  padding-bottom: calc(100dvh / 740 * var(#{$pb}));
-  padding-left: calc(100dvw / 360 * var(#{$pl}));
+  margin-top: calc(100dvh / 740 * var(--mt, #{$mt}));
+  margin-right: calc(100dvw / 360 * var(--mr, #{$mr}));
+  margin-bottom: calc(100dvh / 740 * var(--mb, #{$mb}));
+  margin-left: calc(100dvw / 360 * var(--ml, #{$ml}));
+  padding-top: calc(100dvh / 740 * var(--pt, #{$pt}));
+  padding-right: calc(100dvw / 360 * var(--pr, #{$pr}));
+  padding-bottom: calc(100dvh / 740 * var(--pb, #{$pb}));
+  padding-left: calc(100dvw / 360 * var(--pl, #{$pl}));
 }
 
 @mixin margin($mt: 0, $mr: 0, $mb: 0, $ml: 0) {
-  margin-top: calc(100dvh / 740 * var(#{$mt}));
-  margin-right: calc(100dvw / 360 * var(#{$mr}));
-  margin-bottom: calc(100dvh / 740 * var(#{$mb}));
-  margin-left: calc(100dvw / 360 * var(#{$ml}));
+  margin-top: calc(100dvh / 740 * var(--mt, #{$mt}));
+  margin-right: calc(100dvw / 360 * var(--mr, #{$mr}));
+  margin-bottom: calc(100dvh / 740 * var(--mb, #{$mb}));
+  margin-left: calc(100dvw / 360 * var(--ml, #{$ml}));
+}
+
+@mixin mt($mt: 0) {
+  margin-top: calc(100dvh / 740 * var(--mt, #{$mt}));
+}
+
+@mixin mr($mr: 0) {
+  margin-right: calc(100dvw / 360 * var(--mr, #{$mr}));
+}
+
+@mixin mb($mb: 0) {
+  margin-bottom: calc(100dvh / 740 * var(--mb, #{$mb}));
+}
+
+@mixin ml($ml: 0) {
+  margin-left: calc(100dvw / 360 * var(--ml, #{$ml}));
 }
 
 @mixin padding($pt: 0, $pr: 0, $pb: 0, $pl: 0) {
-  padding-top: calc(100dvh / 740 * var(#{$pt}));
-  padding-right: calc(100dvw / 360 * var(#{$pr}));
-  padding-bottom: calc(100dvh / 740 * var(#{$pb}));
-  padding-left: calc(100dvw / 360 * var(#{$pl}));
+  padding-top: calc(100dvh / 740 * var(--pt, #{$pt}));
+  padding-right: calc(100dvw / 360 * var(--pr, #{$pr}));
+  padding-bottom: calc(100dvh / 740 * var(--pb, #{$pb}));
+  padding-left: calc(100dvw / 360 * var(--pl, #{$pl}));
+}
+
+@mixin pt($pt: 0) {
+  padding-top: calc(100dvh / 740 * var(--pt, #{$pt}));
+}
+
+@mixin pr($pr: 0) {
+  padding-right: calc(100dvw / 360 * var(--pr, #{$pr}));
+}
+
+@mixin pb($pb: 0) {
+  padding-bottom: calc(100dvh / 740 * var(--pb, #{$pb}));
+}
+
+@mixin pl($pl: 0) {
+  padding-left: calc(100dvw / 360 * var(--pl, #{$pl}));
+}
+
+@mixin width($width: 0) {
+  width: calc(100dvw / 360 * var(--width, #{$width}));
+}
+
+@mixin height($height: 0) {
+  height: calc(100dvh / 740 * var(--height, #{$height}));
 }

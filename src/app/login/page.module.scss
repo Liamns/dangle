@@ -1,0 +1,40 @@
+@use "shared/styles/common.scss" as common;
+
+.title {
+  color: var(--brown);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.forget {
+  color: var(--invalid);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.line {
+  flex: 2;
+  height: 1px;
+  background-color: var(--invalid);
+}
+
+.register {
+  flex: 3;
+  color: var(--brown);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.dangleIcon {
+  position: relative;
+  @include common.width(135);
+  @include common.height(66);
+}
+
+.slogan {
+  color: var(--brown);
+  font-size: 12px;
+  font-weight: var(--font-weight, 400);
+  text-align: center;
+}

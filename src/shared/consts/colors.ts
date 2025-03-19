@@ -4,4 +4,5 @@ export const Colors = {
   secondary: "#ffec85",
   tertiary: "#fff5b1",
   brown: "#7f4c2f",
+  invalid: "#d9d9d9",
 };

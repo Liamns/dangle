@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
-import styles from "../styles/buttons.module.css";
+import styles from "../styles/buttons.module.scss";
+import { Colors } from "../consts/colors";
 
 interface ButtonProps {
   children: ReactNode;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   width?: string;
   height?: string;
   color?: string;
@@ -14,6 +15,9 @@ interface ButtonProps {
   mb?: string;
   ml?: string;
   mr?: string;
+  valid?: boolean | null;
+  validColor?: string;
+  invalidColor?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -29,7 +33,13 @@ export const Button: React.FC<ButtonProps> = ({
   mb,
   ml,
   mr,
+  valid = null,
+  validColor = Colors.brown,
+  invalidColor = Colors.invalid,
 }) => {
+  const buttonColor =
+    valid === null ? color : valid ? validColor : invalidColor;
+
   return (
     <button
       className={styles.button}
@@ -37,7 +47,7 @@ export const Button: React.FC<ButtonProps> = ({
         {
           "--width": width,
           "--height": height,
-          "--color": color,
+          "--color": buttonColor,
           "--text-color": textColor,
           "--font-size": fontSize,
           "--font-weight": fontWeight,
