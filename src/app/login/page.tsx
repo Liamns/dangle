@@ -57,7 +57,7 @@ export default function Login() {
         }}
       >
         <div className={styles.line}></div>
-        <a className={styles.register}>댕글 회원가입하기</a>
+        <span className={styles.register}>댕글 회원가입하기</span>
         <div className={styles.line}></div>
       </div>
       <Spacer height="27" />
@@ -69,7 +69,8 @@ export default function Login() {
             src="/images/login/dangle.png"
             alt="댕글 아이콘"
             fill
-            style={{ objectFit: "contain" }}
+            sizes="100%"
+            style={{ objectFit: "cover" }}
           />
         </div>
       </Center>

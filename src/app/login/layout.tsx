@@ -13,14 +13,14 @@ export default function LoginLayout({
   return (
     <InnerWrapper>
       <Spacer height="40" />
-      <ArrowButton ml="30">
+      <ArrowButton ml="30" onClick={() => router.back()}>
         <Image
           src="/images/white-bracket.png"
           alt="뒤로가기"
           width={5}
           height={8}
           style={{ objectFit: "cover" }}
-          onClick={() => router.back()}
+          sizes="100%"
         />
       </ArrowButton>
       <Spacer height="40" />

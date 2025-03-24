@@ -8,7 +8,7 @@
 
 .forget {
   color: var(--invalid);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -21,20 +21,21 @@
 .register {
   flex: 3;
   color: var(--brown);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   text-align: center;
 }
 
 .dangleIcon {
   position: relative;
+  margin: 0 auto;
   @include common.width(135);
   @include common.height(66);
 }
 
 .slogan {
   color: var(--brown);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: var(--font-weight, 400);
   text-align: center;
 }

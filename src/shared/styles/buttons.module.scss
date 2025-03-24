@@ -24,15 +24,18 @@
 }
 
 .arrowButton {
-  width: calc(100dvw / 360 * var(--size, 28));
-  height: calc(100dvw / 360 * var(--size, 28));
+  width: calc(100dvh / 740 * var(--size, 28));
+  height: calc(100dvh / 740 * var(--size, 28));
   border-radius: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: var(--color, var(--primary));
   border: 0;
-  @include common.margin(0, 0, 0, 0);
+  @include common.mt(var(--mt, 0));
+  @include common.mr(var(--mr, 0));
+  @include common.mb(var(--mb, 0));
+  @include common.ml(var(--ml, 16));
 
   &:hover {
     cursor: pointer;

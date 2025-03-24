@@ -72,9 +72,10 @@ export const ArrowButton = ({
   mt,
   ml,
   mb,
+  onClick,
 }: Pick<
   ButtonProps,
-  "children" | "width" | "color" | "mr" | "mt" | "ml" | "mb"
+  "children" | "width" | "color" | "mr" | "mt" | "ml" | "mb" | "onClick"
 >) => {
   return (
     <button
@@ -89,6 +90,7 @@ export const ArrowButton = ({
           "--ml": ml,
         } as React.CSSProperties
       }
+      onClick={onClick}
     >
       {children}
     </button>
