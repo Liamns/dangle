@@ -5,4 +5,5 @@ export const Colors = {
   tertiary: "#fff5b1",
   brown: "#7f4c2f",
   invalid: "#d9d9d9",
+  grey: "rgba(48, 48, 48, 0.3)",
 };

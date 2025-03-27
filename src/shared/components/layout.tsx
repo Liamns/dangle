@@ -56,6 +56,10 @@ export const Card = ({
   height,
   color,
   radius,
+  display,
+  direction,
+  justify,
+  align,
 }: {
   children: React.ReactNode;
   pt?: string;
@@ -70,6 +74,10 @@ export const Card = ({
   height?: string;
   color?: string;
   radius?: string;
+  display?: string;
+  direction?: string;
+  justify?: string;
+  align?: string;
 }) => {
   return (
     <div
@@ -88,6 +96,10 @@ export const Card = ({
           "--height": height,
           "--color": color,
           "--radius": radius,
+          "--display": display,
+          "--direction": direction,
+          "--justify": justify,
+          "--align": align,
         } as React.CSSProperties
       }
     >
@@ -101,7 +113,7 @@ type InputType = "text" | "password" | "email" | "number" | "tel" | "url";
 export const TextField = React.forwardRef<
   HTMLInputElement,
   {
-    type?: InputType;
+    type: InputType;
     value?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;
@@ -112,9 +124,6 @@ export const TextField = React.forwardRef<
     fontSize?: string;
     height?: string;
     width?: string;
-    pl?: string;
-    pt?: string;
-    pb?: string;
     mt?: string;
     mr?: string;
     mb?: string;
@@ -135,9 +144,6 @@ export const TextField = React.forwardRef<
     fontSize,
     height,
     width,
-    pl,
-    pt,
-    pb,
     mt,
     mr,
     mb,
@@ -174,9 +180,6 @@ export const TextField = React.forwardRef<
             "--font-size": fontSize,
             "--height": height,
             "--width": width,
-            "--pl": pl,
-            "--pt": pt,
-            "--pb": pb,
           } as React.CSSProperties
         }
         {...rest}

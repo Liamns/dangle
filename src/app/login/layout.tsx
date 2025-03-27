@@ -4,6 +4,8 @@ import { ArrowButton } from "@/shared/components/buttons";
 import { InnerWrapper, Spacer } from "@/shared/components/layout";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Footer from "./footer";
+import styles from "./layout.module.scss";
 
 export default function LoginLayout({
   children,
@@ -24,7 +26,10 @@ export default function LoginLayout({
         />
       </ArrowButton>
       <Spacer height="40" />
-      {children}
+      <div className={styles.layout}>{children}</div>
+      <Spacer height="18" />
+      <Footer />
+      <Spacer height="18" />
     </InnerWrapper>
   );
 }

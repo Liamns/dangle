@@ -18,6 +18,12 @@ export const passwordSchema = z
     message: "비밀번호에 최소 하나의 숫자가 포함되어야 합니다.",
   });
 
+export const emailFormSchema = z.object({
+  email: emailSchema,
+});
+
+export type EmailFormData = z.infer<typeof emailFormSchema>;
+
 // Login form schema combining email and password
 export const loginFormSchema = z.object({
   email: emailSchema,

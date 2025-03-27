@@ -16,6 +16,7 @@ export default function Home() {
           alt="댕글온보딩타이틀"
           fill
           style={{ objectFit: "contain" }}
+          unoptimized
         />
         <div className={styles.belowTitle}>
           <Image

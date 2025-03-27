@@ -28,3 +28,30 @@ export const DangleText: React.FC<DangleTextProps> = ({
     </span>
   );
 };
+
+export const Text = ({
+  text,
+  fontSize,
+  fontWeight,
+  color,
+}: {
+  text: string;
+  fontSize?: string;
+  fontWeight?: string;
+  color?: string;
+}) => {
+  return (
+    <span
+      className={styles.text}
+      style={
+        {
+          "--font-size": fontSize,
+          "--font-weight": fontWeight,
+          "--color": color,
+        } as React.CSSProperties
+      }
+    >
+      {text}
+    </span>
+  );
+};
