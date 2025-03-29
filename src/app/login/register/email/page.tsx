@@ -12,10 +12,12 @@ import {
 } from "@/shared/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function RegisterEmail() {
+  const router = useRouter();
   const {
     register: emailRegister,
     handleSubmit: emailHandleSubmit,
@@ -42,7 +44,7 @@ export default function RegisterEmail() {
   });
 
   const onAuthSubmit = (data: AuthNumberFormData) => {
-    alert("인증번호 확인");
+    router.push("/login/register/pw");
   };
 
   const onAuthRequest = (e: React.MouseEvent) => {
@@ -62,8 +64,8 @@ export default function RegisterEmail() {
         <Spacer height="12" />
         <Text
           text={`사용하실 메일주소를\n입력해 주세요!`}
-          fontSize="20px"
-          fontWeight="700"
+          fontSize="title"
+          fontWeight="bold"
           color={Colors.brown}
         />
         <Spacer height="24" />
@@ -95,18 +97,14 @@ export default function RegisterEmail() {
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} variant="bottom">
         <Spacer height="37" />
         <Center>
-          <Text fontSize="16px" color={Colors.brown} text={`인증번호\u00a0`} />
+          <Text fontSize="lg" color={Colors.brown} text={`인증번호\u00a0`} />
           <Text
-            fontSize="16px"
+            fontSize="lg"
             color={Colors.brown}
-            fontWeight="700"
+            fontWeight="bold"
             text={`6자리`}
           />
-          <Text
-            fontSize="16px"
-            color={Colors.brown}
-            text={`를 입력해 주세요!`}
-          />
+          <Text fontSize="lg" color={Colors.brown} text={`를 입력해 주세요!`} />
         </Center>
         <Spacer height="24" />
         <form onSubmit={handleAuthSubmit(onAuthSubmit)}>

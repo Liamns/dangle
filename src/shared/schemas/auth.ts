@@ -34,9 +34,8 @@ export const loginFormSchema = z.object({
 export type LoginFormData = z.infer<typeof loginFormSchema>;
 
 // Signup form schema with potentially different requirements
-export const signupFormSchema = z
+export const passwordFormSchema = z
   .object({
-    email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string(),
   })
@@ -45,8 +44,8 @@ export const signupFormSchema = z
     path: ["confirmPassword"],
   });
 
-// Type for the signup form data derived from the schema
-export type SignupFormData = z.infer<typeof signupFormSchema>;
+// Type for the password form data derived from the schema
+export type PasswordFormData = z.infer<typeof passwordFormSchema>;
 
 export const authNumberSchema = z
   .string()

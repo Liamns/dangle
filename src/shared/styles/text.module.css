@@ -1,16 +1,8 @@
-.dangle {
-  font-family: var(--jalnan);
-  font-size: var(--font-size, 16px);
-  font-weight: var(--font-weight, 700);
-  color: var(--color, var(--brown));
-  white-space: pre-line;
-  text-align: center;
-}
-
 .text {
   font-size: var(--font-size, 12px);
   font-weight: var(--font-weight, 400);
   color: var(--color, var(--black));
   white-space: pre-line;
   text-align: center;
+  font-family: var(--font-family, var(--inter));
 }

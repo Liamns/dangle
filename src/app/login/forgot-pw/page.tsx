@@ -27,8 +27,8 @@ export default function ForgotPassword() {
         <Text
           text="비밀번호 찾기"
           color={Colors.brown}
-          fontSize="20px"
-          fontWeight="700"
+          fontSize="title"
+          fontWeight="bold"
         />
         <Text
           text="가입하신 이메일 주소를 입력해 주세요."
