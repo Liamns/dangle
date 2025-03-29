@@ -1,67 +1,133 @@
 "use client";
 import { Button } from "@/shared/components/buttons";
 import { Card, Center, Spacer, TextField } from "@/shared/components/layout";
+import Modal from "@/shared/components/modals";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
-import { EmailFormData, emailFormSchema } from "@/shared/schemas/auth";
+import {
+  AuthNumberFormData,
+  authNumberFormSchema,
+  EmailFormData,
+  emailFormSchema,
+} from "@/shared/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function RegisterEmail() {
   const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
+    register: emailRegister,
+    handleSubmit: emailHandleSubmit,
+    formState: { errors: emailErrors, isValid: emailIsValid },
   } = useForm<EmailFormData>({
     resolver: zodResolver(emailFormSchema),
     mode: "onChange",
   });
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const onSubmit = (data: EmailFormData) => {
-    console.log("입력값:", data);
+    alert("인증번호 요청");
+    setIsOpen(true);
+  };
+
+  const {
+    register: authRegister,
+    handleSubmit: handleAuthSubmit,
+    formState: { errors: authErrors, isValid: authIsValid },
+  } = useForm<AuthNumberFormData>({
+    resolver: zodResolver(authNumberFormSchema),
+    mode: "onChange",
+  });
+
+  const onAuthSubmit = (data: AuthNumberFormData) => {
+    alert("인증번호 확인");
+  };
+
+  const onAuthRequest = (e: React.MouseEvent) => {
+    e.preventDefault();
+    alert("인증번호 재요청");
   };
 
   return (
-    <Card align="center">
-      <Image
-        src="/images/login/register/email/title_icon.png"
-        alt="로그인 아이콘"
-        width={46}
-        height={46}
-      />
-      <Spacer height="12" />
-      <Text
-        text={`사용하실 메일주소를\n입력해 주세요!`}
-        fontSize="20px"
-        fontWeight="700"
-        color={Colors.brown}
-      />
-      <Spacer height="24" />
-      <Text
-        text={`인증받은 이메일로 로그인이 가능합니다.`}
-        color={Colors.brown}
-      />
-      <Spacer height="24" />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          {...register("email")}
-          type="email"
-          placeholder="이메일주소를 입력해 주세요."
-          error={errors.email?.message}
+    <>
+      <Card align="center">
+        <Image
+          src="/images/login/register/email/title_icon.png"
+          alt="로그인 아이콘"
+          width={46}
+          height={46}
         />
-        <Spacer height="60" />
-        <Button color={isValid ? Colors.brown : Colors.invalid}>
-          인증번호 요청
-        </Button>
-        <Spacer height="13" />
+        <Spacer height="12" />
+        <Text
+          text={`사용하실 메일주소를\n입력해 주세요!`}
+          fontSize="20px"
+          fontWeight="700"
+          color={Colors.brown}
+        />
+        <Spacer height="24" />
+        <Text
+          text={`인증받은 이메일로 로그인이 가능합니다.`}
+          color={Colors.brown}
+        />
+        <Spacer height="24" />
+        <form onSubmit={emailHandleSubmit(onSubmit)}>
+          <TextField
+            {...emailRegister("email")}
+            type="email"
+            placeholder="이메일주소를 입력해 주세요."
+            error={emailErrors.email?.message}
+          />
+          <Spacer height="60" />
+          <Button color={emailIsValid ? Colors.brown : Colors.invalid}>
+            인증번호 요청
+          </Button>
+          <Spacer height="13" />
+          <Center>
+            <Text
+              text="입력한 이메일주소로 인증번호가 발송됩니다."
+              color={Colors.grey}
+            />
+          </Center>
+        </form>
+      </Card>
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} variant="bottom">
+        <Spacer height="37" />
         <Center>
+          <Text fontSize="16px" color={Colors.brown} text={`인증번호\u00a0`} />
           <Text
-            text="입력한 이메일주소로 인증번호가 발송됩니다."
-            color={Colors.grey}
+            fontSize="16px"
+            color={Colors.brown}
+            fontWeight="700"
+            text={`6자리`}
+          />
+          <Text
+            fontSize="16px"
+            color={Colors.brown}
+            text={`를 입력해 주세요!`}
           />
         </Center>
-      </form>
-    </Card>
+        <Spacer height="24" />
+        <form onSubmit={handleAuthSubmit(onAuthSubmit)}>
+          <TextField
+            {...authRegister("authNumber")}
+            type="text"
+            placeholder="인증번호를 입력해 주세요."
+            error={authErrors.authNumber?.message}
+            maxLength={6}
+            mb="5"
+          />
+          <Button color={authIsValid ? Colors.brown : Colors.invalid}>
+            확인
+          </Button>
+          <Spacer height="14" />
+          <Button color={Colors.primary} onClick={onAuthRequest}>
+            인증번호 재요청
+          </Button>
+          <Spacer height="12" />
+        </form>
+      </Modal>
+    </>
   );
 }

@@ -2,6 +2,7 @@
 
 .button {
   background-color: var(--color, var(--brown));
+  max-width: calc(1200px - (100dvw / 360 * 120));
   width: var(--width, 100%);
   height: var(--height, 57px);
   border-radius: 10px;

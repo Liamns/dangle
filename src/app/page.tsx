@@ -17,6 +17,7 @@ export default function Home() {
           fill
           style={{ objectFit: "contain" }}
           unoptimized
+          priority
         />
         <div className={styles.belowTitle}>
           <Image
@@ -44,6 +45,7 @@ export default function Home() {
               src="/images/bracket.png"
               alt="둘러보기버튼"
               fill
+              sizes="100%"
               style={{ objectFit: "cover" }}
             />
           </div>

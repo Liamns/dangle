@@ -42,12 +42,17 @@ export default function Login() {
             type="password"
             error={errors.password?.message}
           />
-          <Spacer height="33" />
+          <Spacer height="30" />
           <Button valid={isValid}>로그인 하기</Button>
         </form>
         <Spacer height="15" />
         <Center>
-          <a className={styles.forget}>비밀번호를 잊어버리셨나요?</a>
+          <a
+            className={styles.forget}
+            onClick={() => router.push("/login/forgot-pw")}
+          >
+            비밀번호를 잊어버리셨나요?
+          </a>
         </Center>
         <Spacer height="30" />
         <div

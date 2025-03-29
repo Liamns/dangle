@@ -27,9 +27,7 @@ export default function LoginLayout({
       </ArrowButton>
       <Spacer height="40" />
       <div className={styles.layout}>{children}</div>
-      <Spacer height="18" />
       <Footer />
-      <Spacer height="18" />
     </InnerWrapper>
   );
 }

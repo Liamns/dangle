@@ -47,3 +47,16 @@ export const signupFormSchema = z
 
 // Type for the signup form data derived from the schema
 export type SignupFormData = z.infer<typeof signupFormSchema>;
+
+export const authNumberSchema = z
+  .string()
+  .length(6, {
+    message: "인증번호는 6자리입니다.",
+  })
+  .regex(/[0-9]/, {
+    message: "인증번호는 숫자만 포함되어야 합니다.",
+  });
+export const authNumberFormSchema = z.object({
+  authNumber: authNumberSchema,
+});
+export type AuthNumberFormData = z.infer<typeof authNumberFormSchema>;
