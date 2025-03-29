@@ -26,7 +26,6 @@ export type EmailFormData = z.infer<typeof emailFormSchema>;
 
 // Login form schema combining email and password
 export const loginFormSchema = z.object({
-  email: emailSchema,
   password: passwordSchema,
 });
 

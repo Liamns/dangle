@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import styles from "../styles/modal.module.scss";
 import { createPortal } from "react-dom";
 import Footer from "@/app/login/footer";
@@ -56,6 +56,18 @@ export default function Modal({
   variant = "center",
   children,
 }: ModalProps) {
+  const [isClosing, setIsClosing] = useState(false);
+
+  // Handle closing animation
+  const handleClose = () => {
+    setIsClosing(true);
+    // Wait for animation to complete before actually closing
+    setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 300); // Match the animation duration (0.3s)
+  };
+
   // 모달이 열리면 document.body에 scroll 잠금 처리 가능 (옵션)
   useEffect(() => {
     if (isOpen) {
@@ -68,14 +80,26 @@ export default function Modal({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !isClosing) return null;
+
+  // Determine animation classes
+  const backdropClass = `${styles.backdrop} ${
+    isClosing ? styles.backdropClosing : ""
+  }`;
+  const modalClass = `${styles.modal} ${styles[variant]} ${
+    isClosing
+      ? variant === "bottom"
+        ? styles.bottomClosing
+        : styles.modalClosing
+      : ""
+  }`;
 
   return createPortal(
-    <div className={styles.backdrop} onClick={onClose}>
-      <div
-        className={`${styles.modal} ${styles[variant]}`}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div
+      className={backdropClass}
+      onClick={isClosing ? undefined : handleClose}
+    >
+      <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         {children}
         {variant === "bottom" && <Footer />}
       </div>

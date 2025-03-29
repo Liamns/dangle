@@ -110,10 +110,81 @@ export const Card = ({
 
 type InputType = "text" | "password" | "email" | "number" | "tel" | "url";
 
+// New TextInput component
+export const TextInput = React.forwardRef<
+  HTMLInputElement,
+  {
+    type?: InputType;
+    value?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    placeholder?: string;
+    backgroundColor?: string;
+    border?: string;
+    radius?: string;
+    color?: string;
+    fontSize?: string;
+    height?: string;
+    width?: string;
+    [key: string]: any;
+  }
+>(function TextInput(props, ref) {
+  const {
+    type = "text",
+    value,
+    onChange,
+    placeholder,
+    backgroundColor,
+    border,
+    radius,
+    color,
+    fontSize,
+    height,
+    width,
+    ...rest
+  } = props;
+
+  return (
+    <input
+      ref={ref}
+      type={type}
+      className={styles.textField}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      style={
+        {
+          "--background-color": backgroundColor,
+          "--border": border,
+          "--radius": radius,
+          "--color": color,
+          "--font-size": fontSize,
+          "--height": height,
+          "--width": width,
+        } as React.CSSProperties
+      }
+      {...rest}
+    />
+  );
+});
+
+// New TextError component
+export const TextError = ({ error }: { error?: string | null }) => {
+  return (
+    <span
+      className={classNames(styles.textFieldError, {
+        [styles.errorVisible]: error,
+      })}
+    >
+      {error}
+    </span>
+  );
+};
+
+// Refactored TextField component that uses TextInput and TextError
 export const TextField = React.forwardRef<
   HTMLInputElement,
   {
-    type: InputType;
+    type?: InputType;
     value?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;
@@ -164,33 +235,22 @@ export const TextField = React.forwardRef<
         } as React.CSSProperties
       }
     >
-      <input
+      <TextInput
         ref={ref}
         type={type}
-        className={styles.textField}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        style={
-          {
-            "--background-color": backgroundColor,
-            "--border": border,
-            "--radius": radius,
-            "--color": color,
-            "--font-size": fontSize,
-            "--height": height,
-            "--width": width,
-          } as React.CSSProperties
-        }
+        backgroundColor={backgroundColor}
+        border={border}
+        radius={radius}
+        color={color}
+        fontSize={fontSize}
+        height={height}
+        width={width}
         {...rest}
       />
-      <span
-        className={classNames(styles.textFieldError, {
-          [styles.errorVisible]: error,
-        })}
-      >
-        {error}
-      </span>
+      <TextError error={error} />
     </div>
   );
 });

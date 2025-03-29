@@ -54,8 +54,7 @@
   font-size: var(--font-size, 14px);
   width: 100%;
   @include common.pl(var(--pl, 16));
-  @include common.pt(var(--pt, 12));
-  @include common.pb(var(--pb, 12));
+  height: 40px;
 
   &:focus {
     border-color: var(--brown);
@@ -64,11 +63,11 @@
 }
 
 .textFieldError {
-  font-size: var(--font-size, 12px);
+  font-size: 12px;
   color: var(--color, var(--error));
-  min-height: calc(4px + var(--font-size, 12px));
-  @include common.mt(2);
-  @include common.mb(2);
+  min-height: 16px;
+  margin-top: 2px;
+  margin-bottom: 2px;
   opacity: 0;
   transition: opacity 0.3s ease;
 }

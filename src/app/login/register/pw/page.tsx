@@ -9,7 +9,7 @@ import {
   authNumberFormSchema,
   PasswordFormData,
   passwordFormSchema,
-} from "@/shared/schemas/auth";
+} from "@/entities/user/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -67,9 +67,7 @@ export default function RegisterPW() {
             error={errors.confirmPassword?.message}
           />
           <Spacer height="60" />
-          <Button color={isValid ? Colors.brown : Colors.invalid}>
-            다음으로
-          </Button>
+          <Button valid={isValid}>다음으로</Button>
         </form>
       </Card>
     </>

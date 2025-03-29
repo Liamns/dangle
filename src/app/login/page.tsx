@@ -4,13 +4,25 @@ import styles from "./page.module.scss";
 import { Button } from "@/shared/components/buttons";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormData, loginFormSchema } from "@/shared/schemas/auth";
+import { LoginFormData, loginFormSchema } from "@/entities/user/schema";
 import { Colors } from "@/shared/consts/colors";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { EmailInput } from "@/features/auth/components/EmailInput";
 
 export default function Login() {
   const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const emailhandleSubmit = () => {
+    if (isEmailValid) {
+      // 유효한 이메일일 때만 실행
+      alert(`인증번호 요청: ${email}`);
+    }
+  };
+
   const {
     register,
     handleSubmit,
@@ -21,7 +33,9 @@ export default function Login() {
   });
 
   const onSubmit = (data: LoginFormData) => {
-    console.log("입력값:", data);
+    if (isEmailValid) {
+      alert(`이메일: ${email}, 비밀번호: ${data.password}`);
+    }
   };
 
   return (
@@ -30,11 +44,10 @@ export default function Login() {
         <span className={styles.title}>이메일 로그인</span>
         <Spacer height="25" />
         <form onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            {...register("email")}
-            placeholder="이메일주소를 입력해 주세요."
-            type="email"
-            error={errors.email?.message}
+          <EmailInput
+            value={email}
+            onChange={(value) => setEmail(value)}
+            onValidate={(valid) => setIsEmailValid(valid)}
           />
           <TextField
             {...register("password")}
@@ -43,7 +56,7 @@ export default function Login() {
             error={errors.password?.message}
           />
           <Spacer height="30" />
-          <Button valid={isValid}>로그인 하기</Button>
+          <Button valid={isValid && isEmailValid}>로그인 하기</Button>
         </form>
         <Spacer height="15" />
         <Center>

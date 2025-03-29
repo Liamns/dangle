@@ -9,30 +9,28 @@ import {
   authNumberFormSchema,
   EmailFormData,
   emailFormSchema,
-} from "@/shared/schemas/auth";
+} from "@/entities/user/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { EmailInput } from "@/features/auth/components/EmailInput";
 
 export default function RegisterEmail() {
   const router = useRouter();
-  const {
-    register: emailRegister,
-    handleSubmit: emailHandleSubmit,
-    formState: { errors: emailErrors, isValid: emailIsValid },
-  } = useForm<EmailFormData>({
-    resolver: zodResolver(emailFormSchema),
-    mode: "onChange",
-  });
+
+  const [email, setEmail] = useState("");
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const handleSubmit = () => {
+    if (isEmailValid) {
+      // 유효한 이메일일 때만 실행
+      alert(`인증번호 요청: ${email}`);
+      setIsOpen(true);
+    }
+  };
 
   const [isOpen, setIsOpen] = useState(false);
-
-  const onSubmit = (data: EmailFormData) => {
-    alert("인증번호 요청");
-    setIsOpen(true);
-  };
 
   const {
     register: authRegister,
@@ -74,15 +72,19 @@ export default function RegisterEmail() {
           color={Colors.brown}
         />
         <Spacer height="24" />
-        <form onSubmit={emailHandleSubmit(onSubmit)}>
-          <TextField
-            {...emailRegister("email")}
-            type="email"
-            placeholder="이메일주소를 입력해 주세요."
-            error={emailErrors.email?.message}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+          style={{ width: "100%" }}
+        >
+          <EmailInput
+            value={email}
+            onChange={(value) => setEmail(value)}
+            onValidate={(valid) => setIsEmailValid(valid)}
           />
-          <Spacer height="60" />
-          <Button color={emailIsValid ? Colors.brown : Colors.invalid}>
+          <Spacer height="13" />
+          <Button valid={isEmailValid} onClick={handleSubmit}>
             인증번호 요청
           </Button>
           <Spacer height="13" />
@@ -116,9 +118,7 @@ export default function RegisterEmail() {
             maxLength={6}
             mb="5"
           />
-          <Button color={authIsValid ? Colors.brown : Colors.invalid}>
-            확인
-          </Button>
+          <Button valid={authIsValid}>확인</Button>
           <Spacer height="14" />
           <Button color={Colors.primary} onClick={onAuthRequest}>
             인증번호 재요청
