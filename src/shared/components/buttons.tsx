@@ -45,16 +45,16 @@ export const Button: React.FC<ButtonProps> = ({
       className={styles.button}
       style={
         {
-          "--width": width,
-          "--height": height,
-          "--color": buttonColor,
-          "--text-color": textColor,
-          "--font-size": fontSize,
-          "--font-weight": fontWeight,
-          "--mt": mt,
-          "--mr": mr,
-          "--mb": mb,
-          "--ml": ml,
+          "--btn-width": width,
+          "--btn-height": height,
+          "--btn-color": buttonColor,
+          "--btn-text-color": textColor,
+          "--btn-font-size": fontSize,
+          "--btn-font-weight": fontWeight,
+          "--btn-mt": mt,
+          "--btn-mr": mr,
+          "--btn-mb": mb,
+          "--btn-ml": ml,
         } as React.CSSProperties
       }
       onClick={onClick}
@@ -82,12 +82,12 @@ export const ArrowButton = ({
       className={styles.arrowButton}
       style={
         {
-          "--size": width,
-          "--color": color,
-          "--mt": mt,
-          "--mr": mr,
-          "--mb": mb,
-          "--ml": ml,
+          "--arrow-size": width,
+          "--arrow-color": color,
+          "--arrow-mt": mt,
+          "--arrow-mr": mr,
+          "--arrow-mb": mb,
+          "--arrow-ml": ml,
         } as React.CSSProperties
       }
       onClick={onClick}

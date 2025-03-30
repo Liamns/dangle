@@ -21,7 +21,7 @@ export default function ForgotPassword() {
 
   return (
     <>
-      <Card>
+      <Card height="570">
         <Text
           text="비밀번호 찾기"
           color={Colors.brown}

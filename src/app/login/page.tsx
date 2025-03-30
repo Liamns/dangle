@@ -1,5 +1,11 @@
 "use client";
-import { Card, Center, Spacer, TextField } from "@/shared/components/layout";
+import {
+  Card,
+  Center,
+  InnerBox,
+  Spacer,
+  TextField,
+} from "@/shared/components/layout";
 import styles from "./page.module.scss";
 import { Button } from "@/shared/components/buttons";
 import { useForm } from "react-hook-form";
@@ -40,55 +46,50 @@ export default function Login() {
 
   return (
     <>
-      <Card>
+      <Card height="570" justify="space-between">
         <span className={styles.title}>이메일 로그인</span>
-        <Spacer height="25" />
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <EmailInput
-            value={email}
-            onChange={(value) => setEmail(value)}
-            onValidate={(valid) => setIsEmailValid(valid)}
-          />
-          <TextField
-            {...register("password")}
-            placeholder="비밀번호를 입력해 주세요."
-            type="password"
-            error={errors.password?.message}
-          />
-          <Spacer height="30" />
-          <Button valid={isValid && isEmailValid}>로그인 하기</Button>
-        </form>
-        <Spacer height="15" />
-        <Center>
-          <a
-            className={styles.forget}
-            onClick={() => router.push("/login/forgot-pw")}
-          >
-            비밀번호를 잊어버리셨나요?
-          </a>
-        </Center>
-        <Spacer height="30" />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
-          <div className={styles.line}></div>
-          <span className={styles.register}>댕글 회원가입하기</span>
-          <div className={styles.line}></div>
-        </div>
-        <Spacer height="27" />
-        <Button
-          color={Colors.primary}
-          onClick={() => router.push("/login/register/email")}
-        >
-          회원가입 하러가기
-        </Button>
+        <InnerBox>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <EmailInput
+              value={email}
+              onChange={(value) => setEmail(value)}
+              onValidate={(valid) => setIsEmailValid(valid)}
+            />
+            <TextField
+              {...register("password")}
+              placeholder="비밀번호를 입력해 주세요."
+              type="password"
+              error={errors.password?.message}
+            />
+            <Spacer height="30" />
+            <Button valid={isValid && isEmailValid}>로그인 하기</Button>
+          </form>
+          <Spacer height="15" />
+          <Center>
+            <a
+              className={styles.forget}
+              onClick={() => router.push("/login/forgot-pw")}
+            >
+              비밀번호를 잊어버리셨나요?
+            </a>
+          </Center>
+        </InnerBox>
 
-        <Spacer height="22" />
+        <InnerBox>
+          <InnerBox justify="space-between" direction="row">
+            <div className={styles.line}></div>
+            <span className={styles.register}>댕글 회원가입하기</span>
+            <div className={styles.line}></div>
+          </InnerBox>
+          <Spacer height="27" />
+          <Button
+            color={Colors.primary}
+            onClick={() => router.push("/login/register/email")}
+          >
+            회원가입 하러가기
+          </Button>
+        </InnerBox>
+
         <Center>
           <div className={styles.dangleIcon}>
             <Image

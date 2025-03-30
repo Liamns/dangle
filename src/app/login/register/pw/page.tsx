@@ -28,12 +28,13 @@ export default function RegisterPW() {
   });
 
   const onSubmit = (data: PasswordFormData) => {
-    alert("비밀번호 설정 완료");
+    alert("회원가입 완료!");
+    router.replace("/register/select-sp");
   };
 
   return (
     <>
-      <Card align="center">
+      <Card align="center" height="570">
         <Image
           src="/images/login/register/pw/title_icon.png"
           alt="로그인 아이콘"

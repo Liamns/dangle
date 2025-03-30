@@ -52,7 +52,7 @@ export default function RegisterEmail() {
 
   return (
     <>
-      <Card align="center">
+      <Card align="center" height="570">
         <Image
           src="/images/login/register/email/title_icon.png"
           alt="로그인 아이콘"

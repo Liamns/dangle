@@ -3,16 +3,16 @@ import { ReactNode, useEffect, useState } from "react";
 import styles from "../styles/modal.module.scss";
 import { createPortal } from "react-dom";
 import Footer from "@/app/login/footer";
+import { alignType, directionType, justifyType } from "../types/layout";
 
 interface BottomModalProps {
   children: ReactNode;
   width?: string;
   height?: string;
   padding?: string;
-  justify?: "center" | "space-between" | "start" | "space-evenly" | "end";
-  align?: "center" | "start" | "end";
-  direction?: "row" | "column";
-  isOpen?: boolean;
+  justify?: justifyType;
+  align?: alignType;
+  direction?: directionType;
 }
 
 export const BottomModal: React.FC<BottomModalProps> = ({
@@ -29,12 +29,12 @@ export const BottomModal: React.FC<BottomModalProps> = ({
       className={styles.fixedBottom}
       style={
         {
-          "--width": width,
-          "--height": height,
-          "--padding": padding,
-          "--direction": direction,
-          "--justify": justify,
-          "--align": align,
+          "--modal-width": width,
+          "--modal-height": height,
+          "--modal-padding": padding,
+          "--modal-direction": direction,
+          "--modal-justify": justify,
+          "--modal-align": align,
         } as React.CSSProperties
       }
     >

@@ -1,22 +1,22 @@
 @use "shared/styles/common.scss" as common;
 
 .button {
-  background-color: var(--color, var(--brown));
+  background-color: var(--btn-color, var(--brown));
   max-width: calc(1200px - (100dvw / 360 * 120));
-  width: var(--width, 100%);
-  height: var(--height, 57px);
+  width: var(--btn-width, 100%);
+  height: var(--btn-height, 57px);
   border-radius: 10px;
   border: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--text-color, white);
-  font-size: var(--font-size, 15px);
-  font-weight: var(--font-weight, 600);
-  margin-top: calc(100dvh / 740 * var(--mt, 0));
-  margin-right: calc(100dvw / 360 * var(--mr, 0));
-  margin-bottom: calc(100dvh / 740 * var(--mb, 0));
-  margin-left: calc(100dvw / 360 * var(--ml, 0));
+  color: var(--btn-text-color, white);
+  font-size: var(--btn-font-size, 15px);
+  font-weight: var(--btn-font-weight, 600);
+  margin-top: calc(100dvh / 740 * var(--btn-mt, 0));
+  margin-right: calc(100dvw / 360 * var(--btn-mr, 0));
+  margin-bottom: calc(100dvh / 740 * var(--btn-mb, 0));
+  margin-left: calc(100dvw / 360 * var(--btn-ml, 0));
   position: relative;
 
   &:hover {
@@ -25,18 +25,18 @@
 }
 
 .arrowButton {
-  width: calc(100dvh / 740 * var(--size, 28));
-  height: calc(100dvh / 740 * var(--size, 28));
+  width: calc(100dvh / 740 * var(--arrow-size, 28));
+  height: calc(100dvh / 740 * var(--arrow-size, 28));
   border-radius: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--color, var(--primary));
+  background-color: var(--arrow-color, var(--primary));
   border: 0;
-  @include common.mt(var(--mt, 0));
-  @include common.mr(var(--mr, 0));
-  @include common.mb(var(--mb, 0));
-  @include common.ml(var(--ml, 16));
+  @include common.mt(var(--arrow-mt, 0));
+  @include common.mr(var(--arrow-mr, 0));
+  @include common.mb(var(--arrow-mb, 0));
+  @include common.ml(var(--arrow-ml, 16));
 
   &:hover {
     cursor: pointer;

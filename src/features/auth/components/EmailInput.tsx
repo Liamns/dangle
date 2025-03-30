@@ -125,31 +125,29 @@ export const EmailInput: React.FC<EmailInputProps> = ({
           style={{ flex: 1 }}
         />
         <span className={styles.atSymbol}>@</span>
-        <select
-          className={styles.domainSelect}
-          value={selectedDomainKey}
-          onChange={handleDomainSelect}
-        >
-          {Object.entries(Domains).map(([key, domain]) => (
-            <option key={key} value={key}>
-              {domain}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {selectedDomainKey === "etc" && (
-        <>
-          <Spacer height="7" />
+        {selectedDomainKey === "etc" ? (
           <TextInput
             type="text"
             value={customDomain}
             onChange={handleCustomDomainChange}
-            placeholder="도메인 직접 입력"
-            width="240"
+            placeholder="직접 입력"
+            style={{ flex: 1 }}
           />
-        </>
-      )}
+        ) : (
+          <select
+            className={styles.domainSelect}
+            value={selectedDomainKey}
+            onChange={handleDomainSelect}
+          >
+            {Object.entries(Domains).map(([key, domain]) => (
+              <option key={key} value={key}>
+                {domain}
+              </option>
+            ))}
+            <option value="etc">직접 입력</option>
+          </select>
+        )}
+      </div>
 
       <span className={styles.errorMessage}>{error || validationError}</span>
     </div>

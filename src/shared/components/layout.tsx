@@ -2,6 +2,7 @@ import styles from "../styles/layout.module.scss";
 import gradients from "../styles/gradients.module.css";
 import classNames from "classnames";
 import React from "react";
+import { alignType, directionType, justifyType } from "../types/layout";
 
 export const Wrapper = ({
   children,
@@ -37,21 +38,22 @@ export const Spacer = ({
   return (
     <div
       className={styles.spacer}
-      style={{ "--width": width, "--height": height } as React.CSSProperties}
+      style={
+        {
+          "--spacer-width": width,
+          "--spacer-height": height,
+        } as React.CSSProperties
+      }
     ></div>
   );
 };
 
 export const Card = ({
   children,
-  pt,
-  pr,
-  pb,
-  pl,
-  mt,
-  mr,
-  mb,
-  ml,
+  px,
+  py,
+  mx,
+  my,
   width,
   height,
   color,
@@ -62,48 +64,52 @@ export const Card = ({
   align,
 }: {
   children: React.ReactNode;
-  pt?: string;
-  pr?: string;
-  pb?: string;
-  pl?: string;
-  mt?: string;
-  mr?: string;
-  mb?: string;
-  ml?: string;
+  px?: string;
+  py?: string;
+  mx?: string;
+  my?: string;
   width?: string;
   height?: string;
   color?: string;
   radius?: string;
   display?: string;
-  direction?: string;
-  justify?: string;
-  align?: string;
+  direction?: directionType;
+  justify?: justifyType;
+  align?: alignType;
 }) => {
+  const calculatedHeight = height
+    ? `calc(100dvh / 740 * ${height})`
+    : undefined;
+
   return (
     <div
       className={styles.card}
       style={
         {
-          "--pt": pt,
-          "--pr": pr,
-          "--pb": pb,
-          "--pl": pl,
-          "--mt": mt,
-          "--mr": mr,
-          "--mb": mb,
-          "--ml": ml,
-          "--width": width,
-          "--height": height,
-          "--color": color,
-          "--radius": radius,
-          "--display": display,
-          "--direction": direction,
-          "--justify": justify,
-          "--align": align,
+          "--card-my": my,
+          "--card-mx": mx,
+          "--card-width": width,
+          "--card-height": calculatedHeight,
+          "--card-color": color,
+          "--card-radius": radius,
+          "--card-display": display,
+          "--card-direction": direction,
+          "--card-justify": justify,
+          "--card-align": align,
         } as React.CSSProperties
       }
     >
-      {children}
+      <div
+        className={styles.cardInner}
+        style={
+          {
+            "--card-inner-py": py,
+            "--card-inner-px": px,
+          } as React.CSSProperties
+        }
+      >
+        {children}
+      </div>
     </div>
   );
 };
@@ -153,13 +159,13 @@ export const TextInput = React.forwardRef<
       placeholder={placeholder}
       style={
         {
-          "--background-color": backgroundColor,
-          "--border": border,
-          "--radius": radius,
-          "--color": color,
-          "--font-size": fontSize,
-          "--height": height,
-          "--width": width,
+          "--input-background-color": backgroundColor,
+          "--input-border": border,
+          "--input-radius": radius,
+          "--input-text-color": color,
+          "--input-font-size": fontSize,
+          "--input-height": height,
+          "--input-width": width,
         } as React.CSSProperties
       }
       {...rest}
@@ -228,10 +234,11 @@ export const TextField = React.forwardRef<
       className={styles.textFieldWrapper}
       style={
         {
-          "--mt": mt,
-          "--mr": mr,
-          "--mb": mb,
-          "--ml": ml,
+          "--wrapper-mt": mt,
+          "--wrapper-mr": mr,
+          "--wrapper-mb": mb,
+          "--wrapper-ml": ml,
+          "--wrapper-width": width,
         } as React.CSSProperties
       }
     >
@@ -257,4 +264,34 @@ export const TextField = React.forwardRef<
 
 export const Center = ({ children }: { children: React.ReactNode }) => {
   return <div className={styles.center}>{children}</div>;
+};
+
+export const InnerBox = ({
+  children,
+  justify,
+  align,
+  direction,
+  height,
+}: {
+  children: React.ReactNode;
+  justify?: justifyType;
+  align?: alignType;
+  direction?: directionType;
+  height?: string;
+}) => {
+  return (
+    <div
+      className={styles.innerBox}
+      style={
+        {
+          "--inner-box-justify": justify,
+          "--inner-box-align": align,
+          "--inner-box-direction": direction,
+          "--inner-box-height": height,
+        } as React.CSSProperties
+      }
+    >
+      {children}
+    </div>
+  );
 };
