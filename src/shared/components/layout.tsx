@@ -272,12 +272,20 @@ export const InnerBox = ({
   align,
   direction,
   height,
+  px,
+  py,
+  color,
+  style = {},
 }: {
   children: React.ReactNode;
   justify?: justifyType;
   align?: alignType;
   direction?: directionType;
   height?: string;
+  px?: string;
+  py?: string;
+  color?: string;
+  style?: React.CSSProperties;
 }) => {
   return (
     <div
@@ -288,6 +296,10 @@ export const InnerBox = ({
           "--inner-box-align": align,
           "--inner-box-direction": direction,
           "--inner-box-height": height,
+          "--inner-box-px": px,
+          "--inner-box-py": py,
+          "--inner-box-color": color,
+          ...style,
         } as React.CSSProperties
       }
     >

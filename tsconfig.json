@@ -19,10 +19,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "public/*": ["./public/*"]
     }
   },
   "include": [
+    "svgr.d.ts",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

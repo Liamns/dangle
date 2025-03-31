@@ -108,4 +108,7 @@
   flex-direction: var(--inner-box-direction, column);
   width: 100%;
   height: var(--inner-box-height, auto);
+  @include common.px(var(--inner-box-px, 0));
+  @include common.py(var(--inner-box-py, 0));
+  background-color: var(--inner-box-color, unset);
 }

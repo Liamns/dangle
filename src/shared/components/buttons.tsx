@@ -1,6 +1,12 @@
 import { ReactNode } from "react";
 import styles from "../styles/buttons.module.scss";
 import { Colors } from "../consts/colors";
+import {
+  fontSizeMap,
+  FontSizeType,
+  fontWeightMap,
+  FontWeightType,
+} from "../types/text";
 
 interface ButtonProps {
   children: ReactNode;
@@ -9,8 +15,8 @@ interface ButtonProps {
   height?: string;
   color?: string;
   textColor?: string;
-  fontSize?: string;
-  fontWeight?: string;
+  fontSize?: FontSizeType;
+  fontWeight?: FontWeightType;
   mt?: string;
   mb?: string;
   ml?: string;
@@ -39,6 +45,10 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const buttonColor =
     valid === null ? color : valid ? validColor : invalidColor;
+  const mappedFontSize =
+    fontSize !== undefined ? fontSizeMap[fontSize] : undefined;
+  const mappedFontWeight =
+    fontWeight !== undefined ? fontWeightMap[fontWeight] : undefined;
 
   return (
     <button
@@ -49,8 +59,8 @@ export const Button: React.FC<ButtonProps> = ({
           "--btn-height": height,
           "--btn-color": buttonColor,
           "--btn-text-color": textColor,
-          "--btn-font-size": fontSize,
-          "--btn-font-weight": fontWeight,
+          "--btn-font-size": mappedFontSize,
+          "--btn-font-weight": mappedFontWeight,
           "--btn-mt": mt,
           "--btn-mr": mr,
           "--btn-mb": mb,

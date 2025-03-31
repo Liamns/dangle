@@ -40,10 +40,10 @@ export default function Home() {
       </div>
       <BottomModal>
         <Link href="/login" style={{ width: "100%" }}>
-          <Button fontWeight="700">로그인 하기</Button>
+          <Button fontWeight="bold">로그인 하기</Button>
         </Link>
         <Spacer height="20" />
-        <Button fontWeight="700" color="white" textColor={Colors.black}>
+        <Button fontWeight="bold" color="white" textColor={Colors.black}>
           <Text
             text="댕글"
             color={Colors.brown}

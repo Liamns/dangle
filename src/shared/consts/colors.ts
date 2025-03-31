@@ -7,4 +7,6 @@ export const Colors = {
   invalid: "#d9d9d9",
   grey: "rgba(48, 48, 48, 0.3)",
   error: "#ff0000",
+  white: "#ffffff",
+  background: "#fff",
 };

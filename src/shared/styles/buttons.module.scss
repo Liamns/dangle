@@ -11,8 +11,8 @@
   justify-content: center;
   align-items: center;
   color: var(--btn-text-color, white);
-  font-size: var(--btn-font-size, 15px);
-  font-weight: var(--btn-font-weight, 600);
+  font-size: var(--btn-font-size, 16px);
+  font-weight: var(--btn-font-weight, 700);
   margin-top: calc(100dvh / 740 * var(--btn-mt, 0));
   margin-right: calc(100dvw / 360 * var(--btn-mr, 0));
   margin-bottom: calc(100dvh / 740 * var(--btn-mb, 0));
@@ -25,8 +25,8 @@
 }
 
 .arrowButton {
-  width: calc(100dvh / 740 * var(--arrow-size, 28));
-  height: calc(100dvh / 740 * var(--arrow-size, 28));
+  width: var(--arrow-size, 28px);
+  height: var(--arrow-size, 28px);
   border-radius: 5px;
   display: flex;
   justify-content: center;
