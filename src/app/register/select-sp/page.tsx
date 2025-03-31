@@ -202,13 +202,41 @@ export default function SelectSpecies() {
       </InnerBox>
 
       <BottomModal>
-        <InnerBox direction="row">
-          <Text text="원하시는 카드를" fontSize="lg" fontWeight="bold" />
-          <Text
-            text={`\u00a0선택해 주세요!`}
-            fontSize="lg"
-            fontWeight="normal"
-          />
+        <InnerBox>
+          <InnerBox direction="row" justify="center">
+            <div className={styles.iconText}>
+              <Dog
+                style={{ color: species === 0 ? Colors.brown : Colors.primary }}
+              />
+              <Text
+                text={`\u00a0강아지`}
+                fontSize="md"
+                color={species === 0 ? Colors.brown : Colors.primary}
+              />
+            </div>
+            <Spacer width="10" />
+            <div className={styles.iconText}>
+              <Cat
+                style={{ color: species === 1 ? Colors.brown : Colors.primary }}
+              />
+              <Text
+                text={`\u00a0고양이`}
+                fontSize="md"
+                color={species === 1 ? Colors.brown : Colors.primary}
+              />
+            </div>
+          </InnerBox>
+
+          <Spacer height="8" />
+
+          <InnerBox direction="row">
+            <Text text="원하시는 카드를" fontSize="lg" fontWeight="bold" />
+            <Text
+              text={`\u00a0선택해 주세요!`}
+              fontSize="lg"
+              fontWeight="normal"
+            />
+          </InnerBox>
         </InnerBox>
 
         <Spacer height="12" />
