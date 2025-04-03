@@ -84,7 +84,7 @@ export default function RegisterEmail() {
             onValidate={(valid) => setIsEmailValid(valid)}
           />
           <Spacer height="13" />
-          <Button valid={isEmailValid} onClick={handleSubmit}>
+          <Button width="240" valid={isEmailValid} onClick={handleSubmit}>
             인증번호 요청
           </Button>
           <Spacer height="13" />
@@ -118,9 +118,11 @@ export default function RegisterEmail() {
             maxLength={6}
             mb="5"
           />
-          <Button valid={authIsValid}>확인</Button>
+          <Button width="240" valid={authIsValid}>
+            확인
+          </Button>
           <Spacer height="14" />
-          <Button color={Colors.primary} onClick={onAuthRequest}>
+          <Button width="240" color={Colors.primary} onClick={onAuthRequest}>
             인증번호 재요청
           </Button>
           <Spacer height="12" />

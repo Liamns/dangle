@@ -62,7 +62,9 @@ export default function Login() {
               error={errors.password?.message}
             />
             <Spacer height="30" />
-            <Button valid={isValid && isEmailValid}>로그인 하기</Button>
+            <Button width="240" valid={isValid && isEmailValid}>
+              로그인 하기
+            </Button>
           </form>
           <Spacer height="15" />
           <Center>
@@ -83,6 +85,7 @@ export default function Login() {
           </InnerBox>
           <Spacer height="27" />
           <Button
+            width="240"
             color={Colors.primary}
             onClick={() => router.push("/login/register/email")}
           >

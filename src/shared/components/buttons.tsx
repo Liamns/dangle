@@ -26,7 +26,7 @@ interface ButtonProps {
   invalidColor?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button = ({
   children,
   onClick,
   width,
@@ -42,7 +42,14 @@ export const Button: React.FC<ButtonProps> = ({
   valid = null,
   validColor = Colors.brown,
   invalidColor = Colors.invalid,
-}) => {
+  className = "", // 추가: 사용자 정의 클래스
+  style = {}, // 추가: 사용자 정의 스타일
+  ...rest // 추가: 나머지 button 속성들 (type, disabled, form 등)
+}: ButtonProps &
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    className?: string;
+    style?: React.CSSProperties;
+  }) => {
   const buttonColor =
     valid === null ? color : valid ? validColor : invalidColor;
   const mappedFontSize =
@@ -52,7 +59,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={styles.button}
+      className={`${styles.button} ${className}`}
       style={
         {
           "--btn-width": width,
@@ -65,9 +72,11 @@ export const Button: React.FC<ButtonProps> = ({
           "--btn-mr": mr,
           "--btn-mb": mb,
           "--btn-ml": ml,
+          ...style, // 사용자 정의 스타일 병합
         } as React.CSSProperties
       }
       onClick={onClick}
+      {...rest} // 모든 기본 button 속성 전달
     >
       {children}
     </button>

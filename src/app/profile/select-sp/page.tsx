@@ -15,8 +15,10 @@ import styles from "./page.module.scss";
 import Dog from "@/shared/svgs/dog.svg";
 import Cat from "@/shared/svgs/cat.svg";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function SelectSpecies() {
+  const router = useRouter();
   const totalSpecies = 2;
   const [species, setSpecies] = useState<number>(0);
   const [direction, setDirection] = useState<"left" | "right">("right");
@@ -241,7 +243,11 @@ export default function SelectSpecies() {
 
         <Spacer height="12" />
 
-        <Button color={Colors.brown} fontWeight="bold">
+        <Button
+          color={Colors.brown}
+          fontWeight="bold"
+          onClick={() => router.push("/profile/input/username")}
+        >
           프로필카드 만들기 시작
         </Button>
       </BottomModal>

@@ -1,9 +1,10 @@
-export type FontSizeType = "sm" | "md" | "lg" | "title" | "logo";
+export type FontSizeType = "tiny" | "sm" | "md" | "lg" | "title" | "logo";
 export type FontWeightType = "normal" | "bold" | "light";
 export type FontFamilyType = "inter" | "jalnan";
 
 // 사이즈 매핑 객체
 export const fontSizeMap: Record<FontSizeType, string> = {
+  tiny: "10px",
   sm: "12px",
   md: "14px",
   lg: "16px",

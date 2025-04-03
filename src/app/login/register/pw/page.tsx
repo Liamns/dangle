@@ -29,7 +29,7 @@ export default function RegisterPW() {
 
   const onSubmit = (data: PasswordFormData) => {
     alert("회원가입 완료!");
-    router.replace("/register/select-sp");
+    router.replace("/profile/select-sp");
   };
 
   return (
@@ -68,7 +68,9 @@ export default function RegisterPW() {
             error={errors.confirmPassword?.message}
           />
           <Spacer height="60" />
-          <Button valid={isValid}>다음으로</Button>
+          <Button width="240" valid={isValid}>
+            다음으로
+          </Button>
         </form>
       </Card>
     </>
