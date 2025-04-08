@@ -1,21 +1,3 @@
-@use "shared/styles/common.scss" as common;
-
-.container {
-  position: relative;
-  width: 100%;
-  @include common.pt(40);
-}
-
-.imgContainer {
-  @include common.width(202);
-  @include common.height(98);
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-}
-
 .overlayImg {
   position: absolute;
   top: 0;

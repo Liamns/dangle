@@ -7,6 +7,7 @@ import {
   TextInput,
 } from "@/shared/components/layout";
 import styles from "./page.module.scss";
+import layoutStyles from "../layout.module.scss";
 import Image from "next/image";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
@@ -14,14 +15,16 @@ import { Button } from "@/shared/components/buttons";
 import {
   UsernameFormData,
   usernameFormSchema,
-} from "@/features/profile/schema";
+} from "@/entities/profile/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { getRandomNickname } from "@/features/profile/input/username/api";
-import { set } from "zod";
+import { useRouter } from "next/navigation";
 
 export default function InputUsername() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -55,8 +58,8 @@ export default function InputUsername() {
   }, []);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.imgContainer}>
+    <div className={layoutStyles.container}>
+      <div className={layoutStyles.imgContainer}>
         <Image
           src="/images/register/username/upper.png"
           fill
@@ -110,7 +113,12 @@ export default function InputUsername() {
         </form>
       </Card>
       <Spacer height="30" />
-      <Button valid={isValid} ml="30" mr="30">
+      <Button
+        valid={isValid}
+        ml="30"
+        mr="30"
+        onClick={() => router.push("/profile/input/petname")}
+      >
         다음 단계로
       </Button>
     </div>

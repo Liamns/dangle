@@ -58,3 +58,11 @@ export const authNumberFormSchema = z.object({
   authNumber: authNumberSchema,
 });
 export type AuthNumberFormData = z.infer<typeof authNumberFormSchema>;
+
+export const userSchema = z.object({
+  id: z.string().uuid("유효한 UUID가 아닙니다."),
+  username: z.string().min(1, "사용자 이름을 입력해주세요."),
+  profileIds: z.array(z.string().uuid("유효한 프로필 ID가 아닙니다.")),
+});
+
+export type User = z.infer<typeof userSchema>;
