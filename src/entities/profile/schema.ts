@@ -29,7 +29,7 @@ export const petnameFormSchema = z.object({
 });
 export type PetnameFormData = z.infer<typeof petnameFormSchema>;
 
-export const petageFormSchema = z.object({
+export const petAgeFormSchema = z.object({
   age: z.preprocess(
     (val) => Number(val),
     z
@@ -38,4 +38,14 @@ export const petageFormSchema = z.object({
   ),
   isMonth: z.boolean(),
 });
-export type PetageFormData = z.infer<typeof petageFormSchema>;
+export type PetAgeFormData = z.infer<typeof petAgeFormSchema>;
+
+export const petWeightFormSchema = z.object({
+  weight: z.preprocess(
+    (val) => Number(val),
+    z
+      .number({ invalid_type_error: "숫자를 입력해주세요." })
+      .min(0.1, "몸무게는 최소 0.1kg 이상이어야 합니다.")
+  ),
+});
+export type PetWeightFormData = z.infer<typeof petWeightFormSchema>;

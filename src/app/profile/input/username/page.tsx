@@ -117,7 +117,7 @@ export default function InputUsername() {
         valid={isValid}
         ml="30"
         mr="30"
-        onClick={() => router.push("/profile/input/petname")}
+        onClick={() => router.push("/profile/input/pet-name")}
       >
         다음 단계로
       </Button>

@@ -80,6 +80,21 @@
   }
 }
 
+.textInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.suffix {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--input-font-size, 14px);
+  color: var(--suffix-color, var(--input-text-color, var(--foreground)));
+  font-weight: 700;
+}
+
 .textFieldError {
   font-size: 12px;
   color: var(--error-text-color, var(--error));

@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { usernameSchema, petnameSchema, petageFormSchema } from "./schema";
+import {
+  usernameSchema,
+  petnameSchema,
+  petAgeFormSchema,
+  petWeightFormSchema,
+} from "./schema";
 import { uuidSchema } from "@/entities/user/model";
 
 export const profileModelSchema = z.object({
@@ -7,7 +12,8 @@ export const profileModelSchema = z.object({
   userId: uuidSchema,
   username: usernameSchema,
   petname: petnameSchema,
-  petage: petageFormSchema,
+  petAge: petAgeFormSchema,
+  petWeight: petWeightFormSchema,
 });
 
 // Profile model type derived from the schema

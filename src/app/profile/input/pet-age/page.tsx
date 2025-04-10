@@ -4,22 +4,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  InnerBox,
-  Spacer,
-  TextError,
-  TextField,
-  TextInput,
-} from "@/shared/components/layout";
+import { Card, InnerBox, Spacer, TextField } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import { Button } from "@/shared/components/buttons";
 import Image from "next/image";
 import layoutStyles from "../layout.module.scss";
 import styles from "./page.module.scss";
-import { getPetAgeLabel } from "@/features/profile/petageLabels";
-import { PetageFormData, petageFormSchema } from "@/entities/profile/schema";
+import { PetAgeFormData, petAgeFormSchema } from "@/entities/profile/schema";
+import { getPetAgeLabel } from "@/features/profile/petAgeLabels";
 
 export default function InputPetage() {
   const router = useRouter();
@@ -28,8 +21,8 @@ export default function InputPetage() {
     handleSubmit,
     watch,
     formState: { errors, isValid },
-  } = useForm<PetageFormData>({
-    resolver: zodResolver(petageFormSchema),
+  } = useForm<PetAgeFormData>({
+    resolver: zodResolver(petAgeFormSchema),
     mode: "onChange",
     defaultValues: {
       isMonth: false,
@@ -38,9 +31,10 @@ export default function InputPetage() {
 
   const [ageLabel, setAgeLabel] = useState<string>("");
 
-  const onSubmit = (data: PetageFormData) => {
+  const onSubmit = (data: PetAgeFormData) => {
     alert("제출된 데이터: " + JSON.stringify(data));
     alert("몸무게 페이지 이동");
+    router.push("/profile/input/pet-weight");
   };
 
   // 실시간 미리보기 (옵션)
@@ -97,7 +91,7 @@ export default function InputPetage() {
           />
           <Spacer height="6" />
           <div
-            className={styles.labelContainer}
+            className={layoutStyles.labelContainer}
             style={
               {
                 "--label-bg-color": isValid ? Colors.primary : Colors.invalid,

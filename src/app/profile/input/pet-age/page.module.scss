@@ -28,13 +28,3 @@
     transform: rotate(45deg);
   }
 }
-
-.labelContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  @include common.py(10);
-  background-color: var(--label-bg-color, var(--invalid));
-  width: 100%;
-  border-radius: 10px;
-}

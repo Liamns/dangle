@@ -116,7 +116,7 @@ export const Card = ({
 
 type InputType = "text" | "password" | "email" | "number" | "tel" | "url";
 
-// New TextInput component
+// Updated TextInput component with suffix support
 export const TextInput = React.forwardRef<
   HTMLInputElement,
   {
@@ -131,6 +131,8 @@ export const TextInput = React.forwardRef<
     fontSize?: string;
     height?: string;
     width?: string;
+    suffix?: string;
+    suffixColor?: string;
     [key: string]: any;
   }
 >(function TextInput(props, ref) {
@@ -146,30 +148,52 @@ export const TextInput = React.forwardRef<
     fontSize,
     height,
     width,
+    suffix,
+    suffixColor,
     ...rest
   } = props;
 
   return (
-    <input
-      ref={ref}
-      type={type}
-      className={styles.textField}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      style={
-        {
-          "--input-background-color": backgroundColor,
-          "--input-border": border,
-          "--input-radius": radius,
-          "--input-text-color": color,
-          "--input-font-size": fontSize,
-          "--input-height": height,
-          "--input-width": width,
-        } as React.CSSProperties
-      }
-      {...rest}
-    />
+    <div
+      className={styles.textInputWrapper}
+      style={{ position: "relative", width }}
+    >
+      <input
+        ref={ref}
+        type={type}
+        className={styles.textField}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        style={
+          {
+            "--input-background-color": backgroundColor,
+            "--input-border": border,
+            "--input-radius": radius,
+            "--input-text-color": color,
+            "--input-font-size": fontSize,
+            "--input-height": height,
+            "--input-width": width,
+          } as React.CSSProperties
+        }
+        {...rest}
+      />
+      {suffix && (
+        <span
+          className={styles.suffix}
+          style={{
+            position: "absolute",
+            right: "10px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            fontSize,
+            color: suffixColor || color,
+          }}
+        >
+          {suffix}
+        </span>
+      )}
+    </div>
   );
 });
 
@@ -206,6 +230,8 @@ export const TextField = React.forwardRef<
     mb?: string;
     ml?: string;
     error?: string | null;
+    suffix?: string;
+    suffixColor?: string;
     [key: string]: any;
   }
 >(function TextField(props, ref) {
@@ -226,6 +252,8 @@ export const TextField = React.forwardRef<
     mb,
     ml,
     error,
+    suffix,
+    suffixColor,
     ...rest
   } = props;
 
@@ -255,6 +283,8 @@ export const TextField = React.forwardRef<
         fontSize={fontSize}
         height={height}
         width={width}
+        suffix={suffix}
+        suffixColor={suffixColor}
         {...rest}
       />
       <TextError error={error} />

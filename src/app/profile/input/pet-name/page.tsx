@@ -2,7 +2,6 @@
 import { Card, Spacer, TextError, TextInput } from "@/shared/components/layout";
 
 import layoutStyles from "../layout.module.scss";
-import styles from "../username/page.module.scss"; // reuse the same stylesheet
 import Image from "next/image";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
@@ -14,7 +13,6 @@ import { useRouter } from "next/navigation";
 
 export default function InputPetname() {
   const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -64,7 +62,7 @@ export default function InputPetname() {
         valid={isValid}
         ml="30"
         mr="30"
-        onClick={() => router.push("/profile/input/petage")}
+        onClick={() => router.push("/profile/input/pet-age")}
       >
         다음 단계로
       </Button>
