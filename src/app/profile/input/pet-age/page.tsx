@@ -10,7 +10,7 @@ import { Colors } from "@/shared/consts/colors";
 import { Button } from "@/shared/components/buttons";
 import Image from "next/image";
 import layoutStyles from "../layout.module.scss";
-import styles from "./page.module.scss";
+import chkbox from "@/shared/styles/buttons.module.scss";
 import { PetAgeFormData, petAgeFormSchema } from "@/entities/profile/schema";
 import { getPetAgeLabel } from "@/features/profile/petAgeLabels";
 
@@ -73,7 +73,7 @@ export default function InputPetage() {
             <input
               type="checkbox"
               {...register("isMonth")}
-              className={styles.chkbox}
+              className={chkbox.chkbox}
             />
             <Text
               text={`\u00a0개월수 표기`}

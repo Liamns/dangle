@@ -26,12 +26,10 @@ export const useProfileStore = create(
       setUserProfiles: (profiles) => set({ userProfiles: profiles }),
 
       addProfile: (profile) => {
-        // 프로필 추가 로직
         set((state) => ({
           userProfiles: [...state.userProfiles, profile],
         }));
 
-        // 프로필이 추가되면 현재 프로필이 없는 경우 자동으로 설정
         const { currentProfile } = get();
         if (!currentProfile) {
           set({ currentProfile: profile });
@@ -41,11 +39,11 @@ export const useProfileStore = create(
       updateProfile: (profile) =>
         set((state) => ({
           userProfiles: state.userProfiles.map((p) =>
-            p.id === profile.id ? profile : p
+            p.id === profile.id ? { ...p, ...profile } : p
           ),
           currentProfile:
             state.currentProfile?.id === profile.id
-              ? profile
+              ? { ...state.currentProfile, ...profile }
               : state.currentProfile,
         })),
 
@@ -68,15 +66,8 @@ export const useProfileStore = create(
         }),
 
       loadProfilesByUserId: async (userId) => {
-        // 실제 구현에서는 API 호출을 통해 프로필을 가져올 것입니다.
-        // 예: const profiles = await api.fetchProfilesByUserId(userId);
-        // set({ userProfiles: profiles });
-
-        // 데모 목적으로 임시 로직 구현
         try {
-          // API 호출 시뮬레이션
-          // const profiles = await api.fetchProfilesByUserId(userId);
-          const profiles: ProfileModel[] = []; // API 응답 시뮬레이션
+          const profiles: ProfileModel[] = [];
 
           set({
             userProfiles: profiles,
@@ -92,7 +83,7 @@ export const useProfileStore = create(
       clearProfiles: () => set({ currentProfile: null, userProfiles: [] }),
     }),
     {
-      name: "profile-store", // 로컬 스토리지 키 이름
+      name: "profile-store",
     }
   )
 );

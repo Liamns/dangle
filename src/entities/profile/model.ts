@@ -4,6 +4,7 @@ import {
   petnameSchema,
   petAgeFormSchema,
   petWeightFormSchema,
+  petGenderFormSchema,
 } from "./schema";
 import { uuidSchema } from "@/entities/user/model";
 
@@ -14,6 +15,7 @@ export const profileModelSchema = z.object({
   petname: petnameSchema,
   petAge: petAgeFormSchema,
   petWeight: petWeightFormSchema,
+  petGender: petGenderFormSchema,
 });
 
 // Profile model type derived from the schema

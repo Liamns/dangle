@@ -29,7 +29,7 @@ export default function InputPetWeight() {
 
   const onSubmit = (data: PetWeightFormData) => {
     alert("제출된 데이터: " + JSON.stringify(data));
-    alert("다음 페이지로 이동");
+    router.push("/profile/input/pet-gender");
   };
 
   const watchData = watch();
