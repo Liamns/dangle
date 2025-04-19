@@ -1,4 +1,4 @@
-import { petType } from "../../shared/types/pet";
+import { petType, allVaccines, personalityTags } from "../../shared/types/pet";
 
 import { z } from "zod";
 
@@ -40,13 +40,14 @@ export const petAgeFormSchema = z.object({
 });
 export type PetAgeFormData = z.infer<typeof petAgeFormSchema>;
 
+export const petWeightSchema = z.preprocess(
+  (val) => Number(val),
+  z
+    .number({ invalid_type_error: "숫자를 입력해주세요." })
+    .min(0.1, "몸무게는 최소 0.1kg 이상이어야 합니다.")
+);
 export const petWeightFormSchema = z.object({
-  weight: z.preprocess(
-    (val) => Number(val),
-    z
-      .number({ invalid_type_error: "숫자를 입력해주세요." })
-      .min(0.1, "몸무게는 최소 0.1kg 이상이어야 합니다.")
-  ),
+  weight: petWeightSchema,
 });
 export type PetWeightFormData = z.infer<typeof petWeightFormSchema>;
 
@@ -59,3 +60,22 @@ export const petGenderFormSchema = z.object({
   }),
 });
 export type PetGenderFormData = z.infer<typeof petGenderFormSchema>;
+
+// Species index: 0 = dog (default), 1 = cat
+export const petSpecSchema = z.number().int().min(0).default(0);
+export type PetSpecFormData = z.infer<typeof petSpecSchema>;
+
+// Vaccination selection schema: direct boolean record for each vaccine key
+export const petVaccinationFormSchema = z.object({
+  vaccinations: z.record(z.enum(allVaccines), z.boolean()),
+});
+export type PetVaccinationFormData = z.infer<typeof petVaccinationFormSchema>;
+
+// Personality selection schema: user picks up to 5 tags
+export const petPersonalityFormSchema = z.object({
+  tags: z
+    .array(z.enum(personalityTags))
+    .min(1, "최소 1개의 성격 태그를 선택해주세요.")
+    .max(5, "최대 5개의 성격 태그만 선택할 수 있습니다."),
+});
+export type PetPersonalityFormData = z.infer<typeof petPersonalityFormSchema>;

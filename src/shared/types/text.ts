@@ -16,5 +16,5 @@ export const fontSizeMap: Record<FontSizeType, string> = {
 export const fontWeightMap: Record<FontWeightType, string> = {
   normal: "400",
   bold: "700",
-  light: "200",
+  light: "300",
 };

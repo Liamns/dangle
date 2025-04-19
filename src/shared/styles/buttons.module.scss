@@ -50,13 +50,13 @@
   -moz-appearance: none;
   width: 14px;
   height: 14px;
-  border: 1px solid var(--brown);
+  border: 1px solid var(--box-color, var(--brown));
   cursor: pointer;
   display: inline-block;
   vertical-align: middle;
 
   &:checked {
-    background-color: var(--brown);
+    background-color: var(--box-color, var(--brown));
   }
 
   &:checked::after {

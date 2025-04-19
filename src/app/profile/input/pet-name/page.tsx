@@ -10,9 +10,14 @@ import { PetnameFormData, petnameFormSchema } from "@/entities/profile/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useProfileStore } from "@/entities/profile/store";
 
 export default function InputPetname() {
   const router = useRouter();
+  const updateCurrentProfile = useProfileStore(
+    (state) => state.updateCurrentProfile
+  );
+
   const {
     register,
     handleSubmit,
@@ -23,7 +28,8 @@ export default function InputPetname() {
   });
 
   const petnameSubmit = (data: PetnameFormData) => {
-    alert(`입력한 반려동물 이름: ${data.petname}`);
+    updateCurrentProfile({ petname: data.petname });
+    router.push("/profile/input/pet-age");
   };
 
   return (
@@ -62,7 +68,7 @@ export default function InputPetname() {
         valid={isValid}
         ml="30"
         mr="30"
-        onClick={() => router.push("/profile/input/pet-age")}
+        onClick={handleSubmit(petnameSubmit)}
       >
         다음 단계로
       </Button>

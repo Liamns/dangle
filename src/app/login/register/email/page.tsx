@@ -16,11 +16,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { EmailInput } from "@/features/auth/components/EmailInput";
+import { useUserStore } from "@/entities/user/store";
 
 export default function RegisterEmail() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
+  const updateCurrentUser = useUserStore((state) => state.updateCurrentUser);
   const [isEmailValid, setIsEmailValid] = useState(false);
   const handleSubmit = () => {
     if (isEmailValid) {
@@ -42,6 +44,7 @@ export default function RegisterEmail() {
   });
 
   const onAuthSubmit = (data: AuthNumberFormData) => {
+    updateCurrentUser({ email });
     router.push("/login/register/pw");
   };
 

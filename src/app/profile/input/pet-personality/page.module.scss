@@ -1,0 +1,36 @@
+.formContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.scrollWrapper {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.tagGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  max-height: calc(100dvh / 740 * 260);
+}
+
+.tagItem {
+  padding: 8px 10px;
+  border: 1px solid var(--grey);
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  background-color: var(--white);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.selected {
+  border-color: var(--brown);
+  background-color: var(--tertiary);
+  color: var(--white);
+}

@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmailInput } from "@/features/auth/components/EmailInput";
+import { useUserStore } from "@/entities/user/store";
 
 export default function Login() {
   const router = useRouter();
@@ -43,6 +44,8 @@ export default function Login() {
       alert(`이메일: ${email}, 비밀번호: ${data.password}`);
     }
   };
+
+  const clearUser = useUserStore((state) => state.clearUser);
 
   return (
     <>
@@ -87,7 +90,10 @@ export default function Login() {
           <Button
             width="240"
             color={Colors.primary}
-            onClick={() => router.push("/login/register/email")}
+            onClick={() => {
+              clearUser();
+              router.push("/login/register/email");
+            }}
           >
             회원가입 하러가기
           </Button>

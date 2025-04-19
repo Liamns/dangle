@@ -21,9 +21,14 @@ import {
 } from "@/entities/profile/schema";
 import Image from "next/image";
 import chkbox from "@/shared/styles/buttons.module.scss";
+import { useProfileStore } from "@/entities/profile/store";
 
 export default function InputPetGender() {
   const router = useRouter();
+  const updateCurrentProfile = useProfileStore(
+    (state) => state.updateCurrentProfile
+  );
+
   const {
     register,
     handleSubmit,
@@ -36,13 +41,11 @@ export default function InputPetGender() {
   });
 
   const onSubmit = (data: PetGenderFormData) => {
-    alert("제출된 데이터: " + JSON.stringify(data));
-    alert("다음 페이지로 이동");
+    updateCurrentProfile({ petGender: data });
+    router.push("/profile/input/pet-vaccines");
   };
 
   const watchData = watch();
-  const previewGender = watchData.gender ? "Male" : "Female";
-  const previewNeutered = watchData.isNeutered ? "Yes" : "No";
 
   return (
     <div className={layoutStyles.container}>

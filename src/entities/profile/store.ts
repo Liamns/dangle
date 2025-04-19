@@ -2,12 +2,39 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { ProfileModel } from "./model";
 import { useUserStore } from "@/entities/user/store";
+import {
+  PetAgeFormData,
+  PetGenderFormData,
+  PetVaccinationFormData,
+  PetPersonalityFormData,
+  PetWeightFormData,
+} from "./schema";
+import { allVaccines, personalityTraits } from "@/shared/types/pet";
+
+// 비어있는 프로필 모델 상수 정의
+const EMPTY_PROFILE: ProfileModel = {
+  id: "00000000-0000-0000-0000-000000000000",
+  userId: "00000000-0000-0000-0000-000000000000",
+  username: "",
+  petname: "",
+  petAge: { age: 0, isMonth: false },
+  petWeight: 0,
+  petGender: { gender: true, isNeutered: false },
+  petSpec: 0,
+  vaccinations: Object.fromEntries(
+    allVaccines.map((vaccine) => [vaccine, false])
+  ),
+  personalityScores: Object.fromEntries(
+    personalityTraits.map((trait) => [trait, 0])
+  ),
+};
 
 interface ProfileStoreState {
   currentProfile: ProfileModel | null;
   userProfiles: ProfileModel[];
   setCurrentProfile: (profile: ProfileModel | null) => void;
   setUserProfiles: (profiles: ProfileModel[]) => void;
+  updateCurrentProfile: (profileData: Partial<ProfileModel>) => void;
   addProfile: (profile: ProfileModel) => void;
   updateProfile: (profile: ProfileModel) => void;
   removeProfile: (profileId: string) => void;
@@ -24,6 +51,13 @@ export const useProfileStore = create(
       setCurrentProfile: (profile) => set({ currentProfile: profile }),
 
       setUserProfiles: (profiles) => set({ userProfiles: profiles }),
+
+      updateCurrentProfile: (profileData) =>
+        set((state) => ({
+          currentProfile: state.currentProfile
+            ? { ...state.currentProfile, ...profileData }
+            : null,
+        })),
 
       addProfile: (profile) => {
         set((state) => ({
@@ -80,7 +114,8 @@ export const useProfileStore = create(
         return Promise.resolve();
       },
 
-      clearProfiles: () => set({ currentProfile: null, userProfiles: [] }),
+      clearProfiles: () =>
+        set({ currentProfile: EMPTY_PROFILE, userProfiles: [] }),
     }),
     {
       name: "profile-store",

@@ -15,9 +15,15 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useUserStore } from "@/entities/user/store";
+import { useProfileStore } from "@/entities/profile/store";
+import { clear } from "console";
 
 export default function RegisterPW() {
   const router = useRouter();
+  const updateCurrentUser = useUserStore((state) => state.updateCurrentUser);
+  const clearCurrentProfile = useProfileStore((state) => state.clearProfiles);
+
   const {
     register,
     handleSubmit,
@@ -28,7 +34,8 @@ export default function RegisterPW() {
   });
 
   const onSubmit = (data: PasswordFormData) => {
-    alert("회원가입 완료!");
+    updateCurrentUser({ password: data.password });
+    clearCurrentProfile();
     router.replace("/profile/select-sp");
   };
 

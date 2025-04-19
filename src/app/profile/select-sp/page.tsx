@@ -16,9 +16,15 @@ import Dog from "@/shared/svgs/dog.svg";
 import Cat from "@/shared/svgs/cat.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useProfileStore } from "@/entities/profile/store";
+import { useUserStore } from "@/entities/user/store";
 
 export default function SelectSpecies() {
   const router = useRouter();
+  const updateCurrentProfile = useProfileStore(
+    (state) => state.updateCurrentProfile
+  );
+
   const totalSpecies = 2;
   const [species, setSpecies] = useState<number>(0);
   const [direction, setDirection] = useState<"left" | "right">("right");
@@ -246,7 +252,10 @@ export default function SelectSpecies() {
         <Button
           color={Colors.brown}
           fontWeight="bold"
-          onClick={() => router.push("/profile/input/username")}
+          onClick={() => {
+            updateCurrentProfile({ petSpec: species });
+            router.push("/profile/input/username");
+          }}
         >
           프로필카드 만들기 시작
         </Button>

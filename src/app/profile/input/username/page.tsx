@@ -21,9 +21,13 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { getRandomNickname } from "@/features/profile/input/username/api";
 import { useRouter } from "next/navigation";
+import { useProfileStore } from "@/entities/profile/store";
 
 export default function InputUsername() {
   const router = useRouter();
+  const updateCurrentProfile = useProfileStore(
+    (state) => state.updateCurrentProfile
+  );
 
   const {
     register,
@@ -37,7 +41,8 @@ export default function InputUsername() {
   });
 
   const usernameSubmit = (data: UsernameFormData) => {
-    alert(`입력한 유저 닉네임: ${data.username}`);
+    updateCurrentProfile({ username: data.username });
+    router.push("/profile/input/pet-name");
   };
 
   const getRandomUsername = async () => {
@@ -117,7 +122,7 @@ export default function InputUsername() {
         valid={isValid}
         ml="30"
         mr="30"
-        onClick={() => router.push("/profile/input/pet-name")}
+        onClick={handleSubmit(usernameSubmit)}
       >
         다음 단계로
       </Button>

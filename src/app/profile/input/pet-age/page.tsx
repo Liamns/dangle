@@ -13,9 +13,14 @@ import layoutStyles from "../layout.module.scss";
 import chkbox from "@/shared/styles/buttons.module.scss";
 import { PetAgeFormData, petAgeFormSchema } from "@/entities/profile/schema";
 import { getPetAgeLabel } from "@/features/profile/petAgeLabels";
+import { useProfileStore } from "@/entities/profile/store";
 
 export default function InputPetage() {
   const router = useRouter();
+  const updateCurrentProfile = useProfileStore(
+    (state) => state.updateCurrentProfile
+  );
+
   const {
     register,
     handleSubmit,
@@ -32,8 +37,7 @@ export default function InputPetage() {
   const [ageLabel, setAgeLabel] = useState<string>("");
 
   const onSubmit = (data: PetAgeFormData) => {
-    alert("제출된 데이터: " + JSON.stringify(data));
-    alert("몸무게 페이지 이동");
+    updateCurrentProfile({ petAge: data });
     router.push("/profile/input/pet-weight");
   };
 

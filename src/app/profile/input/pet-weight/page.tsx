@@ -1,7 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, InnerBox, Spacer, TextField } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
@@ -9,14 +9,22 @@ import { Colors } from "@/shared/consts/colors";
 import { Button } from "@/shared/components/buttons";
 import Image from "next/image";
 import layoutStyles from "../layout.module.scss";
+import chkbox from "@/shared/styles/buttons.module.scss";
 import {
   PetWeightFormData,
   petWeightFormSchema,
 } from "@/entities/profile/schema";
 import { classifyDogSize, dogSizeTitles } from "@/shared/types/pet";
+import { useProfileStore } from "@/entities/profile/store";
 
 export default function InputPetWeight() {
   const router = useRouter();
+  const updateCurrentProfile = useProfileStore(
+    (state) => state.updateCurrentProfile
+  );
+  const currentProfile = useProfileStore((state) => state.currentProfile);
+  const [previewLabel, setPreviewLabel] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -25,18 +33,30 @@ export default function InputPetWeight() {
   } = useForm<PetWeightFormData>({
     resolver: zodResolver(petWeightFormSchema),
     mode: "onChange",
+    defaultValues: {
+      // 기존 값이 있으면 불러오기
+      weight: currentProfile?.petWeight || undefined,
+    },
   });
 
-  const onSubmit = (data: PetWeightFormData) => {
-    alert("제출된 데이터: " + JSON.stringify(data));
-    router.push("/profile/input/pet-gender");
-  };
+  const weight = watch("weight");
 
-  const watchData = watch();
-  const previewWeight = watchData.weight;
-  const previewLabel = isValid
-    ? dogSizeTitles[classifyDogSize(previewWeight)]
-    : "";
+  useEffect(() => {
+    if (weight && !isNaN(weight)) {
+      const dogSize = classifyDogSize(weight);
+      setPreviewLabel(dogSizeTitles[dogSize]);
+    } else {
+      setPreviewLabel("");
+    }
+  }, [weight]);
+
+  const onSubmit = (data: PetWeightFormData) => {
+    if (isValid) {
+      // 직접 숫자 값으로 저장 (객체 형태 대신)
+      updateCurrentProfile({ petWeight: data.weight });
+      router.push("/profile/input/pet-gender");
+    }
+  };
 
   return (
     <div className={layoutStyles.container}>
@@ -63,7 +83,7 @@ export default function InputPetWeight() {
             {...register("weight")}
             type="number"
             step="0.1"
-            placeholder="몸무게를 입력해 주세요"
+            placeholder="숫자만 입력해 주세요"
             error={errors.weight?.message}
             suffix="kg"
             suffixColor={Colors.brown}
@@ -74,19 +94,35 @@ export default function InputPetWeight() {
           <Text
             text="Weight Title"
             fontWeight="bold"
-            color={isValid ? Colors.primary : Colors.invalid}
+            color={
+              weight
+                ? isValid
+                  ? Colors.primary
+                  : Colors.invalid
+                : Colors.invalid
+            }
           />
           <Spacer height="6" />
           <div
             className={layoutStyles.labelContainer}
             style={
               {
-                "--label-bg-color": isValid ? Colors.primary : Colors.invalid,
+                "--label-bg-color": weight
+                  ? isValid
+                    ? Colors.primary
+                    : Colors.invalid
+                  : Colors.invalid,
               } as React.CSSProperties
             }
           >
             <Text
-              text={isValid ? previewLabel : `빈칸을 입력해 주세요`}
+              text={
+                weight
+                  ? isValid
+                    ? previewLabel
+                    : errors.weight?.message || "유효하지 않은 값"
+                  : "빈칸을 입력해 주세요"
+              }
               fontSize="md"
               fontWeight="bold"
               color={Colors.white}
