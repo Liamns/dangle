@@ -1,4 +1,8 @@
 .fixedBottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   max-width: 1200px;
   margin: 0 auto;
   width: var(--modal-width, 100%);
@@ -10,7 +14,9 @@
   background-color: white;
   justify-content: var(--modal-justify, center);
   align-items: var(--modal-align, center);
+  z-index: 10; // Lower z-index to ensure cards can render on top if needed
   margin-top: auto;
+  pointer-events: auto; // Ensure modal still receives clicks
 }
 
 .backdrop {

@@ -33,7 +33,7 @@
   flex-direction: var(--card-direction, column);
   justify-content: var(--card-justify, start);
   align-items: var(--card-align, start);
-  overflow: hidden;
+  overflow: visible; // Changed from 'hidden' to allow content to overflow
   position: relative;
 }
 
@@ -127,4 +127,5 @@
   @include common.px(var(--inner-box-px, 0));
   @include common.py(var(--inner-box-py, 0));
   background-color: var(--inner-box-color, unset);
+  position: relative;
 }

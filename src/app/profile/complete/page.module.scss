@@ -1,5 +1,9 @@
 @use "@/shared/styles/common.scss" as common;
 
+.scrollable {
+  overflow-y: auto;
+}
+
 .animalCard {
   flex: 1;
   display: flex;
@@ -43,4 +47,17 @@
   flex-direction: row;
   justify-content: start;
   align-items: center;
+}
+
+.imgContainer {
+  position: relative;
+  width: calc(100dvw / 360 * 300);
+  aspect-ratio: 1;
+  max-width: calc(1200px - (100dvw / 360 * 60));
+}
+
+.radarContainer {
+  width: calc(100dvw / 360 * 300);
+  aspect-ratio: 1;
+  max-width: calc(1200px - (100dvw / 360 * 60));
 }

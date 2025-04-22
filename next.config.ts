@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    domains: ["media.discordapp.net"],
+    domains: ["media.discordapp.net", "agcnyecfqxshatkrfcre.supabase.co"],
   },
 };
 

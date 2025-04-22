@@ -24,6 +24,33 @@ export const BottomModal: React.FC<BottomModalProps> = ({
   justify,
   align,
 }) => {
+  // Comment out the useEffect that adds padding to allow Card to overlap with BottomModal
+
+  useEffect(() => {
+    // 모달 요소 찾기
+    const modalElement = document.querySelector(`.${styles.fixedBottom}`);
+    if (modalElement) {
+      // 모달 높이 계산
+      const modalHeight = modalElement.getBoundingClientRect().height;
+
+      // 메인 컨텐츠의 부모 요소를 찾아 하단 패딩 추가
+      const parentElement = modalElement.parentElement;
+      if (parentElement) {
+        // 기존 패딩 저장
+        const originalPaddingBottom =
+          window.getComputedStyle(parentElement).paddingBottom;
+
+        // 새로운 패딩 설정
+        parentElement.style.paddingBottom = `${modalHeight}px`;
+
+        // 컴포넌트 언마운트 시 원래 패딩으로 복원
+        return () => {
+          parentElement.style.paddingBottom = originalPaddingBottom;
+        };
+      }
+    }
+  }, []);
+
   return (
     <div
       className={styles.fixedBottom}
