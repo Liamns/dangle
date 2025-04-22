@@ -28,6 +28,11 @@ export default function InputPetGender() {
   const updateCurrentProfile = useProfileStore(
     (state) => state.updateCurrentProfile
   );
+  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  if (name === "") {
+    router.push("/profile/input/pet-name");
+    return null;
+  }
 
   const {
     register,
@@ -54,14 +59,14 @@ export default function InputPetGender() {
           src="/images/register/petgender/upper.png"
           fill
           sizes="100%"
-          alt="반려동물 이름 입력"
+          alt="반려동물 성별 선택"
           objectFit="contain"
         />
       </div>
       <Card align="center" height="450">
         <Spacer height="53" />
         <Text
-          text={`댕댕이\n성별은?`}
+          text={`${name}\n성별은?`}
           fontWeight="bold"
           fontSize="title"
           color={Colors.brown}

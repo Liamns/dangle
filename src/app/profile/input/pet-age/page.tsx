@@ -20,6 +20,11 @@ export default function InputPetage() {
   const updateCurrentProfile = useProfileStore(
     (state) => state.updateCurrentProfile
   );
+  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  if (name === "") {
+    router.push("/profile/input/pet-name");
+    return null;
+  }
 
   const {
     register,
@@ -33,8 +38,6 @@ export default function InputPetage() {
       isMonth: false,
     },
   });
-
-  const [ageLabel, setAgeLabel] = useState<string>("");
 
   const onSubmit = (data: PetAgeFormData) => {
     updateCurrentProfile({ petAge: data });
@@ -60,7 +63,7 @@ export default function InputPetage() {
       <Card align="center" height="450">
         <Spacer height="53" />
         <Text
-          text={`댕댕이\n현재 나이는?`}
+          text={`${name}\n현재 나이는?`}
           fontWeight="bold"
           fontSize="title"
           color={Colors.brown}

@@ -9,7 +9,8 @@ interface BottomModalProps {
   children: ReactNode;
   width?: string;
   height?: string;
-  padding?: string;
+  px?: string;
+  py?: string;
   justify?: justifyType;
   align?: alignType;
   direction?: directionType;
@@ -19,54 +20,48 @@ export const BottomModal: React.FC<BottomModalProps> = ({
   children,
   width,
   height,
-  padding,
+  px,
+  py,
   direction,
   justify,
   align,
 }) => {
-  // Comment out the useEffect that adds padding to allow Card to overlap with BottomModal
+  const [modalHeight, setModalHeight] = useState(0);
 
+  // 모달 높이를 측정하여 상태로 저장
   useEffect(() => {
-    // 모달 요소 찾기
     const modalElement = document.querySelector(`.${styles.fixedBottom}`);
     if (modalElement) {
-      // 모달 높이 계산
-      const modalHeight = modalElement.getBoundingClientRect().height;
-
-      // 메인 컨텐츠의 부모 요소를 찾아 하단 패딩 추가
-      const parentElement = modalElement.parentElement;
-      if (parentElement) {
-        // 기존 패딩 저장
-        const originalPaddingBottom =
-          window.getComputedStyle(parentElement).paddingBottom;
-
-        // 새로운 패딩 설정
-        parentElement.style.paddingBottom = `${modalHeight}px`;
-
-        // 컴포넌트 언마운트 시 원래 패딩으로 복원
-        return () => {
-          parentElement.style.paddingBottom = originalPaddingBottom;
-        };
-      }
+      const height = modalElement.getBoundingClientRect().height;
+      setModalHeight(height);
     }
   }, []);
 
   return (
-    <div
-      className={styles.fixedBottom}
-      style={
-        {
-          "--modal-width": width,
-          "--modal-height": height,
-          "--modal-padding": padding,
-          "--modal-direction": direction,
-          "--modal-justify": justify,
-          "--modal-align": align,
-        } as React.CSSProperties
-      }
-    >
-      {children}
-    </div>
+    <>
+      {/* 모달 높이만큼의 여백을 제공하는 div */}
+      <div
+        style={{ height: `${modalHeight}px` }}
+        className={styles.modalSpacer}
+      ></div>
+
+      <div
+        className={styles.fixedBottom}
+        style={
+          {
+            "--modal-width": width,
+            "--modal-height": height,
+            "--modal-px": px,
+            "--modal-py": py,
+            "--modal-direction": direction,
+            "--modal-justify": justify,
+            "--modal-align": align,
+          } as React.CSSProperties
+        }
+      >
+        {children}
+      </div>
+    </>
   );
 };
 

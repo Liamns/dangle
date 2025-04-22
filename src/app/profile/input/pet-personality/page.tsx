@@ -19,10 +19,19 @@ import { Colors } from "@/shared/consts/colors";
 import layoutStyles from "../layout.module.scss";
 import styles from "./page.module.scss";
 import Image from "next/image";
+import { hasJongseong } from "@/shared/lib/string";
 
 export default function InputPetPersonality() {
   const router = useRouter();
   const updateCurrentProfile = useProfileStore((s) => s.updateCurrentProfile);
+  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  if (name === "") {
+    router.push("/profile/input/pet-name");
+    return null;
+  }
+
+  // 이름 마지막 글자 받침 여부에 따른 조사 결정
+  const josa = hasJongseong(name) ? "은" : "는";
 
   const {
     register,
@@ -84,7 +93,7 @@ export default function InputPetPersonality() {
       <Card align="center" height="570">
         <Spacer height="53" />
         <Text
-          text="우리집 댕댕이는"
+          text={`우리집 ${name}${josa}`}
           fontSize="title"
           fontWeight="bold"
           color={Colors.brown}

@@ -22,6 +22,11 @@ import chkbox from "@/shared/styles/buttons.module.scss";
 export default function InputPetVaccines() {
   const router = useRouter();
   const petSpec = useProfileStore((s) => s.currentProfile?.petSpec ?? 0);
+  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  if (name === "") {
+    router.push("/profile/input/pet-name");
+    return null;
+  }
   const updateCurrentProfile = useProfileStore((s) => s.updateCurrentProfile);
   const labels = vaccineListBySpec[petSpec];
 
@@ -76,7 +81,7 @@ export default function InputPetVaccines() {
       <Card align="center" height="450">
         <Spacer height="53" />
         <Text
-          text={`${petSpec === 0 ? "댕댕이" : "야옹이"} 예방접종`}
+          text={`${name} 예방접종`}
           fontWeight="bold"
           fontSize="title"
           color={Colors.brown}

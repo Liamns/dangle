@@ -2,6 +2,8 @@
 
 .scrollable {
   overflow-y: auto;
+  height: 100%;
+  display: block; /* flex에서 block으로 변경 */
 }
 
 .animalCard {
@@ -49,6 +51,14 @@
   align-items: center;
 }
 
+.imgContainerWrapper,
+.radarContainerWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
 .imgContainer {
   position: relative;
   width: calc(100dvw / 360 * 300);
@@ -60,4 +70,47 @@
   width: calc(100dvw / 360 * 300);
   aspect-ratio: 1;
   max-width: calc(1200px - (100dvw / 360 * 60));
+}
+
+// 카드 뒤집기 컨테이너 스타일
+.cardFlipContainer {
+  perspective: 1500px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  @include common.pt(48);
+}
+
+// 플립 카드 전체를 감싸는 컨테이너
+.flipCard {
+  transform-style: preserve-3d;
+  width: calc(100dvw / 360 * 300);
+  max-width: calc(1200px - (100dvw / 360 * 60));
+  position: relative; /* 자식 요소의 absolute 포지셔닝 기준점 */
+}
+
+// 카드 앞면과 뒷면의 공통 스타일
+.cardFace {
+  position: absolute;
+  width: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; /* Safari */
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+// 앞면 스타일
+.cardFront {
+  transform: rotateY(0deg);
+  z-index: 2;
+  position: relative; /* 앞면은 relative로 변경하여 부모 높이 계산에 포함되도록 함 */
+}
+
+// 뒷면 스타일
+.cardBack {
+  transform: rotateY(180deg);
+  z-index: 1;
+  position: absolute; /* 뒷면은 absolute 유지 */
+  height: 100%; /* 앞면과 동일한 높이 적용 */
 }

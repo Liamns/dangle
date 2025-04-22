@@ -22,6 +22,11 @@ export default function InputPetWeight() {
   const updateCurrentProfile = useProfileStore(
     (state) => state.updateCurrentProfile
   );
+  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  if (name === "") {
+    router.push("/profile/input/pet-name");
+    return null;
+  }
   const currentProfile = useProfileStore((state) => state.currentProfile);
   const [previewLabel, setPreviewLabel] = useState("");
 
@@ -62,7 +67,7 @@ export default function InputPetWeight() {
     <div className={layoutStyles.container}>
       <div className={layoutStyles.imgContainer}>
         <Image
-          src="/images/register/petage/upper.png"
+          src="/images/register/petweight/upper.png"
           fill
           sizes="100%"
           alt="반려동물 몸무게 입력"
@@ -72,7 +77,7 @@ export default function InputPetWeight() {
       <Card align="center" height="450">
         <Spacer height="53" />
         <Text
-          text={`댕댕이\n현재 몸무게는?`}
+          text={`${name}\n현재 몸무게는?`}
           fontWeight="bold"
           fontSize="title"
           color={Colors.brown}
