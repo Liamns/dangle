@@ -54,7 +54,7 @@ export type PetWeightFormData = z.infer<typeof petWeightFormSchema>;
 export const petGenderFormSchema = z.object({
   gender: z.boolean({
     invalid_type_error: "성별을 선택해 주세요.",
-  }),
+  }).nullable(),
   isNeutered: z.boolean({
     invalid_type_error: "중성화 여부를 입력해주세요.",
   }),
@@ -62,7 +62,7 @@ export const petGenderFormSchema = z.object({
 export type PetGenderFormData = z.infer<typeof petGenderFormSchema>;
 
 // Species index: 0 = dog (default), 1 = cat
-export const petSpecSchema = z.number().int().min(0).default(0);
+export const petSpecSchema = z.number().int().min(0).nullable().default(null);
 export type PetSpecFormData = z.infer<typeof petSpecSchema>;
 
 // Vaccination selection schema: direct boolean record for each vaccine key

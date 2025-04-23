@@ -22,12 +22,14 @@ import { useEffect, useState } from "react";
 import { getRandomNickname } from "@/features/profile/input/username/api";
 import { useRouter } from "next/navigation";
 import { useProfileStore } from "@/entities/profile/store";
+import { useUserStore } from "@/entities/user/store";
 
 export default function InputUsername() {
   const router = useRouter();
   const updateCurrentProfile = useProfileStore(
     (state) => state.updateCurrentProfile
   );
+  const updateCurrentUser = useUserStore((state) => state.updateCurrentUser);
 
   const {
     register,
@@ -42,6 +44,7 @@ export default function InputUsername() {
 
   const usernameSubmit = (data: UsernameFormData) => {
     updateCurrentProfile({ username: data.username });
+    updateCurrentUser({ username: data.username });
     router.push("/profile/input/pet-name");
   };
 

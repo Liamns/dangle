@@ -14,7 +14,7 @@ import {
   PetWeightFormData,
   petWeightFormSchema,
 } from "@/entities/profile/schema";
-import { classifyDogSize, dogSizeTitles } from "@/shared/types/pet";
+import { classifyPetSize, getPetSizeTitle } from "@/shared/types/pet";
 import { useProfileStore } from "@/entities/profile/store";
 
 export default function InputPetWeight() {
@@ -23,11 +23,9 @@ export default function InputPetWeight() {
     (state) => state.updateCurrentProfile
   );
   const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
-  if (name === "") {
-    router.push("/profile/input/pet-name");
-    return null;
-  }
+
   const currentProfile = useProfileStore((state) => state.currentProfile);
+  const petSpec = currentProfile?.petSpec ?? 0; // 반려동물 종류 정보 가져오기 (0: 개, 1: 고양이)
   const [previewLabel, setPreviewLabel] = useState("");
 
   const {
@@ -48,12 +46,13 @@ export default function InputPetWeight() {
 
   useEffect(() => {
     if (weight && !isNaN(weight)) {
-      const dogSize = classifyDogSize(weight);
-      setPreviewLabel(dogSizeTitles[dogSize]);
+      // 반려동물 종류에 따라 크기 분류 및 라벨 설정
+      const petSize = classifyPetSize(petSpec, weight);
+      setPreviewLabel(getPetSizeTitle(petSpec, petSize));
     } else {
       setPreviewLabel("");
     }
-  }, [weight]);
+  }, [weight, petSpec]);
 
   const onSubmit = (data: PetWeightFormData) => {
     if (isValid) {

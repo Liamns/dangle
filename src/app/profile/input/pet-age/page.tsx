@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, InnerBox, Spacer, TextField } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
@@ -14,6 +14,8 @@ import chkbox from "@/shared/styles/buttons.module.scss";
 import { PetAgeFormData, petAgeFormSchema } from "@/entities/profile/schema";
 import { getPetAgeLabel } from "@/features/profile/petAgeLabels";
 import { useProfileStore } from "@/entities/profile/store";
+import { getPetSpecies } from "@/entities/profile/model";
+import { PetType } from "@/shared/types/pet";
 
 export default function InputPetage() {
   const router = useRouter();
@@ -21,10 +23,6 @@ export default function InputPetage() {
     (state) => state.updateCurrentProfile
   );
   const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
-  if (name === "") {
-    router.push("/profile/input/pet-name");
-    return null;
-  }
 
   const {
     register,
@@ -47,7 +45,17 @@ export default function InputPetage() {
   // 실시간 미리보기 (옵션)
   const watchData = watch();
   const previewAge = watchData.isMonth ? watchData.age / 12 : watchData.age;
-  const previewLabel = getPetAgeLabel("dog", previewAge);
+  const spec = getPetSpecies(useProfileStore.getState().currentProfile);
+
+  useEffect(() => {
+    if (spec === null) {
+      window.alert("잘못된 접근입니다.");
+      router.push("/profile/select-sp");
+    }
+  }, [spec, router]);
+
+  const previewLabel =
+    spec !== null ? getPetAgeLabel(spec as PetType, previewAge) : "";
 
   return (
     <div className={layoutStyles.container}>

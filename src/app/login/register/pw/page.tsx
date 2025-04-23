@@ -34,7 +34,7 @@ export default function RegisterPW() {
   });
 
   const onSubmit = (data: PasswordFormData) => {
-    updateCurrentUser({ password: data.password });
+    alert("회원가입 처리");
     clearCurrentProfile();
     router.replace("/profile/select-sp");
   };

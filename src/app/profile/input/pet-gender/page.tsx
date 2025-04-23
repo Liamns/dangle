@@ -22,6 +22,7 @@ import {
 import Image from "next/image";
 import chkbox from "@/shared/styles/buttons.module.scss";
 import { useProfileStore } from "@/entities/profile/store";
+import { useEffect } from "react";
 
 export default function InputPetGender() {
   const router = useRouter();
@@ -29,10 +30,6 @@ export default function InputPetGender() {
     (state) => state.updateCurrentProfile
   );
   const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
-  if (name === "") {
-    router.push("/profile/input/pet-name");
-    return null;
-  }
 
   const {
     register,

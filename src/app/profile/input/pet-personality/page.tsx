@@ -20,15 +20,20 @@ import layoutStyles from "../layout.module.scss";
 import styles from "./page.module.scss";
 import Image from "next/image";
 import { hasJongseong } from "@/shared/lib/string";
+import { useEffect } from "react";
 
 export default function InputPetPersonality() {
   const router = useRouter();
   const updateCurrentProfile = useProfileStore((s) => s.updateCurrentProfile);
   const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
-  if (name === "") {
-    router.push("/profile/input/pet-name");
-    return null;
-  }
+
+  useEffect(() => {
+    if (name === "") {
+      router.replace("/profile/input/pet-name");
+    }
+  }, [name, router]);
+
+  if (name === "") return null;
 
   // 이름 마지막 글자 받침 여부에 따른 조사 결정
   const josa = hasJongseong(name) ? "은" : "는";

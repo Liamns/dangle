@@ -32,22 +32,58 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from "recharts";
+import { personalityTypeMap, petType } from "@/shared/types/pet";
 
-export default function SelectSpecies() {
+export default function CompleteInputProfile() {
   const router = useRouter();
   const [front, setFront] = useState(true);
   const [resetRadar, setResetRadar] = useState(false);
   const currentProfile = useProfileStore((s) => s.currentProfile);
   const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
-  if (name === "") {
-    router.push("/profile/input/pet-name");
-    return null;
-  }
+
+  // Guard: ensure all registration steps completed, else redirect to the first missing step
+  useEffect(() => {
+    if (!currentProfile) return router.replace("/profile/select-sp");
+    if (currentProfile.petSpec == null)
+      return router.replace("/profile/select-sp");
+    if (!currentProfile.username)
+      return router.replace("/profile/input/username");
+    if (!currentProfile.petname)
+      return router.replace("/profile/input/pet-name");
+    if (!currentProfile.petAge || !currentProfile.petAge.age)
+      return router.replace("/profile/input/pet-age");
+    if (!currentProfile.petWeight)
+      return router.replace("/profile/input/pet-weight");
+    if (!currentProfile.petGender)
+      return router.replace("/profile/input/pet-gender");
+    if (
+      !currentProfile.vaccinations ||
+      Object.keys(currentProfile.vaccinations).length === 0
+    )
+      return router.replace("/profile/input/pet-vaccines");
+    if (determinePersonalityType(currentProfile) === null)
+      return router.replace("/profile/input/pet-personality");
+  }, [currentProfile, router]);
+
+  // Restart radar chart animation when flipping to the back side
+  useEffect(() => {
+    if (!front) {
+      setResetRadar((prev) => !prev);
+    }
+  }, [front]);
+
   const petSpec = currentProfile?.petSpec ?? 0;
 
-  const url = getPublicImageUrl("profile/personality/dog/excited.gif");
-
   const personality = determinePersonalityType(currentProfile);
+  if (personality === null) {
+    alert("성격 유형을 찾을 수 없습니다.");
+    router.push("/profile/input/pet-personality");
+    return null;
+  }
+  const tag = personalityTypeMap[personality].tag;
+  const url = getPublicImageUrl(
+    `profile/personality/${petType[petSpec]}/${tag}.gif`
+  );
   const data = transformPersonalityToRadarData(
     currentProfile?.personalityScores
   );
@@ -63,13 +99,6 @@ export default function SelectSpecies() {
       transition: { duration: 0.8, ease: "easeInOut" },
     },
   };
-
-  // Restart radar chart animation when flipping to the back side
-  useEffect(() => {
-    if (!front) {
-      setResetRadar((prev) => !prev);
-    }
-  }, [front]);
 
   return (
     <InnerWrapper className={styles.scrollable}>

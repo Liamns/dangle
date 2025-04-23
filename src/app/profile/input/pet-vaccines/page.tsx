@@ -23,10 +23,7 @@ export default function InputPetVaccines() {
   const router = useRouter();
   const petSpec = useProfileStore((s) => s.currentProfile?.petSpec ?? 0);
   const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
-  if (name === "") {
-    router.push("/profile/input/pet-name");
-    return null;
-  }
+
   const updateCurrentProfile = useProfileStore((s) => s.updateCurrentProfile);
   const labels = vaccineListBySpec[petSpec];
 
@@ -134,9 +131,6 @@ export default function InputPetVaccines() {
                           "--box-color": Colors.primary,
                         } as React.CSSProperties
                       }
-                      onClick={(e) => {
-                        console.log(vaccinations);
-                      }}
                     />
                   </InnerBox>
                 ))}

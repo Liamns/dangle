@@ -34,6 +34,18 @@ export const profileModelSchema = z.object({
 export type ProfileModel = z.infer<typeof profileModelSchema>;
 
 /**
+ * 프로필의 petSpec 값을 기반으로 반려동물 종류를 반환합니다.
+ * @param profile 사용자 프로필 모델
+ * @returns 반려동물 종류 (dog 또는 cat) 또는 프로필이 null일 경우 null
+ */
+export function getPetSpecies(profile: ProfileModel | null): string | null {
+  if (profile === null) return null;
+  const spec = profile.petSpec;
+  if (spec === null || spec === undefined) return null;
+  return spec === 0 ? "dog" : "cat";
+}
+
+/**
  * 프로필의 personalityScores를 기반으로 가장 적합한 personalityType을 도출합니다.
  * @param profile 사용자 프로필 모델
  * @returns 가장 적합한 personalityType 이름 또는 점수가 부족할 경우 null

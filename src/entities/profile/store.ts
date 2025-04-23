@@ -19,8 +19,8 @@ const EMPTY_PROFILE: ProfileModel = {
   petname: "",
   petAge: { age: 0, isMonth: false },
   petWeight: 0,
-  petGender: { gender: true, isNeutered: false },
-  petSpec: 0,
+  petGender: { gender: null, isNeutered: false },
+  petSpec: null,
   vaccinations: Object.fromEntries(
     allVaccines.map((vaccine) => [vaccine, false])
   ),
