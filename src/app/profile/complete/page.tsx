@@ -1,15 +1,15 @@
 "use client";
-import { ArrowButton, Button } from "@/shared/components/buttons";
+import { ArrowButton, Button } from "../../../shared/components/buttons";
 import {
   Card,
   Center,
   InnerBox,
   InnerWrapper,
   Spacer,
-} from "@/shared/components/layout";
-import { BottomModal } from "@/shared/components/modals";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
+} from "../../../shared/components/layout";
+import { BottomModal } from "../../../shared/components/modals";
+import { Text } from "../../../shared/components/texts";
+import { Colors } from "../../../shared/consts/colors";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import styles from "./page.module.scss";
@@ -19,7 +19,7 @@ import Cat from "@/shared/svgs/cat.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useProfileStore } from "@/entities/profile/store";
-import { getPublicImageUrl } from "@/shared/lib/supabase";
+import { getPublicImageUrl } from "../../../shared/lib/supabase";
 import {
   determinePersonalityType,
   transformPersonalityToRadarData,
@@ -32,7 +32,7 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from "recharts";
-import { personalityTypeMap, petType } from "@/shared/types/pet";
+import { personalityTypeMap, petType } from "../../../shared/types/pet";
 
 export default function CompleteInputProfile() {
   const router = useRouter();
@@ -76,7 +76,7 @@ export default function CompleteInputProfile() {
 
   const personality = determinePersonalityType(currentProfile);
   if (personality === null) {
-    alert("성격 유형을 찾을 수 없습니다.");
+    window.alert("성격 유형을 찾을 수 없습니다.");
     router.push("/profile/input/pet-personality");
     return null;
   }
@@ -166,7 +166,7 @@ export default function CompleteInputProfile() {
                           ? "잘못된 접근입니다."
                           : personality
                       }
-                      fontSize="md"
+                      fontSize="lg"
                       fontWeight="bold"
                       color={Colors.white}
                     />
@@ -294,7 +294,7 @@ export default function CompleteInputProfile() {
                           ? "잘못된 접근입니다."
                           : personality
                       }
-                      fontSize="md"
+                      fontSize="lg"
                       fontWeight="bold"
                       color={Colors.white}
                     />
@@ -324,8 +324,7 @@ export default function CompleteInputProfile() {
             if (front) {
               setFront(false);
             } else {
-              setFront(true);
-              alert("댕글 시작하기");
+              router.replace("/home");
             }
           }}
         >

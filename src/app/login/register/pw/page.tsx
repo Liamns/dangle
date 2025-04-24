@@ -1,9 +1,14 @@
 "use client";
-import { Button } from "@/shared/components/buttons";
-import { Card, Center, Spacer, TextField } from "@/shared/components/layout";
-import Modal from "@/shared/components/modals";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
+import { Button } from "../../../../shared/components/buttons";
+import {
+  Card,
+  Center,
+  Spacer,
+  TextField,
+} from "../../../../shared/components/layout";
+import Modal from "../../../../shared/components/modals";
+import { Text } from "../../../../shared/components/texts";
+import { Colors } from "../../../../shared/consts/colors";
 import {
   AuthNumberFormData,
   authNumberFormSchema,
@@ -34,7 +39,7 @@ export default function RegisterPW() {
   });
 
   const onSubmit = (data: PasswordFormData) => {
-    alert("회원가입 처리");
+    window.alert("회원가입 처리");
     clearCurrentProfile();
     router.replace("/profile/select-sp");
   };

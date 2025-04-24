@@ -5,13 +5,13 @@ import {
   InnerBox,
   Spacer,
   TextField,
-} from "@/shared/components/layout";
+} from "../../shared/components/layout";
 import styles from "./page.module.scss";
-import { Button } from "@/shared/components/buttons";
+import { Button } from "../../shared/components/buttons";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormData, loginFormSchema } from "@/entities/user/schema";
-import { Colors } from "@/shared/consts/colors";
+import { Colors } from "../../shared/consts/colors";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -26,7 +26,7 @@ export default function Login() {
   const emailhandleSubmit = () => {
     if (isEmailValid) {
       // 유효한 이메일일 때만 실행
-      alert(`인증번호 요청: ${email}`);
+      window.alert(`인증번호 요청: ${email}`);
     }
   };
 
@@ -41,7 +41,11 @@ export default function Login() {
 
   const onSubmit = (data: LoginFormData) => {
     if (isEmailValid) {
-      alert(`이메일: ${email}, 비밀번호: ${data.password}`);
+      if (email === "test@gmail.com" && data.password === "testest1") {
+        router.push("/home");
+      } else {
+        window.alert("서버통신 로그인 개발 이전");
+      }
     }
   };
 

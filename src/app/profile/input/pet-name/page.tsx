@@ -1,11 +1,16 @@
 "use client";
-import { Card, Spacer, TextError, TextInput } from "@/shared/components/layout";
+import {
+  Card,
+  Spacer,
+  TextError,
+  TextInput,
+} from "../../../../shared/components/layout";
 
 import layoutStyles from "../layout.module.scss";
 import Image from "next/image";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
-import { Button } from "@/shared/components/buttons";
+import { Text } from "../../../../shared/components/texts";
+import { Colors } from "../../../../shared/consts/colors";
+import { Button } from "../../../../shared/components/buttons";
 import { PetnameFormData, petnameFormSchema } from "@/entities/profile/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

@@ -62,9 +62,9 @@
   &:checked::after {
     content: "";
     position: absolute;
-    left: 3px; // 체크 모양 위치 조정
+    left: 4px; // 체크 모양 위치 조정
     top: 0px; // 체크 모양 위치 조정
-    width: 4px; // 체크 모양 두께 조정
+    width: 3px; // 체크 모양 두께 조정
     height: 8px; // 체크 모양 길이 조정
     border: solid white; // 체크 색상 (보통 흰색)
     border-width: 0 2px 2px 0;

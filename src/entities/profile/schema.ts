@@ -52,9 +52,11 @@ export const petWeightFormSchema = z.object({
 export type PetWeightFormData = z.infer<typeof petWeightFormSchema>;
 
 export const petGenderFormSchema = z.object({
-  gender: z.boolean({
-    invalid_type_error: "성별을 선택해 주세요.",
-  }).nullable(),
+  gender: z
+    .boolean({
+      invalid_type_error: "성별을 선택해 주세요.",
+    })
+    .nullable(),
   isNeutered: z.boolean({
     invalid_type_error: "중성화 여부를 입력해주세요.",
   }),

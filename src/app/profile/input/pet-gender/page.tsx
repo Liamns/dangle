@@ -10,10 +10,10 @@ import {
   Spacer,
   TextField,
   TextInput,
-} from "@/shared/components/layout";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
-import { Button } from "@/shared/components/buttons";
+} from "../../../../shared/components/layout";
+import { Text } from "../../../../shared/components/texts";
+import { Colors } from "../../../../shared/consts/colors";
+import { Button } from "../../../../shared/components/buttons";
 import layoutStyles from "../layout.module.scss";
 import {
   PetGenderFormData,
@@ -76,7 +76,12 @@ export default function InputPetGender() {
             label="성별 (체크: Male, 해제: Female)"
             style={{ display: "none" }}
           />
-          <InnerBox direction="row" justify="space-between" align="center">
+          <InnerBox
+            direction="row"
+            justify="space-between"
+            align="center"
+            px="10"
+          >
             <Image
               src={`/images/register/petgender/${
                 watchData.gender ? "dis" : "en"
@@ -107,14 +112,19 @@ export default function InputPetGender() {
             <Text text="성별을 선택해 주세요." color={Colors.invalid} />
           </Center>
           <Spacer height="30" />
-          <InnerBox direction="row" justify="start" align="center">
+          <InnerBox direction="row" justify="start" align="center" px="10">
             <input
               type="checkbox"
               {...register("isNeutered")}
               className={chkbox.chkbox}
             />
             <Spacer width="6" />
-            <Text text={`중성화 여부`} color={Colors.brown} fontWeight="bold" />
+            <Text
+              text={`중성화 여부`}
+              color={Colors.brown}
+              fontWeight="bold"
+              fontSize="md"
+            />
           </InnerBox>
         </form>
       </Card>

@@ -1,6 +1,6 @@
-import { Center, Spacer } from "@/shared/components/layout";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
+import { Center, Spacer } from "../../shared/components/layout";
+import { Text } from "../../shared/components/texts";
+import { Colors } from "../../shared/consts/colors";
 import styles from "./footer.module.scss";
 
 export default function Footer() {

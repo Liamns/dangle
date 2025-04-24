@@ -1,8 +1,13 @@
 "use client";
-import { Button } from "@/shared/components/buttons";
-import { Card, Center, Spacer, TextField } from "@/shared/components/layout";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
+import { Button } from "../../../shared/components/buttons";
+import {
+  Card,
+  Center,
+  Spacer,
+  TextField,
+} from "../../../shared/components/layout";
+import { Text } from "../../../shared/components/texts";
+import { Colors } from "../../../shared/consts/colors";
 import { EmailFormData, emailFormSchema } from "@/entities/user/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,7 +20,7 @@ export default function ForgotPassword() {
   const emailhandleSubmit = () => {
     if (isEmailValid) {
       // 유효한 이메일일 때만 실행
-      alert(`인증번호 요청: ${email}`);
+      window.alert(`인증번호 요청: ${email}`);
     }
   };
 

@@ -3,10 +3,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, InnerBox, Spacer, TextField } from "@/shared/components/layout";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
-import { Button } from "@/shared/components/buttons";
+import {
+  Card,
+  InnerBox,
+  Spacer,
+  TextField,
+} from "../../../../shared/components/layout";
+import { Text } from "../../../../shared/components/texts";
+import { Colors } from "../../../../shared/consts/colors";
+import { Button } from "../../../../shared/components/buttons";
 import Image from "next/image";
 import layoutStyles from "../layout.module.scss";
 import chkbox from "@/shared/styles/buttons.module.scss";
@@ -14,7 +19,7 @@ import {
   PetWeightFormData,
   petWeightFormSchema,
 } from "@/entities/profile/schema";
-import { classifyPetSize, getPetSizeTitle } from "@/shared/types/pet";
+import { classifyPetSize, getPetSizeTitle } from "../../../../shared/types/pet";
 import { useProfileStore } from "@/entities/profile/store";
 
 export default function InputPetWeight() {

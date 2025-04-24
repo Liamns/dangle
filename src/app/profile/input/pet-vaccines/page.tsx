@@ -4,16 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useWatch } from "react-hook-form";
-import { Card, InnerBox, Spacer } from "@/shared/components/layout";
-import { Text } from "@/shared/components/texts";
-import { Button } from "@/shared/components/buttons";
-import { Colors } from "@/shared/consts/colors";
+import { Card, InnerBox, Spacer } from "../../../../shared/components/layout";
+import { Text } from "../../../../shared/components/texts";
+import { Button } from "../../../../shared/components/buttons";
+import { Colors } from "../../../../shared/consts/colors";
 import { useProfileStore } from "@/entities/profile/store";
 import {
   petVaccinationFormSchema,
   PetVaccinationFormData,
 } from "@/entities/profile/schema";
-import { vaccineListBySpec } from "@/shared/types/pet";
+import { vaccineListBySpec } from "../../../../shared/types/pet";
 import layoutStyles from "../layout.module.scss";
 import styles from "./page.module.scss";
 import Image from "next/image";

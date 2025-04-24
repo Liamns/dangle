@@ -5,13 +5,13 @@ import {
   TextError,
   TextField,
   TextInput,
-} from "@/shared/components/layout";
+} from "../../../../shared/components/layout";
 import styles from "./page.module.scss";
 import layoutStyles from "../layout.module.scss";
 import Image from "next/image";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
-import { Button } from "@/shared/components/buttons";
+import { Text } from "../../../../shared/components/texts";
+import { Colors } from "../../../../shared/consts/colors";
+import { Button } from "../../../../shared/components/buttons";
 import {
   UsernameFormData,
   usernameFormSchema,
@@ -97,9 +97,10 @@ export default function InputUsername() {
             {rendered && (
               <Button
                 color={Colors.primary}
-                width="90"
+                width="80"
                 height="25"
                 fontSize="tiny"
+                textColor={Colors.brown}
                 style={{
                   position: "absolute",
                   top: "50%",

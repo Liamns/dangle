@@ -1,14 +1,14 @@
 "use client";
-import { ArrowButton, Button } from "@/shared/components/buttons";
+import { ArrowButton, Button } from "../../../shared/components/buttons";
 import {
   Center,
   InnerBox,
   InnerWrapper,
   Spacer,
-} from "@/shared/components/layout";
-import { BottomModal } from "@/shared/components/modals";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
+} from "../../../shared/components/layout";
+import { BottomModal } from "../../../shared/components/modals";
+import { Text } from "../../../shared/components/texts";
+import { Colors } from "../../../shared/consts/colors";
 import Image from "next/image";
 import { useState } from "react";
 import styles from "./page.module.scss";

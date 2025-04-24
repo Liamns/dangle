@@ -9,7 +9,7 @@ import {
   PetPersonalityFormData,
   PetWeightFormData,
 } from "./schema";
-import { allVaccines, personalityTraits } from "@/shared/types/pet";
+import { allVaccines, personalityTraits } from "../../shared/types/pet";
 
 // 비어있는 프로필 모델 상수 정의
 const EMPTY_PROFILE: ProfileModel = {

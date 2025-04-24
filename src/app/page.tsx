@@ -1,11 +1,11 @@
 import Image from "next/image";
 import styles from "./page.module.css";
-import { BottomModal } from "@/shared/components/modals";
-import { Button } from "@/shared/components/buttons";
-import { Colors } from "@/shared/consts/colors";
-import { InnerWrapper, Spacer } from "@/shared/components/layout";
+import { BottomModal } from "../shared/components/modals";
+import { Button } from "../shared/components/buttons";
+import { Colors } from "../shared/consts/colors";
+import { InnerWrapper, Spacer } from "../shared/components/layout";
 import Link from "next/link";
-import { Text } from "@/shared/components/texts";
+import { Text } from "../shared/components/texts";
 
 export default function Home() {
   return (

@@ -1,9 +1,14 @@
 "use client";
-import { Button } from "@/shared/components/buttons";
-import { Card, Center, Spacer, TextField } from "@/shared/components/layout";
-import Modal from "@/shared/components/modals";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
+import { Button } from "../../../../shared/components/buttons";
+import {
+  Card,
+  Center,
+  Spacer,
+  TextField,
+} from "../../../../shared/components/layout";
+import Modal from "../../../../shared/components/modals";
+import { Text } from "../../../../shared/components/texts";
+import { Colors } from "../../../../shared/consts/colors";
 import {
   AuthNumberFormData,
   authNumberFormSchema,
@@ -27,7 +32,7 @@ export default function RegisterEmail() {
   const handleSubmit = () => {
     if (isEmailValid) {
       // 유효한 이메일일 때만 실행
-      alert(`인증번호 요청: ${email}`);
+      window.alert(`인증번호 요청: ${email}`);
       setIsOpen(true);
     }
   };
@@ -50,7 +55,7 @@ export default function RegisterEmail() {
 
   const onAuthRequest = (e: React.MouseEvent) => {
     e.preventDefault();
-    alert("인증번호 재요청");
+    window.alert("인증번호 재요청");
   };
 
   return (

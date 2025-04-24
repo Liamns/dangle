@@ -1,4 +1,4 @@
-import { PetType } from "@/shared/types/pet";
+import { PetType } from "../../shared/types/pet";
 
 export function getPetAgeLabel(petType: PetType, ageYears: number): string {
   if (petType === "dog") {

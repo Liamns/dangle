@@ -11,15 +11,15 @@ import {
   personalityTags,
   tagScoreMap,
   personalityTraits,
-} from "@/shared/types/pet";
-import { Card, InnerBox, Spacer } from "@/shared/components/layout";
-import { Text } from "@/shared/components/texts";
-import { Button } from "@/shared/components/buttons";
-import { Colors } from "@/shared/consts/colors";
+} from "../../../../shared/types/pet";
+import { Card, InnerBox, Spacer } from "../../../../shared/components/layout";
+import { Text } from "../../../../shared/components/texts";
+import { Button } from "../../../../shared/components/buttons";
+import { Colors } from "../../../../shared/consts/colors";
 import layoutStyles from "../layout.module.scss";
 import styles from "./page.module.scss";
 import Image from "next/image";
-import { hasJongseong } from "@/shared/lib/string";
+import { hasJongseong } from "../../../../shared/lib/string";
 import { useEffect } from "react";
 
 export default function InputPetPersonality() {
@@ -129,6 +129,7 @@ export default function InputPetPersonality() {
                       selectedTags.includes(tag) ? Colors.brown : Colors.grey
                     }
                     fontWeight="bold"
+                    fontSize="md"
                   />
                 </div>
               ))}

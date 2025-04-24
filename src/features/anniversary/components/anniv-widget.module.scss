@@ -1,0 +1,14 @@
+@use "shared/styles/common.scss" as common;
+
+.emptyContainer {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1.5px solid #ffffff;
+  border-radius: 10px;
+  margin: 0 auto;
+  @include common.width(262);
+  @include common.py(15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

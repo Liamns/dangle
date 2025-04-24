@@ -13,7 +13,7 @@ import {
   personalityTraits,
   PersonalityTrait,
   personalityTypeMap,
-} from "@/shared/types/pet";
+} from "../../shared/types/pet";
 
 export const profileModelSchema = z.object({
   id: uuidSchema,

@@ -1,7 +1,7 @@
 "use client";
 import Footer from "@/app/login/footer";
-import { ArrowButton } from "@/shared/components/buttons";
-import { InnerWrapper, Spacer } from "@/shared/components/layout";
+import { ArrowButton } from "../../../shared/components/buttons";
+import { InnerWrapper, Spacer } from "../../../shared/components/layout";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
