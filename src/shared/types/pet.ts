@@ -67,11 +67,21 @@ export const catVaccines = [
 ] as const;
 export type CatVaccine = (typeof catVaccines)[number];
 
-export const allVaccines = [...dogVaccines, ...catVaccines] as const;
+// 미접종 옵션 추가
+export const noVaccine = "미접종" as const;
+export type NoVaccine = typeof noVaccine;
+
+export const allVaccines = [...dogVaccines, ...catVaccines, noVaccine] as const;
 export type Vaccine = (typeof allVaccines)[number];
 
+// 폼 필드 경로를 위한 타입 추가
+export type VaccinationFieldPath = `vaccinations.${Vaccine}`;
+
 // List of vaccines per species, index 0=dog, 1=cat
-export const vaccineListBySpec = [dogVaccines, catVaccines] as const;
+export const vaccineListBySpec = [
+  [...dogVaccines, noVaccine],
+  [...catVaccines, noVaccine],
+] as const;
 export type VaccineListBySpec = typeof vaccineListBySpec;
 
 // Personality evaluation types

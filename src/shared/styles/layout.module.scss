@@ -79,6 +79,12 @@
     border-color: var(--brown);
     outline: 1px solid var(--brown);
   }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
 
 .textInputWrapper {

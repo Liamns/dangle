@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWatch } from "react-hook-form";
 import { Card, InnerBox, Spacer } from "../../../../shared/components/layout";
 import { Text } from "../../../../shared/components/texts";
@@ -13,7 +13,11 @@ import {
   petVaccinationFormSchema,
   PetVaccinationFormData,
 } from "@/entities/profile/schema";
-import { vaccineListBySpec } from "../../../../shared/types/pet";
+import {
+  vaccineListBySpec,
+  noVaccine,
+  VaccinationFieldPath,
+} from "../../../../shared/types/pet";
 import layoutStyles from "../layout.module.scss";
 import styles from "./page.module.scss";
 import Image from "next/image";
@@ -35,7 +39,9 @@ export default function InputPetVaccines() {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { isValid },
+    watch,
   } = useForm<PetVaccinationFormData>({
     resolver: zodResolver(petVaccinationFormSchema),
     mode: "onChange",
@@ -49,19 +55,53 @@ export default function InputPetVaccines() {
 
   // subscribe to vaccinations changes for immediate updates
   const vaccinations = useWatch({ control, name: "vaccinations" });
+
+  // 미접종 체크 여부 확인
+  const isNoVaccineChecked = vaccinations?.[noVaccine] || false;
+
+  // 실제 접종된 백신 개수 (미접종 제외)
   const selectedCount = vaccinations
-    ? Object.values(vaccinations).filter(Boolean).length
+    ? Object.entries(vaccinations).filter(([key, v]) => v && key !== noVaccine)
+        .length
     : 0;
+
   const selected = vaccinations
     ? Object.entries(vaccinations)
         .filter(([, v]) => v)
         .map(([k]) => k)
     : [];
-  const currentProfile = useProfileStore((s) => s.currentProfile);
+
+  // 미접종과 다른 백신 선택 간의 상호작용 처리
+  useEffect(() => {
+    if (!vaccinations) return;
+
+    // 이전 상태를 기억하기 위한 플래그
+    const lastNoVaccineState = isNoVaccineChecked;
+    const lastSelectedCount = selectedCount;
+
+    // 미접종이 체크되었고 이전 상태와 다를 때만 업데이트
+    if (isNoVaccineChecked && lastSelectedCount > 0) {
+      Object.keys(vaccinations).forEach((key) => {
+        if (key !== noVaccine) {
+          setValue(`vaccinations.${key}` as VaccinationFieldPath, false);
+        }
+      });
+    }
+    // 다른 백신이 하나라도 체크되었고 미접종도 체크되어 있을 때만 업데이트
+    else if (selectedCount > 0 && lastNoVaccineState) {
+      setValue(`vaccinations.${noVaccine}` as VaccinationFieldPath, false, {
+        shouldValidate: true,
+      });
+    }
+  }, [vaccinations, isNoVaccineChecked, setValue]);
+
+  const hasUserMadeSelection = isNoVaccineChecked || selectedCount > 0;
 
   const onSubmit = (data: PetVaccinationFormData) => {
-    updateCurrentProfile({ vaccinations: data.vaccinations });
-    router.push("/profile/input/pet-personality");
+    if (hasUserMadeSelection) {
+      updateCurrentProfile({ vaccinations: data.vaccinations });
+      router.push("/profile/input/pet-personality");
+    }
   };
 
   return (
@@ -114,26 +154,64 @@ export default function InputPetVaccines() {
             </div>
             {open && (
               <div className={styles.dropdownList}>
-                {labels.map((label) => (
-                  <InnerBox
-                    key={label}
-                    direction="row"
-                    align="center"
-                    justify="space-between"
-                  >
-                    <Text text={label} />
-                    <input
-                      type="checkbox"
-                      className={chkbox.chkbox}
-                      {...register(`vaccinations.${label}` as const)}
-                      style={
-                        {
-                          "--box-color": Colors.primary,
-                        } as React.CSSProperties
-                      }
-                    />
-                  </InnerBox>
-                ))}
+                {/* 미접종 옵션을 먼저 표시 */}
+                <InnerBox
+                  key={noVaccine}
+                  direction="row"
+                  align="center"
+                  justify="space-between"
+                >
+                  <Text text={noVaccine} />
+                  <input
+                    type="checkbox"
+                    className={chkbox.chkbox}
+                    {...register(
+                      `vaccinations.${noVaccine}` as VaccinationFieldPath
+                    )}
+                    style={
+                      {
+                        "--box-color": Colors.primary,
+                      } as React.CSSProperties
+                    }
+                  />
+                </InnerBox>
+
+                {/* 기존 백신 목록 */}
+                {labels
+                  .filter((label) => label !== noVaccine)
+                  .map((label) => (
+                    <InnerBox
+                      key={label}
+                      direction="row"
+                      align="center"
+                      justify="space-between"
+                    >
+                      <Text
+                        text={label}
+                        color={
+                          isNoVaccineChecked ? Colors.invalid : Colors.brown
+                        }
+                      />
+                      <input
+                        type="checkbox"
+                        className={chkbox.chkbox}
+                        {...register(
+                          `vaccinations.${label}` as VaccinationFieldPath
+                        )}
+                        disabled={isNoVaccineChecked}
+                        style={
+                          {
+                            "--box-color": isNoVaccineChecked
+                              ? Colors.invalid
+                              : Colors.primary,
+                            cursor: isNoVaccineChecked
+                              ? "not-allowed"
+                              : "pointer",
+                          } as React.CSSProperties
+                        }
+                      />
+                    </InnerBox>
+                  ))}
               </div>
             )}
           </div>
@@ -151,21 +229,25 @@ export default function InputPetVaccines() {
           <Text
             text="Vaccine Title"
             fontWeight="bold"
-            color={clicked ? Colors.primary : Colors.invalid}
+            color={hasUserMadeSelection ? Colors.primary : Colors.invalid}
           />
           <Spacer height="6" />
           <div
             className={layoutStyles.labelContainer}
             style={
               {
-                "--label-bg-color": clicked ? Colors.primary : Colors.invalid,
+                "--label-bg-color": hasUserMadeSelection
+                  ? Colors.primary
+                  : Colors.invalid,
               } as React.CSSProperties
             }
           >
             <Text
               text={
-                clicked
-                  ? `${selectedCount}개 접종 완료`
+                hasUserMadeSelection
+                  ? `${selectedCount}개 접종 완료${
+                      isNoVaccineChecked ? " (미접종)" : ""
+                    }`
                   : `목록을 선택해 주세요`
               }
               fontSize="md"
@@ -176,7 +258,12 @@ export default function InputPetVaccines() {
         </InnerBox>
       </Card>
       <Spacer height="30" />
-      <Button valid={clicked} ml="30" mr="30" onClick={handleSubmit(onSubmit)}>
+      <Button
+        valid={hasUserMadeSelection}
+        ml="30"
+        mr="30"
+        onClick={handleSubmit(onSubmit)}
+      >
         다음 단계로
       </Button>
     </div>
