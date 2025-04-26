@@ -20,7 +20,7 @@ export default function ForgotPassword() {
   const emailhandleSubmit = () => {
     if (isEmailValid) {
       // 유효한 이메일일 때만 실행
-      window.alert(`인증번호 요청: ${email}`);
+      alert(`인증번호 요청: ${email}`);
     }
   };
 

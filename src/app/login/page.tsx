@@ -26,7 +26,7 @@ export default function Login() {
   const emailhandleSubmit = () => {
     if (isEmailValid) {
       // 유효한 이메일일 때만 실행
-      window.alert(`인증번호 요청: ${email}`);
+      alert(`인증번호 요청: ${email}`);
     }
   };
 
@@ -44,7 +44,7 @@ export default function Login() {
       if (email === "test@gmail.com" && data.password === "testest1") {
         router.push("/home");
       } else {
-        window.alert("서버통신 로그인 개발 이전");
+        alert("서버통신 로그인 개발 이전");
       }
     }
   };

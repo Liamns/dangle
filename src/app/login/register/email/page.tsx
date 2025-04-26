@@ -32,7 +32,7 @@ export default function RegisterEmail() {
   const handleSubmit = () => {
     if (isEmailValid) {
       // 유효한 이메일일 때만 실행
-      window.alert(`인증번호 요청: ${email}`);
+      alert(`인증번호 요청: ${email}`);
       setIsOpen(true);
     }
   };
@@ -55,7 +55,7 @@ export default function RegisterEmail() {
 
   const onAuthRequest = (e: React.MouseEvent) => {
     e.preventDefault();
-    window.alert("인증번호 재요청");
+    alert("인증번호 재요청");
   };
 
   return (

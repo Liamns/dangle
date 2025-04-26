@@ -12,3 +12,32 @@
   align-items: center;
   justify-content: center;
 }
+
+.listContainer {
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  @include common.width(300);
+}
+
+.listTitle {
+  border-radius: 10px 10px 0px 0px;
+  background-color: var(--brown);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  @include common.px(28);
+  @include common.py(15);
+}
+
+.listContent {
+  width: 100%;
+  background-color: var(--background);
+  border-radius: 0px 0px 10px 10px;
+  @include common.px(20);
+  @include common.py(20);
+}

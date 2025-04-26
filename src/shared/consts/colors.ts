@@ -9,4 +9,5 @@ export const Colors = {
   error: "#ff0000",
   white: "#ffffff",
   background: "#fff",
+  transparnet: "rgba(0, 0, 0, 0)",
 };

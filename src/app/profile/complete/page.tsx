@@ -76,7 +76,7 @@ export default function CompleteInputProfile() {
 
   const personality = determinePersonalityType(currentProfile);
   if (personality === null) {
-    window.alert("성격 유형을 찾을 수 없습니다.");
+    alert("성격 유형을 찾을 수 없습니다.");
     router.push("/profile/input/pet-personality");
     return null;
   }

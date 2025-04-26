@@ -70,6 +70,7 @@ export interface ModalProps {
   onClose: () => void;
   variant?: "center" | "bottom";
   children: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 export default function Modal({
@@ -77,6 +78,7 @@ export default function Modal({
   onClose,
   variant = "center",
   children,
+  style = {},
 }: ModalProps) {
   const [isClosing, setIsClosing] = useState(false);
 
@@ -121,7 +123,11 @@ export default function Modal({
       className={backdropClass}
       onClick={isClosing ? undefined : handleClose}
     >
-      <div className={modalClass} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={modalClass}
+        onClick={(e) => e.stopPropagation()}
+        style={style}
+      >
         {children}
         {variant === "bottom" && <Footer />}
       </div>
