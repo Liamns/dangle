@@ -67,7 +67,7 @@
 
 .textField {
   background-color: var(--input-background-color, var(--background));
-  border: 1px solid var(--input-border, var(--primary));
+  border: 1px solid var(--input-border-color, var(--primary));
   border-radius: var(--input-radius, 10px);
   color: var(--input-text-color, var(--foreground));
   font-size: var(--input-font-size, 14px);
@@ -76,8 +76,8 @@
   @include common.py(var(--input-py, 10));
 
   &:focus {
-    border-color: var(--brown);
-    outline: 1px solid var(--brown);
+    border-color: var(--input-border-focus-color, var(--brown));
+    outline: 1px solid var(--input-border-focus-color, var(--brown));
   }
 
   &::-webkit-inner-spin-button,
@@ -134,4 +134,9 @@
   @include common.py(var(--inner-box-py, 0));
   background-color: var(--inner-box-color, unset);
   position: relative;
+}
+
+.squareSize {
+  @include common.width(var(--square-size-width, 32));
+  aspect-ratio: 1;
 }

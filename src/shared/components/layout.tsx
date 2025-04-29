@@ -128,7 +128,8 @@ export const TextInput = React.forwardRef<
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;
     backgroundColor?: string;
-    border?: string;
+    borderColor?: string;
+    borderFocusColor?: string;
     radius?: string;
     color?: string;
     fontSize?: string;
@@ -136,6 +137,7 @@ export const TextInput = React.forwardRef<
     width?: string;
     suffix?: string;
     suffixColor?: string;
+    pl?: string;
     [key: string]: any;
   }
 >(function TextInput(props, ref) {
@@ -145,7 +147,8 @@ export const TextInput = React.forwardRef<
     onChange,
     placeholder,
     backgroundColor,
-    border,
+    borderColor,
+    borderFocusColor,
     radius,
     color,
     fontSize,
@@ -153,6 +156,7 @@ export const TextInput = React.forwardRef<
     width,
     suffix,
     suffixColor,
+    pl,
     ...rest
   } = props;
 
@@ -171,12 +175,14 @@ export const TextInput = React.forwardRef<
         style={
           {
             "--input-background-color": backgroundColor,
-            "--input-border": border,
+            "--input-border-color": borderColor,
+            "--input-border-focus-color": borderFocusColor,
             "--input-radius": radius,
             "--input-text-color": color,
             "--input-font-size": fontSize,
             "--input-height": height,
             "--input-width": width,
+            "--input-pl": pl,
           } as React.CSSProperties
         }
         {...rest}
@@ -222,7 +228,8 @@ export const TextField = React.forwardRef<
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;
     backgroundColor?: string;
-    border?: string;
+    borderColor?: string;
+    borderFocusColor?: string;
     radius?: string;
     color?: string;
     fontSize?: string;
@@ -232,6 +239,7 @@ export const TextField = React.forwardRef<
     mr?: string;
     mb?: string;
     ml?: string;
+    pl?: string;
     error?: string | null;
     suffix?: string;
     suffixColor?: string;
@@ -244,7 +252,8 @@ export const TextField = React.forwardRef<
     onChange,
     placeholder,
     backgroundColor,
-    border,
+    borderColor,
+    borderFocusColor,
     radius,
     color,
     fontSize,
@@ -254,6 +263,7 @@ export const TextField = React.forwardRef<
     mr,
     mb,
     ml,
+    pl,
     error,
     suffix,
     suffixColor,
@@ -280,7 +290,8 @@ export const TextField = React.forwardRef<
         onChange={onChange}
         placeholder={placeholder}
         backgroundColor={backgroundColor}
-        border={border}
+        borderColor={borderColor}
+        borderFocusColor={borderFocusColor}
         radius={radius}
         color={color}
         fontSize={fontSize}
@@ -288,6 +299,7 @@ export const TextField = React.forwardRef<
         width={width}
         suffix={suffix}
         suffixColor={suffixColor}
+        pl={pl}
         {...rest}
       />
       <TextError error={error} />
@@ -309,6 +321,7 @@ export const InnerBox = ({
   py,
   color,
   style = {},
+  className = "",
 }: {
   children: React.ReactNode;
   justify?: justifyType;
@@ -319,10 +332,12 @@ export const InnerBox = ({
   py?: string;
   color?: string;
   style?: React.CSSProperties;
+  className?: string;
 }) => {
+  const combinedClass = classNames(styles.innerBox, className);
   return (
     <div
-      className={styles.innerBox}
+      className={combinedClass}
       style={
         {
           "--inner-box-justify": justify,

@@ -1,6 +1,6 @@
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #303030;
   --brown: #7f4c2f;
   --primary: #ffdb6d;
   --secondary: #ffec85;
@@ -41,4 +41,21 @@ a:hover {
 
 .jalnan {
   font-family: var(--jalnan), sans-serif;
+}
+
+tr.rdp-week td:first-child .rdp-day_button {
+  color: red !important;
+}
+
+tr.rdp-week td:last-child .rdp-day_button {
+  color: blue !important;
+}
+
+.rdp-today button {
+  color: var(--foreground);
+  background-color: var(--invalid);
+}
+
+.rdp-selected button {
+  color: var(--brown);
 }

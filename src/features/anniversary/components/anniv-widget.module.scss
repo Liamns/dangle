@@ -13,7 +13,7 @@
   justify-content: center;
 }
 
-.listContainer {
+.modalContainer {
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -23,9 +23,9 @@
   @include common.width(300);
 }
 
-.listTitle {
+.modalTitle {
   border-radius: 10px 10px 0px 0px;
-  background-color: var(--brown);
+  background-color: var(--modal-title-color, var(--brown));
   width: 100%;
   display: flex;
   align-items: center;
@@ -34,10 +34,91 @@
   @include common.py(15);
 }
 
-.listContent {
+.modalContent {
   width: 100%;
   background-color: var(--background);
   border-radius: 0px 0px 10px 10px;
-  @include common.px(20);
+  @include common.px(var(--modal-content-px, 20));
   @include common.py(20);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.addModalSection {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  @include common.px(28);
+  @include common.pb(var(--add-modal-section-pb, 16));
+  @include common.mb(16);
+  border-bottom: 1px solid var(--invalid);
+}
+
+.annivForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconSelectButton {
+  cursor: pointer;
+  @include common.width(32);
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iconSelector {
+  position: absolute;
+  right: 0;
+  top: calc(100dvh / 740 * 48);
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  z-index: 10;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.iconOption {
+  @include common.width(40);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  &.selected {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 0 2px rgba(255, 192, 203, 0.5), 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+  }
+}
+
+.selectedDate {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  @include common.width(190);
 }

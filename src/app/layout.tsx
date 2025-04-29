@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
+import "react-day-picker/style.css";
 import "./globals.css";
 import classNames from "classnames";
 import { Wrapper } from "../shared/components/layout";

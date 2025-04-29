@@ -1,0 +1,7 @@
+@use "shared/styles/common.scss" as common;
+
+.square {
+  position: relative;
+  @include common.width(var(--square-size, 100));
+  aspect-ratio: 1;
+}
