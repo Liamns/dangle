@@ -13,6 +13,7 @@ interface TextProps {
   fontWeight?: FontWeightType;
   color?: string;
   fontFamily?: FontFamilyType;
+  style?: React.CSSProperties;
 }
 
 export const Text: React.FC<TextProps> = ({
@@ -21,6 +22,7 @@ export const Text: React.FC<TextProps> = ({
   fontWeight = "normal",
   fontFamily = "inter",
   color = "black",
+  style = {},
 }) => {
   const mappedFontSize = fontSizeMap[fontSize];
   const mappedFontWeight = fontWeightMap[fontWeight];
@@ -35,6 +37,7 @@ export const Text: React.FC<TextProps> = ({
           "--text-font-weight": mappedFontWeight,
           "--text-color": color,
           "--text-font-family": mappedFontFamily,
+          ...style,
         } as React.CSSProperties
       }
     >

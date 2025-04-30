@@ -59,3 +59,8 @@ tr.rdp-week td:last-child .rdp-day_button {
 .rdp-selected button {
   color: var(--brown);
 }
+
+/* 라디오 버튼 스타일 */
+input[type="radio"] {
+  accent-color: var(--brown);
+}

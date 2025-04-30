@@ -1,6 +1,6 @@
 @use "shared/styles/common.scss" as common;
 
-.emptyContainer {
+.annivContainer {
   background: rgba(255, 255, 255, 0.5);
   border: 1.5px solid #ffffff;
   border-radius: 10px;
@@ -8,40 +8,7 @@
   @include common.width(262);
   @include common.py(15);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.modalContainer {
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  @include common.width(300);
-}
-
-.modalTitle {
-  border-radius: 10px 10px 0px 0px;
-  background-color: var(--modal-title-color, var(--brown));
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  @include common.px(28);
-  @include common.py(15);
-}
-
-.modalContent {
-  width: 100%;
-  background-color: var(--background);
-  border-radius: 0px 0px 10px 10px;
-  @include common.px(var(--modal-content-px, 20));
-  @include common.py(20);
-  display: flex;
-  flex-direction: column;
+  flex-direction: var(--anniv-container-direction, column);
   align-items: center;
   justify-content: center;
 }
@@ -55,7 +22,8 @@
   @include common.px(28);
   @include common.pb(var(--add-modal-section-pb, 16));
   @include common.mb(16);
-  border-bottom: 1px solid var(--invalid);
+  border-bottom: var(--add-modal-section-border-bottom, 1px) solid
+    var(--invalid);
 }
 
 .annivForm {
@@ -121,4 +89,75 @@
   align-items: start;
   justify-content: center;
   @include common.width(190);
+}
+
+.annivListContainer {
+  width: 100%;
+  max-height: calc(100dvh / 740 * 200);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: calc(100dvh / 740 * 10);
+  @include common.pt(1);
+}
+
+.annivItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  border: 1px solid var(--invalid);
+  position: relative;
+  cursor: pointer;
+  @include common.px(20);
+  @include common.py(15);
+
+  &.selected {
+    background-color: var(--primary);
+    border: 1.5px solid var(--brown);
+  }
+
+  .editButton {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    @include common.width(24);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &.selected .editButton {
+    opacity: 1;
+  }
+}
+
+.annivTitle {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
+
+.annivIconContainer {
+  @include common.width(40);
+  @include common.height(40);
+  @include common.mr(15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.annivDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
 }

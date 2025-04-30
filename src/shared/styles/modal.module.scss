@@ -136,3 +136,37 @@
     opacity: 0;
   }
 }
+
+/* 데이트 피커 모달 스타일 */
+.modalContainer {
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  @include common.width(300);
+}
+
+.modalTitle {
+  border-radius: 10px 10px 0px 0px;
+  background-color: var(--modal-title-color, var(--brown));
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  @include common.px(28);
+  @include common.py(15);
+}
+
+.modalContent {
+  width: 100%;
+  background-color: var(--background);
+  border-radius: 0px 0px 10px 10px;
+  @include common.px(var(--modal-content-px, 18));
+  @include common.py(20);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
