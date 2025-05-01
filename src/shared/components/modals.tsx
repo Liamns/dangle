@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, useRef } from "react";
 import styles from "../styles/modal.module.scss";
 import { createPortal } from "react-dom";
 import Footer from "@/app/login/footer";
@@ -14,6 +14,8 @@ interface BottomModalProps {
   justify?: justifyType;
   align?: alignType;
   direction?: directionType;
+  draggable?: boolean;
+  minHeight?: number;
 }
 
 export const BottomModal: React.FC<BottomModalProps> = ({
@@ -25,40 +27,169 @@ export const BottomModal: React.FC<BottomModalProps> = ({
   direction,
   justify,
   align,
+  draggable = false,
+  minHeight = 0,
 }) => {
-  const [modalHeight, setModalHeight] = useState(0);
+  const [currentHeight, setCurrentHeight] = useState<number | null>(null);
+  const startYRef = useRef(0);
+  const startHRef = useRef(0);
+  const [lastHeight, setLastHeight] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const topMargin = 32;
 
-  // 모달 높이를 측정하여 상태로 저장
   useEffect(() => {
+    if (!height) {
+      const el = document.querySelector(
+        `.${styles.fixedBottom}`
+      ) as HTMLElement;
+      if (el) {
+        const renderedHeight = el.getBoundingClientRect().height;
+        setCurrentHeight(renderedHeight);
+        startHRef.current = renderedHeight;
+      }
+    }
+  }, [height]);
+
+  // 모달 높이 측정 (마운트 및 크기 변경 시)
+  useEffect(() => {
+    const el = document.querySelector(`.${styles.fixedBottom}`) as HTMLElement;
+    if (el) {
+      setLastHeight(el.getBoundingClientRect().height);
+    }
+  }, [currentHeight]);
+
+  // 드래그 중 스크롤 방지 로직 추가
+  useEffect(() => {
+    const preventScroll = (e: Event) => {
+      e.preventDefault();
+    };
+
     const modalElement = document.querySelector(`.${styles.fixedBottom}`);
     if (modalElement) {
-      const height = modalElement.getBoundingClientRect().height;
-      setModalHeight(height);
+      modalElement.addEventListener(
+        "touchmove",
+        preventScroll as EventListener,
+        {
+          passive: false,
+        }
+      );
+      modalElement.addEventListener(
+        "mousemove",
+        preventScroll as EventListener
+      );
     }
+
+    return () => {
+      if (modalElement) {
+        modalElement.removeEventListener(
+          "touchmove",
+          preventScroll as EventListener
+        );
+        modalElement.removeEventListener(
+          "mousemove",
+          preventScroll as EventListener
+        );
+      }
+    };
   }, []);
+
+  // 드래그 시작 핸들러
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!draggable) return;
+    e.stopPropagation(); // 이벤트 전파 방지
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    startYRef.current = clientY;
+    startHRef.current = currentHeight || 0;
+    window.addEventListener("mousemove", onDrag);
+    window.addEventListener("mouseup", onDragEnd);
+    window.addEventListener("touchmove", onDrag);
+    window.addEventListener("touchend", onDragEnd);
+  };
+
+  // 드래그 중 (min/max 범위 내에서 즉시 업데이트)
+  const onDrag = (e: MouseEvent | TouchEvent) => {
+    const clientY =
+      "touches" in e
+        ? (e as TouchEvent).touches[0].clientY
+        : (e as MouseEvent).clientY;
+    const delta = startYRef.current - clientY;
+    const maxHeight = window.innerHeight - topMargin;
+    const newHeight = Math.min(
+      Math.max(minHeight, (startHRef.current || 0) + delta),
+      maxHeight
+    );
+    setCurrentHeight(newHeight);
+  };
+
+  // 드래그 종료 및 스냅 처리 로직 수정
+  const onDragEnd = () => {
+    window.removeEventListener("mousemove", onDrag);
+    window.removeEventListener("mouseup", onDragEnd);
+    window.removeEventListener("touchmove", onDrag);
+    window.removeEventListener("touchend", onDragEnd);
+
+    const finalHeight = currentHeight || 0;
+    const maxHeight = window.innerHeight - topMargin;
+
+    // 위로 드래그 시 최대 높이로 스냅
+    if (finalHeight > startHRef.current && finalHeight >= maxHeight * 0.8) {
+      setCurrentHeight(maxHeight);
+      setIsExpanded(true);
+    }
+    // 아래로 드래그 시 최소 높이로 스냅
+    else if (finalHeight < startHRef.current && finalHeight <= minHeight + 20) {
+      setCurrentHeight(minHeight);
+      setIsExpanded(false);
+    }
+    // 중간 높이에서는 이전 높이로 복원
+    else {
+      setCurrentHeight(startHRef.current);
+      setIsExpanded(false);
+    }
+  };
 
   return (
     <>
-      {/* 모달 높이만큼의 여백을 제공하는 div */}
       <div
-        style={{ height: `${modalHeight}px` }}
+        style={{
+          height: `${
+            draggable && currentHeight !== null ? currentHeight : 0
+          }px`,
+        }}
         className={styles.modalSpacer}
-      ></div>
+      />
 
       <div
         className={styles.fixedBottom}
         style={
-          {
-            "--modal-width": width,
-            "--modal-height": height,
-            "--modal-px": px,
-            "--modal-py": py,
-            "--modal-direction": direction,
-            "--modal-justify": justify,
-            "--modal-align": align,
-          } as React.CSSProperties
+          draggable && currentHeight !== null
+            ? ({
+                width,
+                height: `${currentHeight}px`,
+                "--modal-px": px,
+                "--modal-py": py,
+                "--modal-direction": direction,
+                "--modal-justify": justify,
+                "--modal-align": align,
+              } as React.CSSProperties)
+            : ({
+                "--modal-width": width,
+                "--modal-height": height,
+                "--modal-px": px,
+                "--modal-py": py,
+                "--modal-direction": direction,
+                "--modal-justify": justify,
+                "--modal-align": align,
+              } as React.CSSProperties)
         }
       >
+        {draggable && (
+          <div
+            className={styles.dragHandle}
+            onMouseDown={handleDragStart}
+            onTouchStart={handleDragStart}
+          />
+        )}
         {children}
       </div>
     </>

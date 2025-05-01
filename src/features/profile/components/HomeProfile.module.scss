@@ -1,0 +1,53 @@
+@use "shared/styles/common.scss" as common;
+
+.container {
+  position: relative;
+  @include common.width(260);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.arrowContainer {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrowBox {
+  @include common.width(36);
+  aspect-ratio: 1;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1.5px solid var(--background);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.labelContainer {
+  position: absolute;
+  bottom: 0;
+  background-color: var(--background);
+  border-radius: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.editButton {
+  @include common.py(8);
+  @include common.px(15);
+  background-color: var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  @include common.ml(24);
+  flex-shrink: 0;
+}

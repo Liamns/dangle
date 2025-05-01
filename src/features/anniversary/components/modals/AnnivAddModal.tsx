@@ -231,7 +231,7 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
                 </div>
               </div>
 
-              <InnerBox px="28" direction="column" align="start">
+              {/* <InnerBox px="28" direction="column" align="start">
                 <Text text="날짜 계산 방식" color={Colors.brown} />
                 <Spacer height="16" />
                 <InnerBox
@@ -281,7 +281,7 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
                     </label>
                   </InnerBox>
                 </InnerBox>
-              </InnerBox>
+              </InnerBox> */}
 
               <Button
                 width="260"
@@ -289,7 +289,6 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
                 fontSize="sm"
                 fontWeight="bold"
                 color={isValid ? Colors.primary : Colors.invalid}
-                mt="12"
                 type="submit"
                 disabled={!isValid}
               >
