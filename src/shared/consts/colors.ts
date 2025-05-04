@@ -10,6 +10,6 @@ export const Colors = {
   white: "#ffffff",
   background: "#fff",
   transparnet: "rgba(0, 0, 0, 0)",
-  male: "#6AB4FF",
-  female: "#FF6AB4",
+  male: "#6AC8FF",
+  female: "#FF6A6A",
 };

@@ -38,7 +38,7 @@ export default function ForgotPassword() {
           color={Colors.brown}
         />
         <Spacer height="30" />
-        <form onSubmit={(e) => e.preventDefault()}>
+        <form onSubmit={(e) => e.preventDefault()} style={{ width: "100%" }}>
           <EmailInput
             value={email}
             onChange={(value) => {
@@ -49,16 +49,15 @@ export default function ForgotPassword() {
             }}
           />
           <Spacer height="30" />
-          <Button valid={isEmailValid} onClick={emailhandleSubmit}>
+          <Button valid={isEmailValid} onClick={emailhandleSubmit} width="244">
             링크 요청
           </Button>
           <Spacer height="12" />
-          <Center>
-            <Text
-              text="입력한 이메일주소로 재설정 링크가 발송됩니다."
-              color={Colors.grey}
-            />
-          </Center>
+
+          <Text
+            text="입력한 이메일주소로 재설정 링크가 발송됩니다."
+            color={Colors.grey}
+          />
         </form>
       </Card>
     </>

@@ -44,11 +44,11 @@ a:hover {
 }
 
 tr.rdp-week td:first-child .rdp-day_button {
-  color: red !important;
+  color: #ff6a6a !important;
 }
 
 tr.rdp-week td:last-child .rdp-day_button {
-  color: blue !important;
+  color: #6ac8ff !important;
 }
 
 .rdp-today button {

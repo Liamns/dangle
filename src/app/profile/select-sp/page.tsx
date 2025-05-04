@@ -54,52 +54,48 @@ export default function SelectSpecies() {
     }, 300);
   };
 
-  // 애니메이션 variants 정의
+  // 개선된 애니메이션 variants 정의
   const variants = {
     // 왼쪽에서 들어오는 애니메이션
     enterFromLeft: {
       x: "-100%",
-      opacity: 0.5,
+      opacity: 1,
+      transition: {
+        x: { type: "spring", stiffness: 300, damping: 30 },
+      },
     },
     // 오른쪽에서 들어오는 애니메이션
     enterFromRight: {
       x: "100%",
-      opacity: 0.5,
+      opacity: 1,
+      transition: {
+        x: { type: "spring", stiffness: 300, damping: 30 },
+      },
     },
     // 화면 중앙에 있는 상태
     center: {
       x: 0,
       opacity: 1,
-      zIndex: 2,
       transition: {
         type: "spring",
         stiffness: 300,
         damping: 30,
-        delay: 0,
       },
     },
     // 왼쪽으로 나가는 애니메이션
     exitToLeft: {
       x: "-100%",
-      opacity: 0.5,
-      zIndex: 1,
+      opacity: 1,
       transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        delay: 0.05,
+        x: { type: "spring", stiffness: 300, damping: 30 },
       },
     },
     // 오른쪽으로 나가는 애니메이션
     exitToRight: {
       x: "100%",
-      opacity: 0.5,
-      zIndex: 1,
+      opacity: 1,
       transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        delay: 0.05,
+        x: { type: "spring", stiffness: 300, damping: 30 },
       },
     },
   };
@@ -134,7 +130,7 @@ export default function SelectSpecies() {
 
       <Spacer height="36" />
 
-      <InnerBox direction="row" px="30" style={{ flex: 1 }}>
+      <InnerBox direction="row" px="30">
         <ArrowButton ml="0" onClick={clickPrev}>
           <Image
             src="/images/white-bracket.png"
@@ -149,21 +145,17 @@ export default function SelectSpecies() {
         <Spacer width="12" />
 
         <div className={styles.slideContainer}>
-          <AnimatePresence initial={false}>
+          <AnimatePresence initial={false} custom={direction} mode="popLayout">
             <motion.div
               key={species}
               className={styles.animalCard}
+              custom={direction}
               initial={
                 direction === "right" ? "enterFromRight" : "enterFromLeft"
               }
               animate="center"
               exit={direction === "right" ? "exitToLeft" : "exitToRight"}
               variants={variants}
-              style={{
-                position: "absolute",
-                width: "100%",
-                height: "100%",
-              }}
             >
               <div className={styles.animalCardTitle}>
                 <Text
