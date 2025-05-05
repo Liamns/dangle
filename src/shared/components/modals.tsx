@@ -1,10 +1,18 @@
 "use client";
-import { ReactNode, useEffect, useState, useRef } from "react";
+import { ReactNode, useEffect, useState, useRef, useCallback } from "react";
 import styles from "../styles/modal.module.scss";
 import { createPortal } from "react-dom";
 import Footer from "@/app/login/footer";
 import { alignType, directionType, justifyType } from "../types/layout";
 
+/**
+ * 드래그 방향 타입 정의
+ */
+type DragDirection = "up" | "down" | null;
+
+/**
+ * BottomModal 컴포넌트의 Props 인터페이스
+ */
 interface BottomModalProps {
   children: ReactNode;
   width?: string;
@@ -18,6 +26,10 @@ interface BottomModalProps {
   minHeight?: number;
 }
 
+/**
+ * 바텀 모달 컴포넌트
+ * 드래그 가능한 바텀 시트 기능을 제공합니다.
+ */
 export const BottomModal: React.FC<BottomModalProps> = ({
   children,
   width,
@@ -30,71 +42,269 @@ export const BottomModal: React.FC<BottomModalProps> = ({
   draggable = false,
   minHeight = 0,
 }) => {
+  // minHeight 값이 필요한지 확인
+  if (draggable && minHeight <= 0) {
+    console.warn(
+      "BottomModal: draggable이 true일 때는 반드시 minHeight를 지정해야 합니다."
+    );
+  }
+
+  // 상태 관리
   const [currentHeight, setCurrentHeight] = useState<number | null>(null);
-  const startYRef = useRef(0);
-  const startHRef = useRef(0);
   const [lastHeight, setLastHeight] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [contentHeight, setContentHeight] = useState(0); // 콘텐츠 높이를 저장할 상태
-  const [initialContentHeight, setInitialContentHeight] = useState(0); // 초기 콘텐츠 높이를 저장 (변하지 않음)
-  const contentRef = useRef<HTMLDivElement>(null); // 콘텐츠 요소에 대한 ref
-  const dragDirectionRef = useRef<"up" | "down" | null>(null); // 드래그 방향 추적
-  const dragDistanceRef = useRef(0); // 드래그 거리 추적
+  const [contentHeight, setContentHeight] = useState(0);
+  const [initialContentHeight, setInitialContentHeight] = useState(0);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Ref 관리
+  const contentRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const startYRef = useRef(0);
+  const startHRef = useRef(0);
+  const dragDirectionRef = useRef<DragDirection>(null);
+  const dragDistanceRef = useRef(0);
+  const targetHeightRef = useRef<number | null>(null);
+
+  // 상수 정의
   const topMargin = 32;
-  const expandThreshold = 0.3; // 최대 높이의 30%를 넘으면 확장
-  const collapseThreshold = 0.7; // 최대 높이의 70% 미만이면 축소
-  const dragDownThreshold = 20; // 아래로 드래그 시 이 픽셀 값 이상 드래그하면 축소 상태로 전환
+  const expandThreshold = 0.3;
+  const collapseThreshold = 0.7;
+  const dragDownThreshold = 20;
+  const minDragDistance = 10;
+  const dragDirectionThreshold = 5;
 
-  // 초기 렌더링 시 및 내용 변경 시 콘텐츠 높이 측정 - 한 번만 실행되도록 수정
-  useEffect(() => {
-    const measureContentHeight = () => {
-      if (contentRef.current) {
-        // 콘텐츠 높이 + 패딩 + 핸들 영역 계산 (핸들이 있는 경우 여분 공간 추가)
-        const paddingTop =
-          parseInt(getComputedStyle(contentRef.current).paddingTop, 10) || 0;
-        const paddingBottom =
-          parseInt(getComputedStyle(contentRef.current).paddingBottom, 10) || 0;
-        const handleHeight = draggable ? 24 : 0; // 드래그 핸들이 있는 경우 추가 높이
+  /**
+   * 콘텐츠 높이 계산 함수
+   */
+  const measureContentHeight = useCallback(() => {
+    if (!contentRef.current) return;
 
-        // 콘텐츠 자체 높이 + 패딩 + 핸들 영역
-        const totalHeight = contentRef.current.scrollHeight + handleHeight;
+    // 핸들 높이 계산
+    const handleHeight = draggable ? 24 : 0;
 
-        // 콘텐츠 높이 설정
-        setContentHeight(totalHeight);
+    // 콘텐츠 자체 높이 + 핸들 영역
+    const totalHeight = contentRef.current.scrollHeight + handleHeight;
 
-        // 초기 콘텐츠 높이는 한 번만 설정 (이후 변경되지 않음)
-        if (initialContentHeight === 0) {
-          setInitialContentHeight(totalHeight);
+    // 콘텐츠 높이 설정
+    setContentHeight(totalHeight);
 
-          // 최초 렌더링 시 콘텐츠 높이를 기본 높이로 설정
-          if (!currentHeight && draggable) {
-            setCurrentHeight(totalHeight);
-          }
+    // 초기 콘텐츠 높이는 한 번만 설정
+    if (initialContentHeight === 0) {
+      setInitialContentHeight(totalHeight);
+
+      // 최초 렌더링 시 높이 설정
+      if (!currentHeight) {
+        let initialHeight;
+
+        if (draggable) {
+          // draggable=true일 때는 항상 minHeight 사용
+          initialHeight = minHeight;
+        } else {
+          // draggable=false일 때는 기존 로직 유지
+          initialHeight =
+            minHeight > 0 ? Math.min(totalHeight, minHeight) : totalHeight;
         }
-      }
-    };
 
-    measureContentHeight();
+        // 타겟 높이 설정
+        targetHeightRef.current = initialHeight;
+        setCurrentHeight(initialHeight);
 
-    // 초기 높이를 측정한 후에는 리사이즈 이벤트에만 반응
-    window.addEventListener("resize", measureContentHeight);
-    return () => window.removeEventListener("resize", measureContentHeight);
-  }, [children, draggable, initialContentHeight]);
-
-  useEffect(() => {
-    if (!height) {
-      const el = document.querySelector(
-        `.${styles.fixedBottom}`
-      ) as HTMLElement;
-      if (el) {
-        const renderedHeight = el.getBoundingClientRect().height;
-        setCurrentHeight(renderedHeight);
-        startHRef.current = renderedHeight;
+        // transition 효과 활성화 지연
+        setTimeout(() => setIsInitialized(true), 100);
       }
     }
-  }, [height]);
+  }, [
+    contentHeight,
+    currentHeight,
+    draggable,
+    initialContentHeight,
+    minHeight,
+  ]);
 
-  // 모달 높이 측정 (마운트 및 크기 변경 시)
+  /**
+   * DOM 렌더링 후 높이 조정 함수
+   */
+  const adjustHeight = useCallback(() => {
+    if (!modalRef.current || !targetHeightRef.current) return;
+
+    const renderedHeight = modalRef.current.getBoundingClientRect().height;
+
+    // 렌더링된 높이가 목표 높이와 다르면 조정
+    if (renderedHeight !== targetHeightRef.current) {
+      setCurrentHeight(targetHeightRef.current);
+    }
+  }, []);
+
+  /**
+   * 최소 높이 계산 함수
+   */
+  const calculateMinHeight = useCallback(() => {
+    if (draggable) {
+      // draggable=true일 때는 항상 전달된 minHeight 사용
+      return minHeight;
+    } else {
+      // draggable=false일 때는 기존 로직 유지
+      return Math.min(
+        initialContentHeight || contentHeight,
+        minHeight || Infinity
+      );
+    }
+  }, [contentHeight, draggable, initialContentHeight, minHeight]);
+
+  /**
+   * 최대 높이로 확장
+   */
+  const expandModal = useCallback(() => {
+    const maxHeight = window.innerHeight - topMargin;
+    targetHeightRef.current = maxHeight;
+    setCurrentHeight(maxHeight);
+    setIsExpanded(true);
+  }, [topMargin]);
+
+  /**
+   * 최소 높이로 축소
+   */
+  const collapseModal = useCallback(() => {
+    const autoMinHeight = calculateMinHeight();
+    targetHeightRef.current = autoMinHeight;
+    setCurrentHeight(autoMinHeight);
+    setIsExpanded(false);
+  }, [calculateMinHeight]);
+
+  /**
+   * 핸들 클릭 처리
+   */
+  const handleClick = useCallback(() => {
+    if (isExpanded) {
+      collapseModal();
+    } else {
+      expandModal();
+    }
+  }, [collapseModal, expandModal, isExpanded]);
+
+  /**
+   * 드래그 시작 처리
+   */
+  const handleDragStart = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      if (!draggable) return;
+
+      e.stopPropagation();
+      const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+      startYRef.current = clientY;
+      startHRef.current = currentHeight || 0;
+      dragDirectionRef.current = null;
+      dragDistanceRef.current = 0;
+
+      window.addEventListener("mousemove", onDrag);
+      window.addEventListener("mouseup", onDragEnd);
+      window.addEventListener("touchmove", onDrag);
+      window.addEventListener("touchend", onDragEnd);
+    },
+    [currentHeight, draggable]
+  );
+
+  /**
+   * 드래그 중 처리
+   */
+  const onDrag = useCallback(
+    (e: MouseEvent | TouchEvent) => {
+      const clientY =
+        "touches" in e
+          ? (e as TouchEvent).touches[0].clientY
+          : (e as MouseEvent).clientY;
+      const delta = startYRef.current - clientY;
+
+      // 드래그 방향 결정
+      if (
+        delta > dragDirectionThreshold &&
+        (dragDirectionRef.current !== "up" || dragDirectionRef.current === null)
+      ) {
+        dragDirectionRef.current = "up";
+      } else if (
+        delta < -dragDirectionThreshold &&
+        (dragDirectionRef.current !== "down" ||
+          dragDirectionRef.current === null)
+      ) {
+        dragDirectionRef.current = "down";
+      }
+
+      // 드래그 거리 추적
+      dragDistanceRef.current = Math.abs(delta);
+
+      const maxHeight = window.innerHeight - topMargin;
+      const autoMinHeight = calculateMinHeight();
+
+      // 새 높이 계산 및 적용
+      const newHeight = Math.min(
+        Math.max(autoMinHeight, (startHRef.current || 0) + delta),
+        maxHeight
+      );
+
+      targetHeightRef.current = newHeight;
+      setCurrentHeight(newHeight);
+    },
+    [calculateMinHeight, topMargin]
+  );
+
+  /**
+   * 드래그 종료 처리
+   */
+  const onDragEnd = useCallback(() => {
+    // 이벤트 리스너 제거
+    window.removeEventListener("mousemove", onDrag);
+    window.removeEventListener("mouseup", onDragEnd);
+    window.removeEventListener("touchmove", onDrag);
+    window.removeEventListener("touchend", onDragEnd);
+
+    // 짧은 드래그 무시
+    if (dragDistanceRef.current < minDragDistance) {
+      isExpanded ? expandModal() : collapseModal();
+      return;
+    }
+
+    // 드래그 방향에 따른 처리
+    if (dragDirectionRef.current === "up") {
+      expandModal();
+    } else if (dragDirectionRef.current === "down") {
+      if (isExpanded && dragDistanceRef.current > dragDownThreshold) {
+        collapseModal();
+      } else if (!isExpanded) {
+        collapseModal();
+      } else {
+        expandModal();
+      }
+    } else {
+      isExpanded ? expandModal() : collapseModal();
+    }
+  }, [collapseModal, expandModal, isExpanded, minDragDistance, onDrag]);
+
+  // 초기 및 리사이즈 시 높이 측정
+  useEffect(() => {
+    measureContentHeight();
+
+    window.addEventListener("resize", measureContentHeight);
+    return () => window.removeEventListener("resize", measureContentHeight);
+  }, [
+    children,
+    draggable,
+    initialContentHeight,
+    measureContentHeight,
+    minHeight,
+  ]);
+
+  // DOM 렌더링 후 높이 조정
+  useEffect(() => {
+    if (!draggable || height) return;
+
+    adjustHeight();
+
+    const timer = setTimeout(adjustHeight, 100);
+    return () => clearTimeout(timer);
+  }, [adjustHeight, draggable, height]);
+
+  // 모달 높이 변경 추적
   useEffect(() => {
     const el = document.querySelector(`.${styles.fixedBottom}`) as HTMLElement;
     if (el) {
@@ -102,20 +312,16 @@ export const BottomModal: React.FC<BottomModalProps> = ({
     }
   }, [currentHeight]);
 
-  // 드래그 중 스크롤 방지 로직 추가
+  // 스크롤 방지
   useEffect(() => {
-    const preventScroll = (e: Event) => {
-      e.preventDefault();
-    };
+    const preventScroll = (e: Event) => e.preventDefault();
 
     const modalElement = document.querySelector(`.${styles.fixedBottom}`);
     if (modalElement) {
       modalElement.addEventListener(
         "touchmove",
         preventScroll as EventListener,
-        {
-          passive: false,
-        }
+        { passive: false }
       );
       modalElement.addEventListener(
         "mousemove",
@@ -137,130 +343,29 @@ export const BottomModal: React.FC<BottomModalProps> = ({
     };
   }, []);
 
-  // 최대 높이로 확장
-  const expandModal = () => {
-    const maxHeight = window.innerHeight - topMargin;
-    setCurrentHeight(maxHeight);
-    setIsExpanded(true);
-  };
-
-  // 최소 높이로 축소 (초기 콘텐츠 높이 사용)
-  const collapseModal = () => {
-    // 저장된 초기 콘텐츠 높이를 사용 (변하지 않음)
-    // minHeight가 명시적으로 지정된 경우 그 값을 우선함
-    const autoMinHeight = Math.max(
-      initialContentHeight || contentHeight,
-      minHeight
-    );
-    setCurrentHeight(autoMinHeight);
-    setIsExpanded(false);
-  };
-
-  // 핸들 클릭 시 토글 기능 추가
-  const handleClick = () => {
-    if (isExpanded) {
-      collapseModal();
-    } else {
-      expandModal();
-    }
-  };
-
-  // 드래그 시작 핸들러 - 드래그 방향과 거리 초기화
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!draggable) return;
-    e.stopPropagation(); // 이벤트 전파 방지
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    startYRef.current = clientY;
-    startHRef.current = currentHeight || 0;
-    dragDirectionRef.current = null; // 드래그 방향 초기화
-    dragDistanceRef.current = 0; // 드래그 거리 초기화
-    window.addEventListener("mousemove", onDrag);
-    window.addEventListener("mouseup", onDragEnd);
-    window.addEventListener("touchmove", onDrag);
-    window.addEventListener("touchend", onDragEnd);
-  };
-
-  // 드래그 중 - 방향과 거리 추적 (직관적인 사용성을 위해 개선)
-  const onDrag = (e: MouseEvent | TouchEvent) => {
-    const clientY =
-      "touches" in e
-        ? (e as TouchEvent).touches[0].clientY
-        : (e as MouseEvent).clientY;
-    const delta = startYRef.current - clientY;
-
-    // 드래그 방향 결정 (양수면 위로, 음수면 아래로)
-    // 방향이 명확하게 바뀌었을 때만 방향을 업데이트
-    if (
-      delta > 5 &&
-      (dragDirectionRef.current !== "up" || dragDirectionRef.current === null)
-    ) {
-      dragDirectionRef.current = "up";
-    } else if (
-      delta < -5 &&
-      (dragDirectionRef.current !== "down" || dragDirectionRef.current === null)
-    ) {
-      dragDirectionRef.current = "down";
+  // 스타일 계산
+  const getModalStyle = () => {
+    if (draggable && currentHeight !== null) {
+      return {
+        width,
+        height: `${currentHeight}px`,
+        "--modal-px": px,
+        "--modal-py": py,
+        "--modal-direction": direction,
+        "--modal-justify": justify,
+        "--modal-align": align,
+      } as React.CSSProperties;
     }
 
-    // 드래그 절대 거리 추적
-    dragDistanceRef.current = Math.abs(delta);
-
-    const maxHeight = window.innerHeight - topMargin;
-    // 콘텐츠 높이를 최소 높이로 사용 (초기 높이 사용)
-    const autoMinHeight = Math.max(
-      initialContentHeight || contentHeight,
-      minHeight
-    );
-
-    const newHeight = Math.min(
-      Math.max(autoMinHeight, (startHRef.current || 0) + delta),
-      maxHeight
-    );
-    setCurrentHeight(newHeight);
-  };
-
-  // 드래그 종료 - 단순화된 로직으로 수정
-  const onDragEnd = () => {
-    window.removeEventListener("mousemove", onDrag);
-    window.removeEventListener("mouseup", onDragEnd);
-    window.removeEventListener("touchmove", onDrag);
-    window.removeEventListener("touchend", onDragEnd);
-
-    // 짧은 드래그는 무시 (10px 미만의 드래그는 의도적인 드래그로 간주하지 않음)
-    if (dragDistanceRef.current < 10) {
-      // 현재 상태 유지
-      if (isExpanded) {
-        expandModal();
-      } else {
-        collapseModal();
-      }
-      return;
-    }
-
-    // 단순화된 로직: 드래그 방향으로 전환
-    if (dragDirectionRef.current === "up") {
-      // 위로 드래그하면 확장
-      expandModal();
-    } else if (dragDirectionRef.current === "down") {
-      // 아래로 드래그하면 축소
-      // 특히 isExpanded가 true이고 아래로 dragDownThreshold 이상 드래그했을 때 확실히 축소
-      if (isExpanded && dragDistanceRef.current > dragDownThreshold) {
-        collapseModal();
-      } else if (!isExpanded) {
-        // 이미 축소 상태면 축소 유지
-        collapseModal();
-      } else {
-        // 드래그가 충분하지 않으면 상태 유지
-        expandModal();
-      }
-    } else {
-      // 방향이 결정되지 않은 경우 (거의 발생하지 않음)
-      if (isExpanded) {
-        expandModal();
-      } else {
-        collapseModal();
-      }
-    }
+    return {
+      "--modal-width": width,
+      "--modal-height": height,
+      "--modal-px": px,
+      "--modal-py": py,
+      "--modal-direction": direction,
+      "--modal-justify": justify,
+      "--modal-align": align,
+    } as React.CSSProperties;
   };
 
   return (
@@ -275,28 +380,11 @@ export const BottomModal: React.FC<BottomModalProps> = ({
       />
 
       <div
-        className={styles.fixedBottom}
-        style={
-          draggable && currentHeight !== null
-            ? ({
-                width,
-                height: `${currentHeight}px`,
-                "--modal-px": px,
-                "--modal-py": py,
-                "--modal-direction": direction,
-                "--modal-justify": justify,
-                "--modal-align": align,
-              } as React.CSSProperties)
-            : ({
-                "--modal-width": width,
-                "--modal-height": height,
-                "--modal-px": px,
-                "--modal-py": py,
-                "--modal-direction": direction,
-                "--modal-justify": justify,
-                "--modal-align": align,
-              } as React.CSSProperties)
-        }
+        ref={modalRef}
+        className={`${styles.fixedBottom} ${
+          isInitialized ? styles.initialized : ""
+        }`}
+        style={getModalStyle()}
       >
         {draggable && (
           <div
@@ -306,7 +394,11 @@ export const BottomModal: React.FC<BottomModalProps> = ({
             onClick={handleClick}
           />
         )}
-        <div ref={contentRef} className={styles.bottomSheetContent}>
+        <div
+          ref={contentRef}
+          className={styles.bottomSheetContent}
+          style={{ flex: draggable ? 1 : undefined }}
+        >
           {children}
         </div>
       </div>

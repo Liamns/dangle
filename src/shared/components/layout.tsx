@@ -311,32 +311,40 @@ export const Center = ({ children }: { children: React.ReactNode }) => {
   return <div className={styles.center}>{children}</div>;
 };
 
-export const InnerBox = ({
-  children,
-  justify,
-  align,
-  direction,
-  height,
-  px,
-  py,
-  color,
-  style = {},
-  className = "",
-}: {
-  children: React.ReactNode;
-  justify?: justifyType;
-  align?: alignType;
-  direction?: directionType;
-  height?: string;
-  px?: string;
-  py?: string;
-  color?: string;
-  style?: React.CSSProperties;
-  className?: string;
-}) => {
+export const InnerBox = React.forwardRef<
+  HTMLDivElement,
+  {
+    children: React.ReactNode;
+    justify?: justifyType;
+    align?: alignType;
+    direction?: directionType;
+    height?: string;
+    px?: string;
+    py?: string;
+    color?: string;
+    style?: React.CSSProperties;
+    className?: string;
+  }
+>(function InnerBox(
+  {
+    children,
+    justify,
+    align,
+    direction,
+    height,
+    px,
+    py,
+    color,
+    style = {},
+    className = "",
+  },
+  ref
+) {
   const combinedClass = classNames(styles.innerBox, className);
+
   return (
     <div
+      ref={ref}
       className={combinedClass}
       style={
         {
@@ -354,4 +362,4 @@ export const InnerBox = ({
       {children}
     </div>
   );
-};
+});

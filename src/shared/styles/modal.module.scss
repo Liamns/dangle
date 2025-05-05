@@ -16,7 +16,11 @@
   @include common.py(var(--modal-py, 30));
   box-shadow: 0px -6px 12.8px -7px rgba(0, 0, 0, 0.1);
   border-radius: 10px 10px 0px 0px;
-  transition: height 0.3s ease; // 높이 변경 시 애니메이션 추가
+
+  /* 높이 변경 시 애니메이션을 첫 렌더링에서는 제외하기 위한 수정 */
+  &.initialized {
+    transition: height 0.3s ease;
+  }
 
   // 드래그 핸들 스타일
   .dragHandle {
