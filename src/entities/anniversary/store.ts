@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { AnniversaryModel } from "./schema";
+import { AnniversaryModel } from "./model";
 
 interface AnniversaryState {
   annivs: AnniversaryModel[];
