@@ -11,6 +11,7 @@
   flex-direction: var(--anniv-container-direction, column);
   align-items: center;
   justify-content: center;
+  min-height: calc(100dvh / 740 * 73);
 }
 
 .addModalSection {

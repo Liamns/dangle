@@ -6,11 +6,25 @@ import { Colors } from "@/shared/consts/colors";
 import { formatDateToKorean, getShortKoreanDayOfWeek } from "@/shared/lib/date";
 import styles from "@/app/home/page.module.scss";
 import imgStyles from "@/shared/styles/images.module.scss";
+import modalStyles from "./ScheduleBottomModal.module.scss";
 import Share from "@/shared/svgs/share.svg";
 import Image from "next/image";
 import { Button } from "@/shared/components/buttons";
 import Plus from "@/shared/svgs/plus.svg";
-import { useEffect, useState, useCallback, memo } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react";
+import useSWR from "swr";
+import Edit from "@/shared/svgs/edit.svg";
+import Delete from "@/shared/svgs/delete.svg";
+import { getTodaySchedules } from "../apis";
+import {
+  ScheduleWithItemsModel,
+  ScheduleItemWithContentModel,
+} from "@/entities/schedule/model";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
+import {
+  getSubCategoryImagePath,
+  SubCategory,
+} from "@/shared/types/schedule-category";
 
 /**
  * ScheduleBottomModal Props 인터페이스
@@ -29,6 +43,13 @@ export default function ScheduleBottomModal({
   const formattedDate = formatDateToKorean();
   const todayDayOfWeek = getShortKoreanDayOfWeek();
   const [innerBoxHeight, setInnerBoxHeight] = useState(initialHeight);
+
+  // useSWR을 사용하여 오늘의 일정 데이터 페칭
+  const {
+    data: schedules,
+    error,
+    isLoading,
+  } = useSWR("todaySchedules", () => getTodaySchedules());
 
   /**
    * 공유 버튼 클릭 핸들러
@@ -58,10 +79,11 @@ export default function ScheduleBottomModal({
         onShareClick={handleShareClick}
       />
 
-      <Spacer height="16" />
-
-      <ScheduleContent />
-      <Spacer height="80" />
+      <ScheduleContent
+        schedules={schedules}
+        isLoading={isLoading}
+        error={error}
+      />
     </BottomModal>
   );
 }
@@ -101,27 +123,247 @@ const ScheduleHeader = memo(
 ScheduleHeader.displayName = "ScheduleHeader";
 
 /**
+ * 스케줄 콘텐츠 컴포넌트 Props
+ */
+interface ScheduleContentProps {
+  schedules: ScheduleWithItemsModel[] | undefined;
+  isLoading: boolean;
+  error: any;
+}
+
+/**
  * 스케줄 콘텐츠 컴포넌트
  * 스케줄 내용과 버튼을 표시합니다.
  */
-const ScheduleContent = memo(() => {
-  return (
-    <InnerBox style={{ flex: 1 }}>
-      <div className={imgStyles.square}>
-        <Image src={"/images/shared/empty.png"} alt="empty" fill sizes="100%" />
-      </div>
-      <Button color={Colors.primary} width="250" height="40">
-        <InnerBox direction="row">
-          <Text
-            text={`일정을 추가해주세요\u00a0`}
-            fontWeight="bold"
-            color={Colors.brown}
-          />
-          <Plus color={Colors.brown} />
+const ScheduleContent = memo(
+  ({ schedules, isLoading, error }: ScheduleContentProps) => {
+    const [activeItemId, setActiveItemId] = useState<number | null>(null);
+
+    // 문서 전체에 대한 클릭 이벤트 리스너 등록
+    useEffect(() => {
+      const handleGlobalClick = (event: MouseEvent) => {
+        const target = event.target as HTMLElement;
+        if (
+          activeItemId !== null &&
+          !target.closest(`.${modalStyles.buttonContainer}`) &&
+          !target.closest('svg[data-testid="edit-icon"]')
+        ) {
+          setActiveItemId(null);
+        }
+      };
+
+      document.addEventListener("mousedown", handleGlobalClick);
+      return () => {
+        document.removeEventListener("mousedown", handleGlobalClick);
+      };
+    }, [activeItemId]);
+
+    if (isLoading) {
+      return <LoadingOverlay isLoading={isLoading} />;
+    }
+
+    if (error) {
+      return (
+        <InnerBox className={modalStyles.errorContainer}>
+          <div className={imgStyles.square}>
+            <Image
+              src={"/images/shared/error.png"}
+              alt="error"
+              fill
+              sizes="100%"
+            />
+          </div>
+          <Text text="오류가 발생했습니다." color={Colors.error} />
         </InnerBox>
-      </Button>
-    </InnerBox>
-  );
-});
+      );
+    }
+
+    if (!schedules || schedules.length === 0) {
+      return (
+        <InnerBox className={modalStyles.emptyContainer}>
+          <div className={imgStyles.square}>
+            <Image
+              src={"/images/shared/empty.png"}
+              alt="empty"
+              fill
+              sizes="100%"
+            />
+          </div>
+          <Button color={Colors.primary} width="250" height="40">
+            <InnerBox direction="row">
+              <Text
+                text={`일정을 추가해주세요\u00a0`}
+                fontWeight="bold"
+                color={Colors.brown}
+              />
+              <Plus color={Colors.brown} />
+            </InnerBox>
+          </Button>
+        </InnerBox>
+      );
+    }
+
+    // 모든 일정 아이템들을 시간순으로 정렬
+    const allScheduleItems = schedules
+      .flatMap((schedule) =>
+        schedule.scheduleItems.map((item) => ({
+          ...item,
+          scheduleId: schedule.id,
+          profileId: Number(schedule.profileId),
+        }))
+      )
+      .sort(
+        (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
+      );
+
+    return (
+      <InnerBox
+        className={modalStyles.scheduleContentContainer}
+        justify="start"
+      >
+        {allScheduleItems.map((item, index) => (
+          <ScheduleItem
+            key={`${item.id}-${index}`}
+            item={item}
+            isActive={activeItemId === item.id}
+            onActivate={() => setActiveItemId(item.id)}
+          />
+        ))}
+
+        <div className={modalStyles.addScheduleButton}>
+          <InnerBox direction="row">
+            <Text
+              text={`일정 추가하기\u00a0`}
+              fontWeight="bold"
+              color={Colors.black}
+            />
+            <Plus color={Colors.black} />
+          </InnerBox>
+        </div>
+      </InnerBox>
+    );
+  }
+);
 
 ScheduleContent.displayName = "ScheduleContent";
+
+/**
+ * 스케줄 아이템 컴포넌트 Props
+ */
+interface ScheduleItemProps {
+  item: ScheduleItemWithContentModel & {
+    scheduleId: number;
+    profileId: number;
+  };
+  isActive: boolean;
+  onActivate: () => void;
+}
+
+/**
+ * 개별 스케줄 아이템 컴포넌트
+ */
+const ScheduleItem = memo(
+  ({ item, isActive, onActivate }: ScheduleItemProps) => {
+    // 이전 상태를 추적하기 위한 ref
+    const wasActive = React.useRef(isActive);
+
+    // 애니메이션 클래스를 관리하기 위한 상태
+    const [animationClass, setAnimationClass] = useState(
+      isActive ? "active" : ""
+    );
+
+    // isActive 변경시 적절한 애니메이션 클래스 적용
+    useEffect(() => {
+      if (isActive) {
+        setAnimationClass("active");
+      } else if (wasActive.current) {
+        // 이전에 활성화 상태였다면 inactive 애니메이션 적용
+        setAnimationClass("inactive");
+      }
+
+      // 현재 상태를 ref에 저장
+      wasActive.current = isActive;
+    }, [isActive]);
+
+    // 시간 포맷팅
+    const formatTime = (date: Date) => {
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      const formattedHours = hours < 10 ? `0${hours}` : hours;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+      return `${formattedHours}:${formattedMinutes}`;
+    };
+
+    return (
+      <div
+        style={{
+          width: "100%",
+          position: "relative",
+          marginBottom: "8px",
+        }}
+      >
+        <InnerBox direction="row" className={modalStyles.scheduleItem}>
+          <InnerBox className={modalStyles.itemContent}>
+            <div className={modalStyles.itemPrefixSection}>
+              <div className={modalStyles.iconContainer}>
+                <Image
+                  src={getSubCategoryImagePath(
+                    item.content.sub.name as SubCategory
+                  )}
+                  fill
+                  sizes="100%"
+                  alt={item.content.sub.name}
+                />
+              </div>
+              <div className={modalStyles.itemDivider}></div>
+              <Text
+                text={item.content.sub.name}
+                fontWeight="bold"
+                color={Colors.black}
+              />
+            </div>
+            <div className={modalStyles.itemSuffixSection}>
+              <Text text="시작시간" color={Colors.black} />
+              <Text
+                text={formatTime(new Date(item.startAt))}
+                fontSize="sm"
+                color={Colors.black}
+              />
+              <Edit
+                width={16}
+                height={16}
+                color={Colors.brown}
+                onClick={onActivate}
+                data-testid="edit-icon"
+              />
+            </div>
+          </InnerBox>
+        </InnerBox>
+        <div
+          className={`${modalStyles.buttonContainer} ${
+            animationClass ? modalStyles[animationClass] : ""
+          }`}
+        >
+          <div
+            className={modalStyles.deleteButton}
+            onClick={() => {
+              alert("삭제 클릭");
+            }}
+          >
+            <Delete width={12} height={13} color={Colors.brown} />
+          </div>
+          <div
+            className={modalStyles.editButton}
+            onClick={() => {
+              alert("수정 클릭");
+            }}
+          >
+            <Edit width={13} height={13} color={Colors.background} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
+
+ScheduleItem.displayName = "ScheduleItem";

@@ -1,4 +1,4 @@
-import { AnniversaryModel } from "@/entities/anniversary/schema";
+import { AnniversaryModel } from "@/entities/anniversary/model";
 import { TestUUID } from "@/shared/consts/strings";
 
 export async function getAnniversaryList(): Promise<AnniversaryModel[]> {
@@ -6,6 +6,7 @@ export async function getAnniversaryList(): Promise<AnniversaryModel[]> {
     const data = await new Promise<AnniversaryModel[]>((resolve, reject) => {
       setTimeout(() => {
         // reject(new Error("Failed to fetch data"));
+        // resolve([]);
         resolve([
           {
             id: 1,
@@ -58,7 +59,6 @@ export async function getAnniversaryList(): Promise<AnniversaryModel[]> {
             updatedAt: new Date("2024-04-15"),
           },
         ]);
-        // resolve([]);
       }, 1000);
     });
 

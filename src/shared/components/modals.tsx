@@ -314,7 +314,28 @@ export const BottomModal: React.FC<BottomModalProps> = ({
 
   // 스크롤 방지
   useEffect(() => {
-    const preventScroll = (e: Event) => e.preventDefault();
+    const preventScroll = (e: Event) => {
+      // 이벤트의 타겟 요소 확인
+      const target = e.target as HTMLElement;
+      
+      // 드래그 핸들 영역이면 이벤트 방지
+      if (target.closest(`.${styles.dragHandle}`)) {
+        e.preventDefault();
+        return;
+      }
+      
+      // 내부 콘텐츠 영역인지 확인
+      const isContentArea = target.closest(`.${styles.bottomSheetContent}`);
+      
+      // 내부 콘텐츠 영역이면 스크롤 허용 (이벤트 전파)
+      if (isContentArea) {
+        // 스크롤 허용 (preventDefault 호출하지 않음)
+        return;
+      }
+      
+      // 그 외 영역(모달 자체 등)에서는 스크롤 방지
+      e.preventDefault();
+    };
 
     const modalElement = document.querySelector(`.${styles.fixedBottom}`);
     if (modalElement) {

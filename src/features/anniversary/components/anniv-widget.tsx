@@ -8,18 +8,18 @@ import { Colors } from "@/shared/consts/colors";
 import React from "react";
 import useSWR from "swr";
 import { getAnniversaryList } from "../apis";
-import {
-  AnniversaryModel,
-  AnniversaryFormData,
-  getAnniversaryIconByType,
-  getAnniversaryDday,
-} from "@/entities/anniversary/schema";
+import { AnniversaryFormData } from "@/entities/anniversary/schema";
 import { useAnniversaryStore } from "@/entities/anniversary/store";
 
 // 모달 컴포넌트 임포트
 import AnnivListModal from "./modals/AnnivListModal";
 import AnnivAddModal from "./modals/AnnivAddModal";
 import Image from "next/image";
+import {
+  AnniversaryModel,
+  getAnniversaryDday,
+  getAnniversaryIconByType,
+} from "@/entities/anniversary/model";
 
 export default function AnnivWidget() {
   const [activeModal, setActiveModal] = React.useState<string | null>(null);

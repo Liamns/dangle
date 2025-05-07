@@ -11,13 +11,15 @@ import Image from "next/image";
 import imgStyles from "@/shared/styles/images.module.scss";
 import modalStyles from "@/shared/styles/modal.module.scss";
 import styles from "../anniv-widget.module.scss";
-import {
-  AnniversaryModel,
-  getAnniversaryIconByType,
-  getAnniversaryDday,
-} from "@/entities/anniversary/schema";
+import {} from "@/entities/anniversary/schema";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { useAnniversaryStore } from "@/entities/anniversary/store";
+import {
+  AnniversaryModel,
+  getAnniversaryDday,
+  getAnniversaryIconByType,
+} from "@/entities/anniversary/model";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
 
 interface AnnivListModalProps {
   isOpen: boolean;
@@ -76,7 +78,9 @@ const AnnivListModal: React.FC<AnnivListModalProps> = ({
         </div>
 
         <div className={modalStyles.modalContent}>
-          {isLoading || error || !data || data.length === 0 ? (
+          {isLoading ? (
+            <LoadingOverlay isLoading={isLoading} />
+          ) : error || !data || data.length === 0 ? (
             <div className={imgStyles.square}>
               <Image
                 src={`/images/shared/${
@@ -132,7 +136,7 @@ const AnnivListModal: React.FC<AnnivListModalProps> = ({
                         onEditClick(anniversary);
                       }}
                     >
-                      <EditIcon />
+                      <EditIcon color={Colors.brown} width={12} height={12} />
                     </div>
                   )}
                 </div>

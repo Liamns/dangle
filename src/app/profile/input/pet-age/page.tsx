@@ -54,7 +54,9 @@ export default function InputPetage() {
 
   useEffect(() => {
     if (spec === null) {
-      alert("잘못된 접근입니다.");
+      if (typeof window !== "undefined") {
+        alert("잘못된 접근입니다.");
+      }
       router.push("/profile/select-sp");
     }
   }, [spec, router]);

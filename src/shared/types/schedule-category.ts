@@ -22,10 +22,10 @@ export const mainCategoryIds: Record<MainCategory, number> = {
 
 // 서브 카테고리 정의 - 건강관리
 export const healthSubCategories = [
-  "영양제 섭취하기",
-  "체중체크 하기",
-  "예방접종 일정",
-  "건강 체크",
+  "영양제 섭취",
+  "체중체크",
+  "예방접종",
+  "건강체크",
 ] as const;
 
 export type HealthSubCategory = (typeof healthSubCategories)[number];
@@ -36,7 +36,7 @@ export const educationSubCategories = [
   "복종 훈련",
   "유치원 등원",
   "배변 훈련",
-  "기타 교육",
+  "교육 기타",
 ] as const;
 
 export type EducationSubCategory = (typeof educationSubCategories)[number];
@@ -45,7 +45,7 @@ export type EducationSubCategory = (typeof educationSubCategories)[number];
 export const dailySubCategories = [
   "산책",
   "놀이",
-  "미용실 방문",
+  "미용실",
   "목욕",
   "실외배변",
   "복용약",
@@ -63,9 +63,9 @@ export type AnniversarySubCategory = (typeof anniversarySubCategories)[number];
 
 // 서브 카테고리 정의 - 모임관리
 export const meetingSubCategories = [
-  "커뮤니티 모임",
-  "동네 모임",
-  "친구 모임",
+  "산책모임",
+  "동네모임",
+  "친구모임",
 ] as const;
 
 export type MeetingSubCategory = (typeof meetingSubCategories)[number];
@@ -73,19 +73,21 @@ export type MeetingSubCategory = (typeof meetingSubCategories)[number];
 // 서브 카테고리 정의 - 외출관리
 export const outingSubCategories = [
   "여행",
-  "반려견 운동장",
+  "운동장",
   "애견카페",
   "외출 기타",
+  "애견호텔",
+  "동물병원",
 ] as const;
 
 export type OutingSubCategory = (typeof outingSubCategories)[number];
 
 // 서브 카테고리 ID 맵핑
 export const healthSubCategoryIds: Record<HealthSubCategory, number> = {
-  "영양제 섭취하기": 0,
-  "체중체크 하기": 1,
-  "예방접종 일정": 2,
-  "건강 체크": 3,
+  "영양제 섭취": 0,
+  체중체크: 1,
+  예방접종: 2,
+  건강체크: 3,
 };
 
 export const educationSubCategoryIds: Record<EducationSubCategory, number> = {
@@ -93,13 +95,13 @@ export const educationSubCategoryIds: Record<EducationSubCategory, number> = {
   "복종 훈련": 1,
   "유치원 등원": 2,
   "배변 훈련": 3,
-  "기타 교육": 4,
+  "교육 기타": 4,
 };
 
 export const dailySubCategoryIds: Record<DailySubCategory, number> = {
   산책: 0,
   놀이: 1,
-  "미용실 방문": 2,
+  미용실: 2,
   목욕: 3,
   실외배변: 4,
   복용약: 5,
@@ -115,16 +117,18 @@ export const anniversarySubCategoryIds: Record<AnniversarySubCategory, number> =
   };
 
 export const meetingSubCategoryIds: Record<MeetingSubCategory, number> = {
-  "커뮤니티 모임": 0,
-  "동네 모임": 1,
-  "친구 모임": 2,
+  산책모임: 0,
+  동네모임: 1,
+  친구모임: 2,
 };
 
 export const outingSubCategoryIds: Record<OutingSubCategory, number> = {
   여행: 0,
-  "반려견 운동장": 1,
+  운동장: 1,
   애견카페: 2,
   "외출 기타": 3,
+  애견호텔: 4,
+  동물병원: 5,
 };
 
 // 모든 서브 카테고리 타입
@@ -199,4 +203,66 @@ export function getAllSubCategoriesByMain(
     id: index,
     name: name as string,
   }));
+}
+
+// 서브 카테고리 영어 이름 매핑 (이미지 아이콘용)
+export const subCategoryToImageName: Record<SubCategory, string> = {
+  // 건강관리 서브 카테고리
+  "영양제 섭취": "vitamin",
+  체중체크: "weight-check",
+  예방접종: "vaccination",
+  건강체크: "health-check",
+
+  // 교육관리 서브 카테고리
+  "사회화 훈련": "socialization",
+  "복종 훈련": "obedience",
+  "유치원 등원": "kindergarten",
+  "배변 훈련": "potty-training",
+  "교육 기타": "other-education",
+
+  // 일상관리 서브 카테고리
+  산책: "walk",
+  놀이: "play",
+  미용실: "grooming",
+  목욕: "bath",
+  실외배변: "outdoor-potty",
+  복용약: "medicine",
+  간식: "snack",
+  식사: "meal",
+  "일상 기타": "daily-other",
+
+  // 기념일관리 서브 카테고리
+  생일: "birthday",
+  디데이: "dday",
+
+  // 모임관리 서브 카테고리
+  산책모임: "community",
+  동네모임: "neighborhood",
+  친구모임: "friends",
+
+  // 외출관리 서브 카테고리
+  여행: "travel",
+  운동장: "dog-park",
+  애견카페: "pet-cafe",
+  "외출 기타": "outing-other",
+  애견호텔: "pet-hotel",
+  동물병원: "animal-hospital",
+};
+
+// 서브 카테고리에 해당하는 이미지 경로를 반환하는 함수
+export function getSubCategoryImagePath(subCategory: SubCategory): string {
+  const imageName = subCategoryToImageName[subCategory];
+  return `/images/schedule/${imageName}.png`;
+}
+
+// 메인 카테고리와 서브 카테고리 ID로 이미지 경로를 반환하는 함수
+export function getSubCategoryImagePathById(
+  mainCategoryId: number,
+  subCategoryId: number
+): string | null {
+  const subCategoryName = getSubCategoryNameById(mainCategoryId, subCategoryId);
+  if (!subCategoryName) return null;
+
+  const imageName = subCategoryToImageName[subCategoryName as SubCategory];
+  return imageName ? `/images/schedule/${imageName}.png` : null;
 }

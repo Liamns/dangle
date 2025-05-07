@@ -59,10 +59,6 @@ export type CategorySelectionFormData = z.infer<typeof categorySelectionSchema>;
 // 일정 컨텐츠 스키마
 export const scheduleContentSchema = z
   .object({
-    title: z
-      .string()
-      .min(1, "일정 제목은 필수입니다.")
-      .max(100, "일정 제목은 최대 100자까지 입력할 수 있습니다."),
     mainId: z.number().int().positive("유효한 메인 카테고리를 선택해주세요."),
     subId: z.number().int().positive("유효한 서브 카테고리를 선택해주세요."),
     description: z
@@ -94,7 +90,7 @@ export type ScheduleContentFormData = z.infer<typeof scheduleContentSchema>;
 
 // 일정 인스턴스 스키마
 export const scheduleSchema = z.object({
-  userId: z.number().int().positive("유효한 사용자를 선택해주세요."),
+  profileId: z.string().uuid("유효한 프로필을 선택해주세요."),
 });
 
 export type ScheduleFormData = z.infer<typeof scheduleSchema>;
@@ -119,7 +115,7 @@ export type ScheduleItemFormData = z.infer<typeof scheduleItemSchema>;
 
 // 즐겨찾기 일정 컨텐츠 스키마
 export const favoriteContentSchema = z.object({
-  userId: z.number().int().positive("유효한 사용자를 선택해주세요."),
+  userId: z.string().uuid("유효한 사용자를 선택해주세요."),
   contentId: z.number().int().positive("유효한 컨텐츠를 선택해주세요."),
 });
 

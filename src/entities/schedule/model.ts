@@ -42,10 +42,9 @@ export const categoryWithSubsModelSchema = categoryMainModelSchema.extend({
 
 export type CategoryWithSubsModel = z.infer<typeof categoryWithSubsModelSchema>;
 
-// 템플릿(일정 컨텐츠) 모델
+// 템플릿(일정 컨텐츠) 모델 - title 속성 제거
 export const scheduleContentModelSchema = z.object({
   id: z.number().int().positive(),
-  title: z.string(),
   mainId: z.number().int().positive(),
   subId: z.number().int().positive(),
   description: z.string().nullable().optional(),
@@ -56,7 +55,7 @@ export type ScheduleContentModel = z.infer<typeof scheduleContentModelSchema>;
 // 유저가 만든 일정 인스턴스 모델
 export const scheduleModelSchema = z.object({
   id: z.number().int().positive(),
-  userId: z.number().int().positive(),
+  profileId: uuidSchema,
   createdAt: z.date(),
 });
 
@@ -75,7 +74,7 @@ export type ScheduleItemModel = z.infer<typeof scheduleItemModelSchema>;
 // 템플릿 즐겨찾기 모델
 export const favoriteContentModelSchema = z.object({
   id: z.number().int().positive(),
-  userId: z.number().int().positive(),
+  userId: uuidSchema,
   contentId: z.number().int().positive(),
   addedAt: z.date(),
 });

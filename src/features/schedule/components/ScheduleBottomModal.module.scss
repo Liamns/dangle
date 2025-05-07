@@ -1,0 +1,147 @@
+@use "shared/styles/common" as common;
+// 스케줄 콘텐츠 스타일
+.scheduleContentContainer {
+  width: 100%;
+  max-height: 60vh; /* 모달 내부 콘텐츠 최대 높이 제한 */
+  overflow-y: auto; /* 세로 스크롤 허용 */
+  -webkit-overflow-scrolling: touch; /* iOS에서 부드러운 스크롤 지원 */
+  padding: 10px 0;
+  margin-top: 16px;
+  margin-bottom: calc(100dvh / 740 * 60);
+}
+
+// 일정 추가 버튼 스타일
+.addScheduleButton {
+  width: 100%;
+  background-color: var(--background);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid var(--invalid);
+  margin-bottom: 8px;
+}
+
+// 스케줄 아이템 관련 스타일
+.scheduleItem {
+  width: calc(100% - 2px);
+  justify-content: space-between;
+  @include common.py(6);
+  @include common.px(12);
+  border-radius: 10px;
+  border: 0.5px solid var(--invalid);
+  background: white;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.categoryIndicator {
+  width: 6px;
+  height: 100%;
+  border-radius: 3px;
+  margin-right: 12px;
+}
+
+.itemContent {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.itemPrefixSection {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
+
+.iconContainer {
+  position: relative;
+  @include common.width(26);
+  aspect-ratio: 1;
+}
+
+.itemDivider {
+  width: 0.5px;
+  height: calc(100dvw / 360 * 26);
+  background-color: var(--invalid);
+  @include common.mx(8);
+}
+
+.itemSuffixSection {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+  gap: calc(100dvw / 360 * 10);
+}
+
+/* 버튼 컨테이너 나타나는 애니메이션 */
+@keyframes show-buttons {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 50%;
+  }
+}
+
+/* 버튼 컨테이너 사라지는 애니메이션 */
+@keyframes hide-buttons {
+  0% {
+    width: 50%;
+  }
+  100% {
+    width: 0;
+  }
+}
+
+.buttonContainer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  overflow: hidden; /* 너비가 0일 때 내용이 보이지 않도록 함 */
+  width: 0; /* 기본 너비는 0 */
+  /* 트랜지션 대신 애니메이션 사용으로 변경 */
+  &.active {
+    animation: show-buttons 0.5s forwards;
+  }
+  &.inactive {
+    animation: hide-buttons 0.5s forwards;
+  }
+}
+
+.editButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @include common.px(12);
+  background-color: var(--brown);
+  border-radius: 0 10px 10px 0;
+  height: 100%;
+}
+
+.deleteButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @include common.px(12);
+  background-color: var(--primary);
+  height: 100%;
+}
+
+.errorContainer {
+  flex: 1;
+  justify-content: center;
+}
+
+.emptyContainer {
+  flex: 1;
+}
