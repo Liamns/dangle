@@ -1,0 +1,152 @@
+@use "shared/styles/common" as common;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  @include common.px(20);
+  @include common.py(12);
+  @include common.width(250);
+}
+
+// 즐겨찾기 체크박스 컨테이너
+.favoriteContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: common.rw(6);
+}
+
+// 커스텀 체크박스
+.favoriteCheckbox {
+  position: relative;
+  display: block;
+  width: common.rw(14);
+  height: common.rw(14); // aspect-ratio:1 유지를 위해 width와 동일한 값 사용
+
+  // 원본 체크박스 숨기기
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+
+  // 커스텀 체크박스 스타일
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: common.rw(14);
+    height: common.rw(14);
+    border: 1px solid var(--brown);
+    background-color: transparent;
+  }
+
+  // 체크박스 위에 마우스 올렸을 때
+  &:hover input ~ .checkmark {
+    background-color: rgba(var(--brown-rgb), 0.1);
+  }
+
+  // 체크됐을 때 배경색
+  input:checked ~ .checkmark {
+    background-color: var(--brown);
+  }
+
+  // 체크마크 (✓) 스타일 - 정확한 가운데 위치
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 50%;
+    top: 50%;
+    width: common.rw(4);
+    height: common.rw(7);
+    border: solid white;
+    border-width: 0 common.rw(1.5) common.rw(1.5) 0;
+    transform: translate(-50%, -65%) rotate(45deg);
+  }
+
+  // 체크됐을 때 체크마크 표시
+  input:checked ~ .checkmark:after {
+    display: block;
+  }
+}
+
+// 체크박스 레이블
+.favoriteLabel {
+  cursor: pointer;
+}
+
+// 구분선
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--invalid);
+}
+
+// 날짜 선택 컨테이너
+.datePickerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+// 날짜 선택 버튼
+.datePickerButton {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.timePickerWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+.timeSelected {
+  width: 100%;
+  @include common.height(30);
+  border-radius: 10px;
+  background-color: var(--primary);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: -1;
+}
+
+.timePickerLabel {
+  @include common.height(26);
+  @include common.pl(10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timePickerContainer {
+  flex: 1;
+
+  div div:last-of-type {
+    display: none;
+  }
+}
+
+// 제출 버튼
+.submitButton {
+  width: 100%;
+  @include common.height(37);
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}

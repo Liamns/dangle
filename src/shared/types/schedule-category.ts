@@ -1,23 +1,23 @@
 // 메인 카테고리 정의
 export const mainCategories = [
-  "건강관리",
-  "교육관리",
-  "일상관리",
-  "기념일관리",
-  "모임관리",
-  "외출관리",
+  "건강",
+  "교육",
+  "일상",
+  "기념일",
+  "모임",
+  "외출",
 ] as const;
 
 export type MainCategory = (typeof mainCategories)[number];
 
 // 메인 카테고리 ID 맵핑 (숫자 인덱스용)
 export const mainCategoryIds: Record<MainCategory, number> = {
-  건강관리: 0,
-  교육관리: 1,
-  일상관리: 2,
-  기념일관리: 3,
-  모임관리: 4,
-  외출관리: 5,
+  건강: 0,
+  교육: 1,
+  일상: 2,
+  기념일: 3,
+  모임: 4,
+  외출: 5,
 };
 
 // 서브 카테고리 정의 - 건강관리
@@ -142,12 +142,12 @@ export type SubCategory =
 
 // 메인 카테고리별 서브 카테고리 목록 맵핑
 export const subCategoriesByMain: Record<MainCategory, readonly string[]> = {
-  건강관리: healthSubCategories,
-  교육관리: educationSubCategories,
-  일상관리: dailySubCategories,
-  기념일관리: anniversarySubCategories,
-  모임관리: meetingSubCategories,
-  외출관리: outingSubCategories,
+  건강: healthSubCategories,
+  교육: educationSubCategories,
+  일상: dailySubCategories,
+  기념일: anniversarySubCategories,
+  모임: meetingSubCategories,
+  외출: outingSubCategories,
 };
 
 // 메인 카테고리에 따라 해당하는 서브 카테고리 배열을 반환하는 함수
@@ -163,19 +163,19 @@ export function getSubCategoryId(
   subCategory: string
 ): number {
   switch (mainCategory) {
-    case "건강관리":
+    case "건강":
       return healthSubCategoryIds[subCategory as HealthSubCategory] ?? -1;
-    case "교육관리":
+    case "교육":
       return educationSubCategoryIds[subCategory as EducationSubCategory] ?? -1;
-    case "일상관리":
+    case "일상":
       return dailySubCategoryIds[subCategory as DailySubCategory] ?? -1;
-    case "기념일관리":
+    case "기념일":
       return (
         anniversarySubCategoryIds[subCategory as AnniversarySubCategory] ?? -1
       );
-    case "모임관리":
+    case "모임":
       return meetingSubCategoryIds[subCategory as MeetingSubCategory] ?? -1;
-    case "외출관리":
+    case "외출":
       return outingSubCategoryIds[subCategory as OutingSubCategory] ?? -1;
     default:
       return -1;

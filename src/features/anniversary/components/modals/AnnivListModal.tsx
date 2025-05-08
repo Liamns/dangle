@@ -67,14 +67,14 @@ const AnnivListModal: React.FC<AnnivListModalProps> = ({
     >
       <div className={modalStyles.modalContainer}>
         <div className={modalStyles.modalTitle}>
-          <Close style={{ opacity: 0 }} />
+          <Close style={{ opacity: 0 }} width={8} height={8} />
           <Text
             text="기념일 목록"
             color={Colors.white}
             fontSize="lg"
             fontWeight="bold"
           />
-          <Close onClick={onClose} />
+          <Close onClick={onClose} color={Colors.white} width={8} height={8} />
         </div>
 
         <div className={modalStyles.modalContent}>

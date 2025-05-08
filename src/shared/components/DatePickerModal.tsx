@@ -47,7 +47,14 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
             fontSize="lg"
             fontWeight="bold"
           />
-          {onBack ? <Close onClick={onBack} /> : null}
+          {onBack ? (
+            <Close
+              onClick={onBack}
+              width={10}
+              height={10}
+              color={Colors.background}
+            />
+          ) : null}
         </div>
 
         <div className={styles.modalContent}>

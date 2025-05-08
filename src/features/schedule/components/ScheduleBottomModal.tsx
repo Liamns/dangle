@@ -1,5 +1,6 @@
 "use client";
 import { BottomModal } from "@/shared/components/modals";
+import Modal from "@/shared/components/modals";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
@@ -25,6 +26,8 @@ import {
   getSubCategoryImagePath,
   SubCategory,
 } from "@/shared/types/schedule-category";
+import AddScheduleModal from "./AddScheduleModal";
+import { useUserStore } from "@/entities/user/store";
 
 /**
  * ScheduleBottomModal Props 인터페이스
@@ -138,6 +141,12 @@ interface ScheduleContentProps {
 const ScheduleContent = memo(
   ({ schedules, isLoading, error }: ScheduleContentProps) => {
     const [activeItemId, setActiveItemId] = useState<number | null>(null);
+    // 일정 추가 모달 상태
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    // 현재 사용자 정보 가져오기
+    const currentUser = useUserStore((state) => state.currentUser);
+    // useSWR의 mutate 함수 가져오기
+    const { mutate } = useSWR("todaySchedules");
 
     // 문서 전체에 대한 클릭 이벤트 리스너 등록
     useEffect(() => {
@@ -230,8 +239,11 @@ const ScheduleContent = memo(
           />
         ))}
 
-        <div className={modalStyles.addScheduleButton}>
-          <InnerBox direction="row">
+        <div
+          className={modalStyles.addScheduleButton}
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          <InnerBox direction="row" justify="center">
             <Text
               text={`일정 추가하기\u00a0`}
               fontWeight="bold"
@@ -240,6 +252,32 @@ const ScheduleContent = memo(
             <Plus color={Colors.black} />
           </InnerBox>
         </div>
+
+        {/* 일정 추가 모달 */}
+        {schedules && schedules.length > 0 && currentUser && (
+          <AddScheduleModal
+            isOpen={isAddModalOpen}
+            onClose={() => setIsAddModalOpen(false)}
+            scheduleId={schedules[0].id} // 첫 번째 스케줄의 ID 사용
+            userId={currentUser.id} // Zustand 스토어에서 가져온 사용자 ID
+            onAddScheduleContent={async (
+              scheduleContent,
+              scheduleItem,
+              favoriteContent
+            ) => {
+              // 여기에 일정 콘텐츠 추가 API 호출 로직 구현
+              console.log("일정 추가:", {
+                scheduleContent,
+                scheduleItem,
+                favoriteContent,
+              });
+              // TODO: API 호출 구현
+            }}
+            onSuccess={() => {
+              mutate(); // SWR mutate 호출하여 데이터 갱신
+            }}
+          />
+        )}
       </InnerBox>
     );
   }

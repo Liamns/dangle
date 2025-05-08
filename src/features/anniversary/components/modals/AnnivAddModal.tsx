@@ -11,10 +11,7 @@ import { Button } from "@/shared/components/buttons";
 import Image from "next/image";
 import modalStyles from "@/shared/styles/modal.module.scss";
 import styles from "../anniv-widget.module.scss";
-import {
-  AnniversaryFormData,
-  AnniversaryModel,
-} from "@/entities/anniversary/schema";
+import { AnniversaryFormData } from "@/entities/anniversary/schema";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { useForm } from "react-hook-form";
@@ -22,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { anniversaryFormSchema } from "@/entities/anniversary/schema";
 import classNames from "classnames";
 import DatePickerModal from "@/shared/components/DatePickerModal";
+import { AnniversaryModel } from "@/entities/anniversary/model";
 
 interface AnnivAddModalProps {
   isOpen: boolean;
@@ -144,7 +142,12 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
               fontSize="lg"
               fontWeight="bold"
             />
-            <Close onClick={onBackToList} />
+            <Close
+              onClick={onBackToList}
+              width={10}
+              height={10}
+              color={Colors.background}
+            />
           </div>
 
           <div
