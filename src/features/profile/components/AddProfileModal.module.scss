@@ -1,0 +1,35 @@
+@use "shared/styles/common" as *;
+@import "../../../shared/styles/common.scss";
+
+.modalContainer {
+  @include width(300);
+}
+
+.titleBar {
+  position: relative;
+  width: 100%;
+  @include py(10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+}
+
+.closeButton {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  cursor: pointer;
+}
+
+.modalContent {
+  width: 100%;
+}
+
+.imgContainer {
+  width: 218px;
+  height: 120px;
+  position: relative;
+}

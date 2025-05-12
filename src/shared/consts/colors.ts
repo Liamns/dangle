@@ -9,6 +9,7 @@ export const Colors = {
   error: "#ff0000",
   white: "#ffffff",
   background: "#fff",
+  halfBackground: "rgba(255, 255, 255, 0.5)",
   transparnet: "rgba(0, 0, 0, 0)",
   male: "#6AC8FF",
   female: "#FF6A6A",

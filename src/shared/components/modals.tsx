@@ -317,22 +317,22 @@ export const BottomModal: React.FC<BottomModalProps> = ({
     const preventScroll = (e: Event) => {
       // 이벤트의 타겟 요소 확인
       const target = e.target as HTMLElement;
-      
+
       // 드래그 핸들 영역이면 이벤트 방지
       if (target.closest(`.${styles.dragHandle}`)) {
         e.preventDefault();
         return;
       }
-      
+
       // 내부 콘텐츠 영역인지 확인
       const isContentArea = target.closest(`.${styles.bottomSheetContent}`);
-      
+
       // 내부 콘텐츠 영역이면 스크롤 허용 (이벤트 전파)
       if (isContentArea) {
         // 스크롤 허용 (preventDefault 호출하지 않음)
         return;
       }
-      
+
       // 그 외 영역(모달 자체 등)에서는 스크롤 방지
       e.preventDefault();
     };
@@ -442,21 +442,54 @@ export default function Modal({
   children,
   style = {},
 }: ModalProps) {
+  // 내부 상태로 isOpen 값을 복사하여 관리
+  const [internalIsOpen, setInternalIsOpen] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Handle closing animation
-  const handleClose = () => {
+  // 외부에서 전달된 isOpen 값이 변경될 때 내부 상태 동기화
+  useEffect(() => {
+    if (isOpen && !internalIsOpen && !isClosing) {
+      // 모달 열기: 바로 열기
+      setInternalIsOpen(true);
+    } else if (!isOpen && internalIsOpen && !isClosing) {
+      // 모달 닫기: 애니메이션 후 닫기
+      handleClose();
+    }
+  }, [isOpen, internalIsOpen, isClosing]);
+
+  // 애니메이션과 함께 모달 닫기
+  const handleClose = useCallback(() => {
+    if (isClosing) return; // 이미 닫는 중이면 무시
+
     setIsClosing(true);
-    // Wait for animation to complete before actually closing
-    setTimeout(() => {
+
+    // 기존 타이머가 있으면 제거
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+
+    // 애니메이션 후 실제로 닫기
+    closeTimeoutRef.current = setTimeout(() => {
       setIsClosing(false);
-      onClose();
-    }, 300); // Match the animation duration (0.3s)
-  };
+      setInternalIsOpen(false);
+      onClose(); // 부모 컴포넌트에 알림
+      closeTimeoutRef.current = null;
+    }, 300); // 애니메이션 지속 시간과 일치
+  }, [isClosing, onClose]);
+
+  // 컴포넌트 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // 모달이 열리면 document.body에 scroll 잠금 처리 가능 (옵션)
   useEffect(() => {
-    if (isOpen) {
+    if (internalIsOpen || isClosing) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -464,9 +497,10 @@ export default function Modal({
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [internalIsOpen, isClosing]);
 
-  if (!isOpen && !isClosing) return null;
+  // 모달이 실제로 닫혀있고 애니메이션도 진행 중이 아닐 경우 null 반환
+  if (!internalIsOpen && !isClosing) return null;
 
   // Determine animation classes
   const backdropClass = `${styles.backdrop} ${

@@ -1,0 +1,61 @@
+@use "shared/styles/common" as *;
+
+.cardFlipContainer {
+  perspective: 1000px;
+  width: 100%;
+  height: auto; /* 높이를 자식 요소에 맞게 조정 */
+  display: flex; /* 부모 컨테이너가 자식 요소를 반영 */
+  flex-direction: column; /* 아래쪽으로 쌓이도록 설정 */
+}
+
+.flipCard {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transform-style: preserve-3d;
+}
+
+.cardFace {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cardFront {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.cardBack {
+  transform: rotateY(180deg);
+}
+
+.gifContainer {
+  width: 100%;
+  aspect-ratio: 1/1;
+  position: relative;
+}
+
+.nameContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  @include py(6);
+}
+
+.editButton {
+  border-radius: 10px;
+  background-color: var(--primary);
+  height: 100%;
+  @include px(16);
+  @include py(8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}

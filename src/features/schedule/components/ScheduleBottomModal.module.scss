@@ -7,7 +7,7 @@
   -webkit-overflow-scrolling: touch; /* iOS에서 부드러운 스크롤 지원 */
   padding: 10px 0;
   margin-top: 16px;
-  margin-bottom: calc(100dvh / 740 * 60);
+  margin-bottom: min(calc(100dvh / 740 * 60), 60px);
 }
 
 // 일정 추가 버튼 스타일

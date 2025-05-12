@@ -17,6 +17,7 @@ interface UserStoreState {
   setCurrentUser: (user: UserModel | null) => void;
   updateCurrentUser: (userData: Partial<UserModel>) => void;
   loadUserProfiles: () => Promise<ProfileModel[]>;
+  hasMultipleProfiles: () => boolean;
   clearUser: () => void;
 }
 
@@ -45,6 +46,18 @@ export const useUserStore = create(
             ? { ...state.currentUser, ...userData }
             : null,
         })),
+
+      hasMultipleProfiles: () => {
+        const state = get();
+        if (!state.currentUser || !state.currentUser.profileIds) {
+          return false;
+        }
+        // profileIds가 배열인 경우 길이가 2 이상인지 확인
+        if (Array.isArray(state.currentUser.profileIds)) {
+          return state.currentUser.profileIds.length >= 2;
+        }
+        return false;
+      },
 
       loadUserProfiles: async () => {
         const state = get();

@@ -4,12 +4,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  @include common.pt(16);
-  padding-bottom: calc((100dvh / 740 * 16) + env(safe-area-inset-bottom));
+  padding-top: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
   @include common.px(35);
   width: 100dvw;
   max-width: 1200px;
-  @include common.height(80);
+  height: min(
+    calc(100dvh / 740 * 80),
+    calc(80px + env(safe-area-inset-bottom))
+  );
   background-color: var(--background);
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
