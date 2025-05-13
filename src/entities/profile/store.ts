@@ -32,6 +32,7 @@ const EMPTY_PROFILE: ProfileModel = {
 interface ProfileStoreState {
   currentProfile: ProfileModel | null;
   userProfiles: ProfileModel[];
+  isLoaded: boolean;
   setCurrentProfile: (profile: ProfileModel | null) => void;
   setUserProfiles: (profiles: ProfileModel[]) => void;
   updateCurrentProfile: (profileData: Partial<ProfileModel>) => void;
@@ -40,6 +41,8 @@ interface ProfileStoreState {
   removeProfile: (profileId: string) => void;
   loadProfilesByUserId: (userId: string) => Promise<void>;
   clearProfiles: () => void;
+  isProfileValid: (profile: ProfileModel | null) => boolean; // 검증 함수 추가
+  getCurrentProfile: () => ProfileModel | null;
 }
 
 export const useProfileStore = create(
@@ -47,8 +50,11 @@ export const useProfileStore = create(
     (set, get) => ({
       currentProfile: null,
       userProfiles: [],
+      isLoaded: false,
 
-      setCurrentProfile: (profile) => set({ currentProfile: profile }),
+      setCurrentProfile: (profile) => {
+        set({ currentProfile: profile, isLoaded: true });
+      },
 
       setUserProfiles: (profiles) => set({ userProfiles: profiles }),
 
@@ -66,7 +72,7 @@ export const useProfileStore = create(
 
         const { currentProfile } = get();
         if (!currentProfile) {
-          set({ currentProfile: profile });
+          set({ currentProfile: profile, isLoaded: true });
         }
       },
 
@@ -106,6 +112,7 @@ export const useProfileStore = create(
           set({
             userProfiles: profiles,
             currentProfile: profiles.length > 0 ? profiles[0] : null,
+            isLoaded: true,
           });
         } catch (error) {
           console.error("프로필 로드 중 오류 발생:", error);
@@ -115,7 +122,34 @@ export const useProfileStore = create(
       },
 
       clearProfiles: () =>
-        set({ currentProfile: EMPTY_PROFILE, userProfiles: [] }),
+        set({
+          currentProfile: EMPTY_PROFILE,
+          userProfiles: [],
+          isLoaded: false,
+        }),
+
+      isProfileValid: (profile) => {
+        if (!profile) return false;
+        const { petname, petAge, petWeight, petGender, petSpec, vaccinations } =
+          profile;
+        return (
+          !!petname &&
+          !!petAge &&
+          !!petWeight &&
+          petSpec !== null &&
+          petSpec !== undefined &&
+          !!petGender &&
+          Object.keys(vaccinations || {}).length > 0
+        );
+      },
+
+      getCurrentProfile: () => {
+        const state = get();
+        if (!state.isLoaded) {
+          set({ isLoaded: true });
+        }
+        return state.currentProfile;
+      },
     }),
     {
       name: "profile-store",

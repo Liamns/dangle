@@ -13,11 +13,16 @@ import {
   ProfileModel,
 } from "@/entities/profile/model";
 import { getPublicImageUrl } from "@/shared/lib/supabase";
-import { personalityTypeMap, petType } from "@/shared/types/pet";
+import {
+  classifyCatSize,
+  classifyDogSize,
+  personalityTypeMap,
+  petType,
+} from "@/shared/types/pet";
 import { useRouter } from "next/navigation";
 import Male from "@/shared/svgs/male.svg";
 import Female from "@/shared/svgs/female.svg";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface ProfileCardProps {
   isFlipped: boolean;
@@ -26,10 +31,36 @@ interface ProfileCardProps {
 
 export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
   const router = useRouter();
+  const currentProfile = useProfileStore((state) => state.getCurrentProfile());
+  const isProfileValid = useProfileStore((state) => state.isProfileValid);
+  const isLoaded = useProfileStore((state) => state.isLoaded);
+  const [loading, setLoading] = useState(true);
 
-  const currentProfile = useProfileStore(
-    (state) => state.currentProfile
-  ) as ProfileModel | null;
+  useEffect(() => {
+    if (isLoaded) {
+      setLoading(false);
+      if (!isProfileValid(currentProfile)) {
+        if (typeof window !== "undefined") {
+          alert("프로필 정보가 부족합니다. 모든 정보를 입력해주세요.");
+        }
+        router.replace("/home");
+      }
+    }
+  }, [currentProfile, isProfileValid, isLoaded, router]);
+
+  if (loading) {
+    return (
+      <Card>
+        <InnerBox
+          justify="center"
+          align="center"
+          style={{ minHeight: "200px" }}
+        >
+          <Text text="로딩 중..." color={Colors.grey} />
+        </InnerBox>
+      </Card>
+    );
+  }
 
   const personalityType = currentProfile?.personalityScores
     ? "Example Type"
@@ -51,32 +82,11 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
   const petSpec = currentProfile?.petSpec;
   const personality = determinePersonalityType(currentProfile);
 
-  useEffect(() => {
-    if (
-      !petName ||
-      !petAge ||
-      !petWeight ||
-      petSpec === null ||
-      petSpec === undefined ||
-      !petGender ||
-      personality === null ||
-      activeVaccinations.length === 0
-    ) {
-      if (typeof window !== "undefined") {
-        alert("프로필 정보가 부족합니다. 모든 정보를 입력해주세요.");
-      }
-      router.replace("/home");
-    }
-  }, [
-    petName,
-    petAge,
-    petWeight,
-    petSpec,
-    petGender,
-    personality,
-    activeVaccinations,
-    router,
-  ]);
+  const petTypeName =
+    petSpec !== null && petSpec !== undefined ? petType[petSpec] : undefined;
+
+  const findWeightTitleFn =
+    currentProfile?.petSpec === 0 ? classifyDogSize : classifyCatSize;
 
   // 프로필이 없으면 빈 상태 표시
   if (!currentProfile) {
@@ -111,10 +121,9 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
   };
 
   const tag = personality ? personalityTypeMap[personality]?.tag : "default";
-  const url =
-    petSpec !== null && petSpec !== undefined
-      ? getPublicImageUrl(`profile/personality/${petType[petSpec]}/${tag}.gif`)
-      : getPublicImageUrl("profile/personality/default.gif");
+  const url = petTypeName
+    ? getPublicImageUrl(`profile/personality/${petTypeName}/${tag}.gif`)
+    : getPublicImageUrl("profile/personality/default.gif");
 
   return (
     <div className={styles.cardFlipContainer}>
@@ -122,7 +131,6 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
         animate={isFlipped ? "back" : "front"}
         variants={flipCardVariants}
         className={styles.flipCard}
-        onClick={handleFlip}
       >
         {/* 앞면 카드 */}
         <div className={`${styles.cardFace} ${styles.cardFront}`}>
@@ -158,8 +166,41 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
                 />
               </div>
             </InnerBox>
+            <Spacer height="14" />
 
-            {/* 나이 */}
+            <InnerBox px="50" align="start">
+              {/* 나이 */}
+              <div className={styles.infoBox}>
+                <Text text="Age" fontWeight="bold" color={Colors.brown} />
+                <div className={styles.infoContainer}>
+                  <div className={styles.ageTitle}>
+                    <Text
+                      text={`${petAge?.age} 살`}
+                      color={Colors.white}
+                      fontWeight="bold"
+                    />
+                  </div>
+                  <div className={styles.ageContent}></div>
+                </div>
+              </div>
+              <div className={styles.infoBox}>
+                <Text
+                  text="Weight Title"
+                  fontWeight="bold"
+                  color={Colors.brown}
+                />
+                <div className={styles.infoContainer}>
+                  <div className={styles.weightTitle}>
+                    <Text
+                      text={findWeightTitleFn(petWeight!)}
+                      color={Colors.white}
+                      fontWeight="bold"
+                    />
+                  </div>
+                  <div className={styles.weightContent}></div>
+                </div>
+              </div>
+            </InnerBox>
           </Card>
         </div>
 
