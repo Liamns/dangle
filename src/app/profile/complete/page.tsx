@@ -36,7 +36,8 @@ export default function CompleteInputProfile() {
       return router.replace("/profile/input/username");
     if (!currentProfile.petname)
       return router.replace("/profile/input/pet-name");
-    if (!currentProfile.petAge || !currentProfile.petAge.age)
+    if (!currentProfile.petAge)
+      // petAge를 문자열로 체크
       return router.replace("/profile/input/pet-age");
     if (!currentProfile.petWeight)
       return router.replace("/profile/input/pet-weight");

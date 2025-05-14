@@ -1,8 +1,8 @@
 import { z } from "zod";
+import { useForm } from "react-hook-form";
 import {
   usernameSchema,
   petnameSchema,
-  petAgeFormSchema,
   petGenderFormSchema,
   petSpecSchema,
   petWeightSchema,
@@ -20,7 +20,9 @@ export const profileModelSchema = z.object({
   userId: uuidSchema,
   username: usernameSchema,
   petname: petnameSchema,
-  petAge: petAgeFormSchema,
+  petAge: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "날짜는 yyyy-mm-dd 형식이어야 합니다."),
   petWeight: petWeightSchema,
   petGender: petGenderFormSchema,
   petSpec: petSpecSchema,
@@ -32,6 +34,15 @@ export const profileModelSchema = z.object({
 
 // Profile model type derived from the schema
 export type ProfileModel = z.infer<typeof profileModelSchema>;
+
+export type EditProfileFormData = {
+  petAge: string;
+  petGender: {
+    isNeutered: boolean;
+  };
+  petWeight: number;
+  vaccinations: Record<string, boolean>;
+};
 
 /**
  * 프로필의 petSpec 값을 기반으로 반려동물 종류를 반환합니다.

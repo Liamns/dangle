@@ -30,13 +30,9 @@ export const petnameFormSchema = z.object({
 export type PetnameFormData = z.infer<typeof petnameFormSchema>;
 
 export const petAgeFormSchema = z.object({
-  age: z.preprocess(
-    (val) => Number(val),
-    z
-      .number({ invalid_type_error: "숫자를 입력해주세요." })
-      .min(1, "최소 1 이상이어야 합니다.")
-  ),
-  isMonth: z.boolean(),
+  age: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "날짜는 yyyy-mm-dd 형식이어야 합니다."),
 });
 export type PetAgeFormData = z.infer<typeof petAgeFormSchema>;
 
@@ -81,3 +77,15 @@ export const petPersonalityFormSchema = z.object({
     .max(5, "최대 5개의 성격 태그만 선택할 수 있습니다."),
 });
 export type PetPersonalityFormData = z.infer<typeof petPersonalityFormSchema>;
+
+export const editProfileFormSchema = z.object({
+  petAge: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "날짜는 yyyy-mm-dd 형식이어야 합니다."),
+  petGender: z.object({
+    isNeutered: z.boolean(),
+  }),
+  petWeight: z.number().min(0.1, "몸무게는 최소 0.1kg 이상이어야 합니다."),
+  vaccinations: z.record(z.boolean()),
+});
+export type EditProfileFormData = z.infer<typeof editProfileFormSchema>;

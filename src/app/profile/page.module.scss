@@ -1,0 +1,6 @@
+@use "shared/styles/common" as *;
+
+.container {
+  @include height(570);
+  overflow-y: auto;
+}

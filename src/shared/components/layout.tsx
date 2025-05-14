@@ -3,6 +3,7 @@ import gradients from "../styles/gradients.module.css";
 import classNames from "classnames";
 import React from "react";
 import { alignType, directionType, justifyType } from "../types/layout";
+import { transformToDateFormat, DATE_PLACEHOLDER_EXAMPLE } from "../lib/date";
 
 export const Wrapper = ({
   children,
@@ -119,7 +120,6 @@ export const Card = ({
 
 type InputType = "text" | "password" | "email" | "number" | "tel" | "url";
 
-// Updated TextInput component with suffix support
 export const TextInput = React.forwardRef<
   HTMLInputElement,
   {
@@ -160,6 +160,24 @@ export const TextInput = React.forwardRef<
     ...rest
   } = props;
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = e.target.value;
+
+    // yyyymmdd -> yyyy-mm-dd 변환 로직 적용
+    if (placeholder === DATE_PLACEHOLDER_EXAMPLE) {
+      const transformed = transformToDateFormat(newValue);
+      if (transformed) {
+        newValue = transformed;
+      }
+    }
+
+    if (onChange) {
+      // react-hook-form과 호환되도록 원본 이벤트 객체를 직접 수정
+      e.target.value = newValue;
+      onChange(e);
+    }
+  };
+
   return (
     <div
       className={styles.textInputWrapper}
@@ -170,7 +188,7 @@ export const TextInput = React.forwardRef<
         type={type}
         className={styles.textField}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         placeholder={placeholder}
         style={
           {
@@ -206,7 +224,6 @@ export const TextInput = React.forwardRef<
   );
 });
 
-// New TextError component
 export const TextError = ({ error }: { error?: string | null }) => {
   return (
     <span
@@ -219,7 +236,6 @@ export const TextError = ({ error }: { error?: string | null }) => {
   );
 };
 
-// Refactored TextField component that uses TextInput and TextError
 export const TextField = React.forwardRef<
   HTMLInputElement,
   {
@@ -270,6 +286,23 @@ export const TextField = React.forwardRef<
     ...rest
   } = props;
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newValue = e.target.value;
+
+    if (placeholder === DATE_PLACEHOLDER_EXAMPLE) {
+      const transformed = transformToDateFormat(newValue);
+      if (transformed) {
+        newValue = transformed;
+      }
+    }
+
+    if (onChange) {
+      // react-hook-form과 호환되도록 원본 이벤트 객체를 직접 수정
+      e.target.value = newValue;
+      onChange(e);
+    }
+  };
+
   return (
     <div
       className={styles.textFieldWrapper}
@@ -287,7 +320,7 @@ export const TextField = React.forwardRef<
         ref={ref}
         type={type}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         placeholder={placeholder}
         backgroundColor={backgroundColor}
         borderColor={borderColor}

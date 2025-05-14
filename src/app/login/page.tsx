@@ -14,7 +14,7 @@ import { LoginFormData, loginFormSchema } from "@/entities/user/schema";
 import { Colors } from "../../shared/consts/colors";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EmailInput } from "@/features/auth/components/EmailInput";
 import { useUserStore } from "@/entities/user/store";
 
@@ -34,6 +34,7 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    watch,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
     mode: "onChange",

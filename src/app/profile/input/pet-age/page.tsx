@@ -15,12 +15,14 @@ import { Colors } from "../../../../shared/consts/colors";
 import { Button } from "../../../../shared/components/buttons";
 import Image from "next/image";
 import layoutStyles from "../layout.module.scss";
-import chkbox from "@/shared/styles/buttons.module.scss";
 import { PetAgeFormData, petAgeFormSchema } from "@/entities/profile/schema";
-import { getPetAgeLabel } from "@/features/profile/petAgeLabels";
 import { useProfileStore } from "@/entities/profile/store";
 import { getPetSpecies } from "@/entities/profile/model";
 import { PetType } from "../../../../shared/types/pet";
+import {
+  DATE_PLACEHOLDER_EXAMPLE,
+  getPetAgeLabel,
+} from "../../../../shared/lib/date";
 
 export default function InputPetage() {
   const router = useRouter();
@@ -37,19 +39,15 @@ export default function InputPetage() {
   } = useForm<PetAgeFormData>({
     resolver: zodResolver(petAgeFormSchema),
     mode: "onChange",
-    defaultValues: {
-      isMonth: false,
-    },
   });
 
   const onSubmit = (data: PetAgeFormData) => {
-    updateCurrentProfile({ petAge: data });
+    updateCurrentProfile({ petAge: data.age }); // Wrap 'age' in an object to match the expected type
     router.push("/profile/input/pet-weight");
   };
 
-  // 실시간 미리보기 (옵션)
   const watchData = watch();
-  const previewAge = watchData.isMonth ? watchData.age / 12 : watchData.age;
+  const previewAge = watchData.age;
   const spec = getPetSpecies(useProfileStore.getState().currentProfile);
 
   useEffect(() => {
@@ -87,22 +85,10 @@ export default function InputPetage() {
         <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
           <TextField
             {...register("age")}
-            type="number"
-            placeholder="숫자만 입력해 주세요"
+            type="text"
+            placeholder={DATE_PLACEHOLDER_EXAMPLE}
             error={errors.age?.message}
           />
-          <InnerBox justify="end" direction="row">
-            <input
-              type="checkbox"
-              {...register("isMonth")}
-              className={chkbox.chkbox}
-            />
-            <Text
-              text={`\u00a0개월수 표기`}
-              color={Colors.brown}
-              fontWeight="bold"
-            />
-          </InnerBox>
         </form>
         <Spacer height="40" />
         <InnerBox justify="start" direction="column" align="start">

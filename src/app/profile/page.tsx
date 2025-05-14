@@ -17,6 +17,7 @@ import ProfileCard from "@/features/profile/components/ProfileCard";
 import { useProfileStore } from "@/entities/profile/store";
 import { useMyStore } from "@/shared/hooks/store";
 import { useState } from "react";
+import styles from "./page.module.scss";
 
 export default function Profile() {
   const router = useRouter();
@@ -57,7 +58,9 @@ export default function Profile() {
       <Spacer height="18" />
 
       {/* ProfileCard에 상태와 핸들러 전달 */}
-      <ProfileCard isFlipped={isFlipped} onFlip={setIsFlipped} />
+      <div className={styles.container}>
+        <ProfileCard isFlipped={isFlipped} onFlip={setIsFlipped} />
+      </div>
 
       <Button
         width="300"

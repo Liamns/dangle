@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ProfileModel } from "./model";
+import { ProfileModel, EditProfileFormData } from "./model";
 import { useUserStore } from "@/entities/user/store";
 import {
   PetAgeFormData,
@@ -17,7 +17,7 @@ const EMPTY_PROFILE: ProfileModel = {
   userId: "00000000-0000-0000-0000-000000000000",
   username: "",
   petname: "",
-  petAge: { age: 0, isMonth: false },
+  petAge: "", // petAge를 문자열로 수정 (yyyy-mm-dd 형식)
   petWeight: 0,
   petGender: { gender: null, isNeutered: false },
   petSpec: null,
@@ -61,7 +61,10 @@ export const useProfileStore = create(
       updateCurrentProfile: (profileData) =>
         set((state) => ({
           currentProfile: state.currentProfile
-            ? { ...state.currentProfile, ...profileData }
+            ? {
+                ...state.currentProfile,
+                ...profileData,
+              }
             : null,
         })),
 
@@ -134,7 +137,7 @@ export const useProfileStore = create(
           profile;
         return (
           !!petname &&
-          !!petAge &&
+          !!petAge && // petAge를 문자열로 검사
           !!petWeight &&
           petSpec !== null &&
           petSpec !== undefined &&
