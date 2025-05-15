@@ -4,3 +4,29 @@
   @include height(570);
   overflow-y: auto;
 }
+
+.modalContainer {
+  @include width(250);
+  @include px(50);
+  @include py(20);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.shareModal {
+  @include width(80);
+  @include height(52);
+  position: relative;
+}
+
+.shareModalBtn {
+  @include width(147);
+  @include height(40);
+  border-radius: 10px;
+  background-color: var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

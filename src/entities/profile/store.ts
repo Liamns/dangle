@@ -21,6 +21,9 @@ const EMPTY_PROFILE: ProfileModel = {
   petWeight: 0,
   petGender: { gender: null, isNeutered: false },
   petSpec: null,
+  etc1: null,
+  etc2: null,
+  etc3: null,
   vaccinations: Object.fromEntries(
     allVaccines.map((vaccine) => [vaccine, false])
   ),
@@ -33,6 +36,7 @@ interface ProfileStoreState {
   currentProfile: ProfileModel | null;
   userProfiles: ProfileModel[];
   isLoaded: boolean;
+  isFirstVisit: boolean; // 최초 방문 여부 상태 추가
   setCurrentProfile: (profile: ProfileModel | null) => void;
   setUserProfiles: (profiles: ProfileModel[]) => void;
   updateCurrentProfile: (profileData: Partial<ProfileModel>) => void;
@@ -43,6 +47,7 @@ interface ProfileStoreState {
   clearProfiles: () => void;
   isProfileValid: (profile: ProfileModel | null) => boolean; // 검증 함수 추가
   getCurrentProfile: () => ProfileModel | null;
+  setFirstVisit: (value: boolean) => void; // 상태 변경 메서드 추가
 }
 
 export const useProfileStore = create(
@@ -51,6 +56,7 @@ export const useProfileStore = create(
       currentProfile: null,
       userProfiles: [],
       isLoaded: false,
+      isFirstVisit: true, // 기본값 true로 설정
 
       setCurrentProfile: (profile) => {
         set({ currentProfile: profile, isLoaded: true });
@@ -143,6 +149,7 @@ export const useProfileStore = create(
           petSpec !== undefined &&
           !!petGender &&
           Object.keys(vaccinations || {}).length > 0
+          // etc1, etc2, etc3는 필수가 아니므로 검사에서 제외
         );
       },
 
@@ -153,6 +160,8 @@ export const useProfileStore = create(
         }
         return state.currentProfile;
       },
+
+      setFirstVisit: (value) => set({ isFirstVisit: value }), // 상태 변경 메서드 구현
     }),
     {
       name: "profile-store",

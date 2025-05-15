@@ -202,3 +202,72 @@
 .dropdownItem:last-child {
   border-bottom: none;
 }
+
+.backTitle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  @include height(49);
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+  @include px(18);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.backPersonality {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  @include width(192);
+  @include py(9);
+  background-color: var(--brown);
+  border-radius: 10px;
+}
+
+.profileDetail {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  @include px(22);
+  gap: 5px;
+}
+
+.detailTitle {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.editDetail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include px(16);
+  @include py(8);
+  background-color: var(--primary);
+  border-radius: 10px;
+}
+
+.etcContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include py(10);
+  border-radius: 10px;
+  border: 1px solid var(--primary);
+}
+
+.editForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}

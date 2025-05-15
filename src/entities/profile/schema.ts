@@ -78,6 +78,22 @@ export const petPersonalityFormSchema = z.object({
 });
 export type PetPersonalityFormData = z.infer<typeof petPersonalityFormSchema>;
 
+// 추가 필드 스키마 (etc1, etc2, etc3)
+export const etcFieldSchema = z
+  .string()
+  .min(2, { message: "최소 2글자 이상이어야 합니다." })
+  .max(12, { message: "최대 12글자까지 가능합니다." })
+  .nullable()
+  .default(null);
+
+// 추가 정보 폼 스키마
+export const etcFormSchema = z.object({
+  etc1: etcFieldSchema,
+  etc2: etcFieldSchema,
+  etc3: etcFieldSchema,
+});
+export type EtcFormData = z.infer<typeof etcFormSchema>;
+
 export const editProfileFormSchema = z.object({
   petAge: z
     .string()

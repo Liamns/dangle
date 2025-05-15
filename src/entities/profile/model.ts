@@ -6,6 +6,7 @@ import {
   petGenderFormSchema,
   petSpecSchema,
   petWeightSchema,
+  etcFieldSchema,
 } from "./schema";
 import { uuidSchema } from "@/entities/user/model";
 import {
@@ -26,6 +27,10 @@ export const profileModelSchema = z.object({
   petWeight: petWeightSchema,
   petGender: petGenderFormSchema,
   petSpec: petSpecSchema,
+  // 추가 정보 필드 (etc1, etc2, etc3)
+  etc1: etcFieldSchema,
+  etc2: etcFieldSchema,
+  etc3: etcFieldSchema,
   // vaccinations: map vaccine key to boolean flag
   vaccinations: z.record(z.enum(allVaccines), z.boolean()),
   // aggregated personality trait scores
@@ -42,6 +47,12 @@ export type EditProfileFormData = {
   };
   petWeight: number;
   vaccinations: Record<string, boolean>;
+};
+
+export type EtcFormData = {
+  etc1: string | null;
+  etc2: string | null;
+  etc3: string | null;
 };
 
 /**

@@ -16,8 +16,10 @@ import Plus from "@/shared/svgs/plus.svg";
 import ProfileCard from "@/features/profile/components/ProfileCard";
 import { useProfileStore } from "@/entities/profile/store";
 import { useMyStore } from "@/shared/hooks/store";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./page.module.scss";
+import Modal from "@/shared/components/modals"; // 모달 컴포넌트 임포트
+import { encrypt } from "@/shared/lib/crypto";
 
 export default function Profile() {
   const router = useRouter();
@@ -26,11 +28,58 @@ export default function Profile() {
     (state) => state.currentProfile
   );
 
+  const isFirstVisit = useProfileStore((state) => state.isFirstVisit); // 기본값 보장
+  const setFirstVisit = useProfileStore((state) => state.setFirstVisit); // 기본값 보장
+
   // 상태 관리 로직 추가
   const [isFlipped, setIsFlipped] = useState(false);
 
+  // 모달 닫기 핸들러
+  const handleCloseModal = () => {
+    setFirstVisit(false);
+  };
+
   return (
     <InnerWrapper>
+      {isFirstVisit && isFlipped && (
+        <Modal isOpen={isFirstVisit} onClose={handleCloseModal}>
+          <div className={styles.modalContainer}>
+            <div className={styles.shareModal}>
+              <Image
+                src="/images/onboarding/profile/shareModal.png"
+                alt="프로필 공유 안내"
+                fill
+              />
+            </div>
+            <Spacer height="24" />
+            <Text
+              text="상세 프로필을 완성하고"
+              color={Colors.brown}
+              fontSize="lg"
+            />
+            <Text text="나만의 반려동물" color={Colors.brown} fontSize="lg" />
+            <InnerBox direction="row">
+              <Text
+                text="프로필을 공유"
+                color={Colors.brown}
+                fontSize="lg"
+                fontWeight="bold"
+              />
+              <Text text="해보세요!" color={Colors.brown} fontSize="lg" />
+            </InnerBox>
+            <Spacer height="30" />
+            <div className={styles.shareModalBtn} onClick={handleCloseModal}>
+              <Text
+                text="시작하기"
+                color={Colors.brown}
+                fontSize="lg"
+                fontWeight="bold"
+              />
+            </div>
+          </div>
+        </Modal>
+      )}
+
       <Spacer height="40" />
       <InnerBox px="30" justify="space-between" direction="row">
         <ArrowButton ml="0" onClick={() => router.back()}>
@@ -65,8 +114,29 @@ export default function Profile() {
       <Button
         width="300"
         height="57"
-        onClick={() => {
-          setIsFlipped(!isFlipped);
+        onClick={async () => {
+          if (isFlipped) {
+            const json = JSON.stringify(currentProfile);
+            const encrypted = await encrypt(json);
+            const shareUrl = `${
+              window.location.origin
+            }/profile/viewer?data=${encodeURIComponent(encrypted)}`;
+            if (navigator.clipboard?.writeText) {
+              navigator.clipboard.writeText(shareUrl).then(() => {
+                alert("공유용 링크가 복사되었습니다.");
+              });
+            } else {
+              const textarea = document.createElement("textarea");
+              textarea.value = shareUrl;
+              document.body.appendChild(textarea);
+              textarea.select();
+              document.execCommand("copy");
+              document.body.removeChild(textarea);
+              alert("공유용 링크가 복사되었습니다.");
+            }
+          } else {
+            setIsFlipped(!isFlipped);
+          }
         }}
         style={{
           position: "absolute",
@@ -76,7 +146,7 @@ export default function Profile() {
           marginTop: "14px",
         }}
       >
-        다음 페이지
+        {isFlipped ? "프로필 자랑하기" : "다음 페이지"}
       </Button>
     </InnerWrapper>
   );

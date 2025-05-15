@@ -4,12 +4,10 @@ import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import { motion } from "framer-motion";
 import styles from "./ProfileCard.module.scss";
-import Dog from "@/shared/svgs/dog.svg";
-import Cat from "@/shared/svgs/cat.svg";
 import { useProfileStore } from "@/entities/profile/store";
 import {
   determinePersonalityType,
-  ProfileModel,
+  transformPersonalityToRadarData,
 } from "@/entities/profile/model";
 import { getPublicImageUrl } from "@/shared/lib/supabase";
 import {
@@ -36,9 +34,11 @@ import { useForm } from "react-hook-form";
 import {
   editProfileFormSchema,
   EditProfileFormData,
+  etcFormSchema,
+  EtcFormData,
 } from "@/entities/profile/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextInput } from "@/shared/components/layout";
+import RadarChartComponent from "@/app/profile/complete/components/RadarChartComponent";
 
 interface ProfileCardProps {
   isFlipped: boolean;
@@ -56,6 +56,8 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
   const [loading, setLoading] = useState(true);
   const [isVaccineSelectOpen, setIsVaccineSelectOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isBackEditMode, setIsBackEditMode] = useState(false); // 뒷면 편집 모드 상태 추가
+  const [resetRadar, setResetRadar] = useState(false);
   const [filteredVaccinations, setFilteredVaccinations] = useState<string[]>(
     []
   );
@@ -76,7 +78,23 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
     },
   });
 
+  const {
+    register: registerEtc,
+    handleSubmit: handleSubmitEtc,
+    setValue: setValueEtc,
+    watch: watchEtc,
+    formState: { errors: errorsEtc },
+  } = useForm<EtcFormData>({
+    resolver: zodResolver(etcFormSchema),
+    defaultValues: {
+      etc1: currentProfile?.etc1 || null,
+      etc2: currentProfile?.etc2 || null,
+      etc3: currentProfile?.etc3 || null,
+    },
+  });
+
   const onSubmit = (data: EditProfileFormData) => {
+    alert("서버에 반영 로직 추가 필요");
     updateCurrentProfile({
       ...data,
       petGender: {
@@ -86,6 +104,23 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
     });
     setIsEditMode(false);
   };
+
+  const onSubmitEtc = (data: EtcFormData) => {
+    alert("서버에 반영 로직 추가 필요");
+    updateCurrentProfile(data);
+    setIsBackEditMode(false);
+  };
+
+  useEffect(() => {
+    if (isFlipped) {
+      setResetRadar((prev) => !prev);
+      // 앞면에서 뒷면으로 넘어갈 때 편집 모드 초기화
+      setIsBackEditMode(false);
+    } else {
+      // 뒷면에서 앞면으로 넘어갈 때 편집 모드 초기화
+      setIsEditMode(false);
+    }
+  }, [isFlipped]);
 
   // 프로필 데이터 준비
   const activeVaccinations = Object.keys(
@@ -143,11 +178,9 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
     );
   }
 
-  const personalityType = currentProfile?.personalityScores
-    ? "Example Type"
-    : null; // Replace with actual logic
-  const personalityImageUrl = null; // Replace with actual logic
-  const radarChartData = null; // Replace with actual logic
+  const data = transformPersonalityToRadarData(
+    currentProfile?.personalityScores
+  );
   const petName = currentProfile?.petname;
   const petAge = calculateAgeFromDateString(currentProfile?.petAge);
   const petWeight = currentProfile?.petWeight;
@@ -197,58 +230,57 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
     : getPublicImageUrl("profile/personality/default.gif");
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className={styles.cardFlipContainer}>
-        <motion.div
-          animate={isFlipped ? "back" : "front"}
-          variants={flipCardVariants}
-          className={styles.flipCard}
-        >
-          {/* 앞면 카드 */}
-          <div className={`${styles.cardFace} ${styles.cardFront}`}>
-            <Card>
-              {/* 프로필 이미지 */}
-              <div className={styles.gifContainer}>
-                <Image src={url} alt="반려동물 성격별 이미지" fill />
+    <div className={styles.cardFlipContainer}>
+      <motion.div
+        animate={isFlipped ? "back" : "front"}
+        variants={flipCardVariants}
+        className={styles.flipCard}
+      >
+        {/* 앞면 카드 */}
+        <div className={`${styles.cardFace} ${styles.cardFront}`}>
+          <Card>
+            {/* 프로필 이미지 */}
+            <div className={styles.gifContainer}>
+              <Image src={url} alt="반려동물 성격별 이미지" fill />
+            </div>
+            <Spacer height="20" />
+
+            {/* 이름 및 성별 */}
+            <InnerBox direction="row">
+              <div className={styles.nameContainer}>
+                <Text
+                  text={petName || "이름 없음"}
+                  color={Colors.brown}
+                  fontWeight="bold"
+                  fontSize="lg"
+                />
+                <Spacer width="6" />
+                {petGender ? (
+                  <Male color={Colors.male} width={16} height={16} />
+                ) : (
+                  <Female color={Colors.female} width={16} height={16} />
+                )}
               </div>
-              <Spacer height="20" />
-
-              {/* 이름 및 성별 */}
-              <InnerBox direction="row">
-                <div className={styles.nameContainer}>
-                  <Text
-                    text={petName || "이름 없음"}
-                    color={Colors.brown}
-                    fontWeight="bold"
-                    fontSize="lg"
-                  />
-                  <Spacer width="6" />
-                  {petGender ? (
-                    <Male color={Colors.male} width={16} height={16} />
-                  ) : (
-                    <Female color={Colors.female} width={16} height={16} />
-                  )}
-                </div>
-                <div
-                  className={styles.editButton}
-                  onClick={() => {
-                    if (isEditMode) {
-                      onSubmit(watch());
-                    } else {
-                      setIsEditMode(true);
-                    }
-                  }}
-                >
-                  <Text
-                    text={isEditMode ? "저장하기" : "수정하기"}
-                    color={Colors.brown}
-                    fontSize="tiny"
-                    fontWeight="bold"
-                  />
-                </div>
-              </InnerBox>
-              <Spacer height="14" />
-
+              <div
+                className={styles.editButton}
+                onClick={() => {
+                  if (isEditMode) {
+                    onSubmit(watch());
+                  } else {
+                    setIsEditMode(true);
+                  }
+                }}
+              >
+                <Text
+                  text={isEditMode ? "저장하기" : "수정하기"}
+                  color={Colors.brown}
+                  fontSize="tiny"
+                  fontWeight="bold"
+                />
+              </div>
+            </InnerBox>
+            <Spacer height="14" />
+            <form style={{ width: "100%" }}>
               <InnerBox px="20" align="start">
                 {/* 나이 */}
                 <div className={styles.infoBox}>
@@ -507,64 +539,196 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
                   </InnerBox>
                 </InnerBox>
               </InnerBox>
-            </Card>
-          </div>
+            </form>
+          </Card>
+        </div>
 
-          {/* 뒷면 카드 */}
-          <div className={`${styles.cardFace} ${styles.cardBack}`}>
-            <Card>
-              <InnerBox>
-                <InnerBox direction="row">
-                  <Text
-                    text={`${petSpec === 0 ? "댕댕이" : "야옹이"} 프로필`}
-                    color={Colors.brown}
-                    fontWeight="bold"
-                    fontSize="title"
-                  />
-                  <Spacer width="6" />
-                  {petSpec === 0 ? (
-                    <Dog style={{ color: Colors.brown }} />
-                  ) : (
-                    <Cat style={{ color: Colors.brown }} />
-                  )}
-                </InnerBox>
-
-                <Spacer height="20" />
-
-                {/* 반려동물 기본 정보 */}
-                <InnerBox direction="column" align="start">
-                  <Text
-                    text="기본 정보"
-                    fontWeight="bold"
-                    color={Colors.brown}
-                  />
-                  <Spacer height="10" />
-                  <Text text={`이름: ${petName}`} />
-                  <Text text={`나이: ${petAge}살`} />
-                  <Text text={`체중: ${petWeight}kg`} />
-                  <Text text={`성별: ${petGender?.gender ? "남아" : "여아"}`} />
-                  <Text text={`중성화: ${petGender?.isNeutered ? "O" : "X"}`} />
-                </InnerBox>
-
-                <Spacer height="20" />
-
-                {/* 예방접종 정보 */}
-                <InnerBox direction="column" align="start">
-                  <Text
-                    text="예방접종"
-                    fontWeight="bold"
-                    color={Colors.brown}
-                  />
-                  <Spacer height="10" />
-                  {activeVaccinations.map((vaccine) => (
-                    <Text key={vaccine} text={vaccine} />
-                  ))}
-                </InnerBox>
+        {/* 뒷면 카드 */}
+        <div className={`${styles.cardFace} ${styles.cardBack}`}>
+          <Card>
+            <Spacer height="49" />
+            {/* 타이틀 영역 */}
+            <div className={styles.backTitle}>
+              <InnerBox direction="row" justify="start" align="center">
+                <Text text="Name" color={Colors.brown} fontSize="sm" />
+                <Spacer width="3" />
+                <Text
+                  text={petName!}
+                  color={Colors.brown}
+                  fontSize="lg"
+                  fontWeight="bold"
+                />
+                <Spacer width="6" />
+                {petGender ? (
+                  <Male color={Colors.male} width={12} height={12} />
+                ) : (
+                  <Female color={Colors.female} width={12} height={12} />
+                )}
               </InnerBox>
-            </Card>
-          </div>
-        </motion.div>
-      </div>
-    </form>
+              <InnerBox direction="row" justify="end">
+                <Text
+                  text={`#${personality!}`}
+                  color={Colors.brown}
+                  fontWeight="bold"
+                />
+              </InnerBox>
+            </div>
+            <Spacer height="20" />
+
+            {/* 성격 */}
+            <InnerBox>
+              <Text
+                text="Personality"
+                color={Colors.brown}
+                fontSize="sm"
+                fontWeight="bold"
+              />
+              <Spacer height="6" />
+              <div className={styles.backPersonality}>
+                <Text
+                  text={personality!}
+                  color={Colors.white}
+                  fontSize="lg"
+                  fontWeight="bold"
+                />
+              </div>
+            </InnerBox>
+
+            <Spacer height="14" />
+
+            {/* 성격 이미지 */}
+            <RadarChartComponent data={data} resetKey={resetRadar} />
+
+            {/* 상세정보 */}
+            <div className={styles.profileDetail}>
+              <div className={styles.detailTitle}>
+                <Text
+                  text="Profile"
+                  fontSize="sm"
+                  color={Colors.primary}
+                  fontWeight="bold"
+                />
+                <div
+                  className={styles.editDetail}
+                  onClick={() => {
+                    if (isBackEditMode) {
+                      onSubmitEtc(watchEtc());
+                    } else {
+                      setIsBackEditMode(true);
+                    }
+                  }}
+                >
+                  <Text
+                    text={isBackEditMode ? "저장하기" : "입력하기"}
+                    fontSize="tiny"
+                    fontWeight="bold"
+                    color={Colors.brown}
+                  />
+                </div>
+              </div>
+
+              {/* ETC 필드 */}
+              {isBackEditMode ? (
+                <form className={styles.editForm}>
+                  <div className={styles.etcContainer}>
+                    <input
+                      {...registerEtc("etc1")}
+                      className={styles.editInput}
+                      placeholder="2-12글자 입력 가능"
+                      maxLength={12}
+                    />
+                    {errorsEtc.etc1 && (
+                      <Text
+                        text={errorsEtc.etc1.message || ""}
+                        color={Colors.invalid}
+                      />
+                    )}
+                  </div>
+                  <div className={styles.etcContainer}>
+                    <input
+                      {...registerEtc("etc2")}
+                      className={styles.editInput}
+                      placeholder="2-12글자 입력 가능"
+                      maxLength={12}
+                    />
+                    {errorsEtc.etc2 && (
+                      <Text
+                        text={errorsEtc.etc2.message || ""}
+                        color={Colors.invalid}
+                      />
+                    )}
+                  </div>
+                  <div className={styles.etcContainer}>
+                    <input
+                      {...registerEtc("etc3")}
+                      className={styles.editInput}
+                      placeholder="2-12글자 입력 가능"
+                      maxLength={12}
+                    />
+                    {errorsEtc.etc3 && (
+                      <Text
+                        text={errorsEtc.etc3.message || ""}
+                        color={Colors.invalid}
+                      />
+                    )}
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <div className={styles.etcContainer}>
+                    {currentProfile.etc1 ? (
+                      <Text
+                        text={currentProfile.etc1}
+                        fontSize="sm"
+                        fontWeight="bold"
+                        color={Colors.black}
+                      />
+                    ) : (
+                      <Text
+                        text="외모 특징"
+                        color={Colors.invalid}
+                        fontWeight="bold"
+                      />
+                    )}
+                  </div>
+                  <div className={styles.etcContainer}>
+                    {currentProfile.etc2 ? (
+                      <Text
+                        text={currentProfile.etc2}
+                        fontSize="sm"
+                        fontWeight="bold"
+                        color={Colors.black}
+                      />
+                    ) : (
+                      <Text
+                        text="견/묘 종류"
+                        color={Colors.invalid}
+                        fontWeight="bold"
+                      />
+                    )}
+                  </div>
+                  <div className={styles.etcContainer}>
+                    {currentProfile.etc3 ? (
+                      <Text
+                        text={currentProfile.etc3}
+                        fontSize="sm"
+                        fontWeight="bold"
+                        color={Colors.black}
+                      />
+                    ) : (
+                      <Text
+                        text="특이사항"
+                        color={Colors.invalid}
+                        fontWeight="bold"
+                      />
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </Card>
+        </div>
+      </motion.div>
+    </div>
   );
 }
