@@ -207,6 +207,7 @@ export default function ProfileViewer({
             </InnerBox>
           </Card>
         </div>
+
         {/* 뒷면 */}
         <div className={`${styles.cardFace} ${styles.cardBack}`}>
           <Card>
@@ -218,7 +219,7 @@ export default function ProfileViewer({
                 <Text
                   text={petName!}
                   color={Colors.brown}
-                  fontSize="lg"
+                  fontSize="md"
                   fontWeight="bold"
                 />
                 <Spacer width="6" />
@@ -228,13 +229,12 @@ export default function ProfileViewer({
                   <Female color={Colors.female} width={16} height={16} />
                 )}
               </InnerBox>
-              <InnerBox direction="row" justify="end">
-                <Text
-                  text={`#${personality!}`}
-                  color={Colors.brown}
-                  fontWeight="bold"
-                />
-              </InnerBox>
+              <Text
+                text={`#${personality!}`}
+                color={Colors.brown}
+                fontWeight="bold"
+                style={{ whiteSpace: "nowrap" }}
+              />
             </div>
             <Spacer height="20" />
             <InnerBox>

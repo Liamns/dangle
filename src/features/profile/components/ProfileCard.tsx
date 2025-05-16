@@ -255,7 +255,7 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
                   fontSize="lg"
                 />
                 <Spacer width="6" />
-                {petGender ? (
+                {petGender?.gender ? (
                   <Male color={Colors.male} width={16} height={16} />
                 ) : (
                   <Female color={Colors.female} width={16} height={16} />
@@ -550,12 +550,12 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
             {/* 타이틀 영역 */}
             <div className={styles.backTitle}>
               <InnerBox direction="row" justify="start" align="center">
-                <Text text="Name" color={Colors.brown} fontSize="sm" />
+                <Text text="Name" color={Colors.brown} fontSize="tiny" />
                 <Spacer width="3" />
                 <Text
                   text={petName!}
                   color={Colors.brown}
-                  fontSize="lg"
+                  fontSize="md"
                   fontWeight="bold"
                 />
                 <Spacer width="6" />
@@ -565,13 +565,12 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
                   <Female color={Colors.female} width={12} height={12} />
                 )}
               </InnerBox>
-              <InnerBox direction="row" justify="end">
-                <Text
-                  text={`#${personality!}`}
-                  color={Colors.brown}
-                  fontWeight="bold"
-                />
-              </InnerBox>
+              <Text
+                text={`#${personality!}`}
+                color={Colors.brown}
+                fontWeight="bold"
+                style={{ whiteSpace: "nowrap" }}
+              />
             </div>
             <Spacer height="20" />
 

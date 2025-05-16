@@ -19,6 +19,7 @@ export default function HomeProfile() {
   const species: PetSpecFormData = currentProfile?.petSpec ?? null;
   const gender: PetGenderFormData["gender"] =
     currentProfile?.petGender?.gender ?? null;
+  const name = currentProfile?.petname ?? "데이터 오류";
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
@@ -82,7 +83,7 @@ export default function HomeProfile() {
         <div className={styles.labelContainer}>
           <InnerBox direction="row" justify="end" align="center">
             <Text
-              text="댕글이랑딩그이랑"
+              text={name}
               color={Colors.brown}
               fontSize="lg"
               fontWeight="bold"
