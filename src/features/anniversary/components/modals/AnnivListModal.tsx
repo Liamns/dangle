@@ -11,7 +11,6 @@ import Image from "next/image";
 import imgStyles from "@/shared/styles/images.module.scss";
 import modalStyles from "@/shared/styles/modal.module.scss";
 import styles from "../anniv-widget.module.scss";
-import {} from "@/entities/anniversary/schema";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { useAnniversaryStore } from "@/entities/anniversary/store";
 import {
@@ -65,7 +64,10 @@ const AnnivListModal: React.FC<AnnivListModalProps> = ({
       onClose={onClose}
       style={{ backgroundColor: Colors.transparnet }}
     >
-      <div className={modalStyles.modalContainer}>
+      <div
+        className={modalStyles.modalContainer}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={modalStyles.modalTitle}>
           <Close style={{ opacity: 0 }} width={8} height={8} />
           <Text
@@ -141,7 +143,13 @@ const AnnivListModal: React.FC<AnnivListModalProps> = ({
                   )}
                 </div>
               ))}
-              <div onClick={onAddClick}>
+              <div
+                onClick={(e) => {
+                  e.stopPropagation(); // 이벤트 전파 방지
+                  console.log("AnnivListModal ▶ onAddClick fired");
+                  onAddClick();
+                }}
+              >
                 <InnerBox
                   direction="row"
                   align="center"

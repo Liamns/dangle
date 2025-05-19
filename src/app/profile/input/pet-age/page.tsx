@@ -88,6 +88,7 @@ export default function InputPetage() {
             type="text"
             placeholder={DATE_PLACEHOLDER_EXAMPLE}
             error={errors.age?.message}
+            maxLength={10}
           />
         </form>
         <Spacer height="40" />

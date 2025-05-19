@@ -12,7 +12,7 @@ import Share from "@/shared/svgs/share.svg";
 import Image from "next/image";
 import { Button } from "@/shared/components/buttons";
 import Plus from "@/shared/svgs/plus.svg";
-import React, { useEffect, useState, useCallback, memo } from "react";
+import React, { useEffect, useState, useCallback, memo, useRef } from "react";
 import useSWR from "swr";
 import Edit from "@/shared/svgs/edit.svg";
 import Delete from "@/shared/svgs/delete.svg";
@@ -81,7 +81,6 @@ export default function ScheduleBottomModal({
         dayOfWeek={todayDayOfWeek}
         onShareClick={handleShareClick}
       />
-
       <ScheduleContent
         schedules={schedules}
         isLoading={isLoading}
@@ -161,9 +160,22 @@ const ScheduleContent = memo(
         }
       };
 
+      // 이벤트 리스너 등록
       document.addEventListener("mousedown", handleGlobalClick);
+
+      // 페이지 변경 감지를 위한 라우터 이벤트 리스너 추가
+      const handleRouteChange = () => {
+        // 페이지 이동 시 활성 아이템 초기화
+        setActiveItemId(null);
+      };
+
+      // Next.js의 router events 활용 (window 이벤트로 대체)
+      window.addEventListener("beforeunload", handleRouteChange);
+
       return () => {
+        // 이벤트 리스너 정리
         document.removeEventListener("mousedown", handleGlobalClick);
+        window.removeEventListener("beforeunload", handleRouteChange);
       };
     }, [activeItemId]);
 
@@ -230,9 +242,10 @@ const ScheduleContent = memo(
         className={modalStyles.scheduleContentContainer}
         justify="start"
       >
+        <Spacer height="16" />
         {allScheduleItems.map((item, index) => (
           <ScheduleItem
-            key={`${item.id}-${index}`}
+            key={`schedule-item-${item.id}-${item.startAt}`}
             item={item}
             isActive={activeItemId === item.id}
             onActivate={() => setActiveItemId(item.id)}
@@ -278,6 +291,8 @@ const ScheduleContent = memo(
             }}
           />
         )}
+
+        <Spacer height="60" />
       </InnerBox>
     );
   }
@@ -304,19 +319,36 @@ const ScheduleItem = memo(
   ({ item, isActive, onActivate }: ScheduleItemProps) => {
     // 이전 상태를 추적하기 위한 ref
     const wasActive = React.useRef(isActive);
+    // 마운트 상태 추적을 위한 ref
+    const isMounted = React.useRef(false);
 
     // 애니메이션 클래스를 관리하기 위한 상태
-    const [animationClass, setAnimationClass] = useState(
-      isActive ? "active" : ""
-    );
+    const [animationClass, setAnimationClass] = useState("");
+
+    // 컴포넌트 마운트/언마운트 감지
+    useEffect(() => {
+      // 컴포넌트가 마운트될 때 초기화
+      isMounted.current = true;
+
+      // 초기 상태 설정 - 마운트 시에는 애니메이션 없이 즉시 상태 적용
+      setAnimationClass(isActive ? "active" : "");
+
+      return () => {
+        // 컴포넌트 언마운트 시 정리
+        isMounted.current = false;
+      };
+    }, []);
 
     // isActive 변경시 적절한 애니메이션 클래스 적용
     useEffect(() => {
-      if (isActive) {
-        setAnimationClass("active");
-      } else if (wasActive.current) {
-        // 이전에 활성화 상태였다면 inactive 애니메이션 적용
-        setAnimationClass("inactive");
+      // 컴포넌트가 마운트된 후에만 애니메이션 적용
+      if (isMounted.current) {
+        if (isActive) {
+          setAnimationClass("active");
+        } else if (wasActive.current) {
+          // 이전에 활성화 상태였다면 inactive 애니메이션 적용
+          setAnimationClass("inactive");
+        }
       }
 
       // 현재 상태를 ref에 저장
@@ -381,6 +413,16 @@ const ScheduleItem = memo(
           className={`${modalStyles.buttonContainer} ${
             animationClass ? modalStyles[animationClass] : ""
           }`}
+          onAnimationEnd={(e) => {
+            // 애니메이션 종료 후 상태 관리
+            if (
+              e.animationName.includes("hide-buttons") &&
+              animationClass === "inactive"
+            ) {
+              // 숨김 애니메이션이 끝나면 클래스를 비워서 width:0 상태 유지
+              setAnimationClass("");
+            }
+          }}
         >
           <div
             className={modalStyles.deleteButton}

@@ -57,7 +57,7 @@ export const dailySubCategories = [
 export type DailySubCategory = (typeof dailySubCategories)[number];
 
 // 서브 카테고리 정의 - 기념일관리
-export const anniversarySubCategories = ["생일", "디데이"] as const;
+export const anniversarySubCategories = ["생일"] as const;
 
 export type AnniversarySubCategory = (typeof anniversarySubCategories)[number];
 
@@ -113,7 +113,6 @@ export const dailySubCategoryIds: Record<DailySubCategory, number> = {
 export const anniversarySubCategoryIds: Record<AnniversarySubCategory, number> =
   {
     생일: 0,
-    디데이: 1,
   };
 
 export const meetingSubCategoryIds: Record<MeetingSubCategory, number> = {
@@ -233,7 +232,6 @@ export const subCategoryToImageName: Record<SubCategory, string> = {
 
   // 기념일관리 서브 카테고리
   생일: "birthday",
-  디데이: "dday",
 
   // 모임관리 서브 카테고리
   산책모임: "community",

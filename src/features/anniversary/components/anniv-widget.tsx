@@ -5,7 +5,7 @@ import Cake from "@/shared/svgs/cake.svg";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
-import React from "react";
+import React, { useEffect } from "react";
 import useSWR from "swr";
 import { getAnniversaryList } from "../apis";
 import { AnniversaryFormData } from "@/entities/anniversary/schema";
@@ -14,6 +14,7 @@ import { useAnniversaryStore } from "@/entities/anniversary/store";
 // 모달 컴포넌트 임포트
 import AnnivListModal from "./modals/AnnivListModal";
 import AnnivAddModal from "./modals/AnnivAddModal";
+import DatePickerModal from "@/shared/components/DatePickerModal";
 import Image from "next/image";
 import {
   AnniversaryModel,
@@ -22,15 +23,31 @@ import {
 } from "@/entities/anniversary/model";
 
 export default function AnnivWidget() {
-  const [activeModal, setActiveModal] = React.useState<string | null>(null);
+  const [showListModal, setShowListModal] = React.useState<boolean>(false);
+  const [showAddModal, setShowAddModal] = React.useState<boolean>(false);
+  const [showDatePickerModal, setShowDatePickerModal] =
+    React.useState<boolean>(false);
   const [editMode, setEditMode] = React.useState<boolean>(false);
   const storedCurrent = useAnniversaryStore((s) => s.currentAnniv);
   // local selection for editing
   const [selectedAnniv, setSelectedAnniv] =
     React.useState<AnniversaryModel | null>(null);
+  // 날짜 선택기를 위한 상태
+  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
+  // DatePickerModal 열기 전 폼 데이터 임시 저장
+  const [tempFormData, setTempFormData] = React.useState<{
+    content?: string;
+    icon?: number;
+    isDday?: boolean;
+  } | null>(null);
+
+  // 새로운 상태: AnnivAddModal이 "숨겨진" 상태인지 표시
+  // (실제로 닫히지 않고 DatePicker 뒤에 남아있음)
+  const [isAddModalHidden, setIsAddModalHidden] =
+    React.useState<boolean>(false);
 
   const { data, error, isLoading, mutate } = useSWR<AnniversaryModel[]>(
-    activeModal === "list" ? "/api/anniversary" : null,
+    "/api/anniversary",
     getAnniversaryList
   );
 
@@ -38,31 +55,67 @@ export default function AnnivWidget() {
   const handleAddClick = () => {
     setEditMode(false);
     setSelectedAnniv(null);
-    setActiveModal("add");
+    setShowListModal(false); // 목록 모달 닫기
+
+    // 약간의 지연 후 추가 모달 열기
+    setTimeout(() => {
+      setShowAddModal(true);
+    }, 100);
   };
 
   // 수정 모드로 모달 열기
   const handleEditClick = (anniv: AnniversaryModel) => {
     setEditMode(true);
     setSelectedAnniv(anniv);
-    setActiveModal("add");
+    // 수정할 기념일의 날짜로 selectedDate를 업데이트
+    setSelectedDate(new Date(anniv.date));
+    setShowListModal(false); // 목록 모달 닫기
+
+    // 약간의 지연 후 추가 모달 열기
+    setTimeout(() => {
+      setShowAddModal(true);
+    }, 100);
   };
 
   // 추가 제출 (id는 사용되지 않음)
   const handleAddSubmit = (data: AnniversaryFormData & { id?: number }) => {
-    setActiveModal("list");
-    console.log("기념일 추가", data);
+    setShowAddModal(false);
+    // 폼 제출 시 임시 데이터 초기화
+    setTempFormData(null);
+    setTimeout(() => {
+      setShowListModal(true);
+    }, 100);
     alert("기념일 추가 API 구현 필요");
     mutate();
   };
 
   // 수정 제출 (id 활용)
   const handleEditSubmit = (data: AnniversaryFormData & { id?: number }) => {
-    setActiveModal("list");
-    console.log("기념일 수정", data);
+    setShowAddModal(false);
+    // 폼 제출 시 임시 데이터 초기화
+    setTempFormData(null);
+    setTimeout(() => {
+      setShowListModal(true);
+    }, 100);
     alert(`기념일 수정 API 구현 필요`);
     mutate();
   };
+
+  // 날짜 선택 핸들러
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      // DatePicker 닫기
+      setShowDatePickerModal(false);
+      // AddModal 다시 표시 (숨김 상태 해제)
+      setIsAddModalHidden(false);
+    }
+  };
+
+  // 임시 폼 데이터 관리 (DatePickerModal 사용 시)
+  useEffect(() => {
+    // tempFormData 관리 로직
+  }, [tempFormData]);
 
   return (
     <>
@@ -73,7 +126,7 @@ export default function AnnivWidget() {
             { "--anniv-container-direction": "row" } as React.CSSProperties
           }
           onClick={() => {
-            setActiveModal("list");
+            setShowListModal(true);
             mutate();
           }}
         >
@@ -115,7 +168,7 @@ export default function AnnivWidget() {
         <div
           className={styles.annivContainer}
           onClick={() => {
-            setActiveModal("list");
+            setShowListModal(true);
             mutate();
           }}
         >
@@ -131,8 +184,8 @@ export default function AnnivWidget() {
 
       {/* 기념일 목록 모달 */}
       <AnnivListModal
-        isOpen={activeModal === "list"}
-        onClose={() => setActiveModal(null)}
+        isOpen={showListModal}
+        onClose={() => setShowListModal(false)}
         onAddClick={handleAddClick}
         onEditClick={handleEditClick}
         data={data}
@@ -142,12 +195,47 @@ export default function AnnivWidget() {
 
       {/* 기념일 추가/수정 모달 */}
       <AnnivAddModal
-        isOpen={activeModal === "add"}
+        isOpen={showAddModal}
         editMode={editMode}
         initialData={selectedAnniv}
-        onClose={() => setActiveModal(null)}
-        onBackToList={() => setActiveModal("list")}
+        onClose={() => setShowAddModal(false)}
+        onBackToList={() => {
+          setShowAddModal(false);
+          setTimeout(() => setShowListModal(true), 100);
+        }}
         onSubmit={editMode ? handleEditSubmit : handleAddSubmit}
+        onDatePickerOpen={(formData) => {
+          // 현재 폼 데이터 임시 저장
+          setTempFormData(formData);
+          // AnnivAddModal을 실제로 닫지 않고, 숨김 상태로 변경
+          setIsAddModalHidden(true);
+          // DatePickerModal 열기
+          setShowDatePickerModal(true);
+        }}
+        selectedDate={selectedDate}
+        tempFormData={tempFormData}
+        // 숨김 상태 전달
+        isHidden={isAddModalHidden}
+      />
+
+      {/* 날짜 선택 모달 - AnnivWidget에서 관리 */}
+      <DatePickerModal
+        isOpen={showDatePickerModal}
+        onClose={() => {
+          // DatePicker 닫기
+          setShowDatePickerModal(false);
+          // 기존 AddModal을 다시 표시
+          setIsAddModalHidden(false);
+        }}
+        onBack={() => {
+          // DatePicker 닫기
+          setShowDatePickerModal(false);
+          // 기존 AddModal을 다시 표시
+          setIsAddModalHidden(false);
+        }}
+        title="날짜 선택"
+        selectedDate={selectedDate}
+        onDateSelect={handleDateSelect}
       />
     </>
   );
