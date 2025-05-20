@@ -1,0 +1,12 @@
+@use "shared/styles/common" as *;
+
+.importBtn {
+  @include width(80);
+  aspect-ratio: 8/3;
+  background-color: var(--brown);
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  border-radius: 10px;
+  flex-direction: row;
+}

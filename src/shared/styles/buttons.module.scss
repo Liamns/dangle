@@ -25,8 +25,8 @@
 }
 
 .arrowButton {
-  width: var(--arrow-size, 28px);
-  height: var(--arrow-size, 28px);
+  @include common.width(var(--arrow-size, 28));
+  aspect-ratio: 1;
   border-radius: 5px;
   display: flex;
   justify-content: center;

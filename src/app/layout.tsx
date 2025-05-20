@@ -5,6 +5,7 @@ import "react-day-picker/style.css";
 import "./globals.css";
 import classNames from "classnames";
 import { Wrapper } from "../shared/components/layout";
+import AppProvider from "../shared/providers/AppProvider";
 
 const inter = Inter({
   variable: "--inter",
@@ -32,7 +33,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={className}>
-        <Wrapper>{children}</Wrapper>
+        <Wrapper>
+          <AppProvider>{children}</AppProvider>
+        </Wrapper>
       </body>
     </html>
   );

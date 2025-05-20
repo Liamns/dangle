@@ -6,6 +6,7 @@ import ScheduleIcon from "@/shared/svgs/schedule.svg";
 import ProfileIcon from "@/shared/svgs/profile.svg";
 import RoutineIcon from "@/shared/svgs/routine.svg";
 import FavoritesIcon from "@/shared/svgs/favorites.svg";
+import { Colors } from "../consts/colors";
 
 export default function BottomNavBar() {
   const navItems = [
@@ -32,7 +33,7 @@ export default function BottomNavBar() {
     {
       href: "/favorites",
       label: "즐겨찾기",
-      icon: <FavoritesIcon />,
+      icon: <FavoritesIcon width={20} height={20} color={Colors.darkGrey} />,
     },
   ];
 

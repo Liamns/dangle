@@ -1,0 +1,58 @@
+@use "shared/styles/common" as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.favoriteBtn {
+  @include width(87);
+  @include height(30);
+  background-color: var(--favorite-btn-color, rgba(217, 217, 217, 0.3));
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  cursor: pointer;
+  gap: rw(2);
+
+  &.active {
+    background-color: var(--primary);
+  }
+}
+
+.favoriteTip {
+  @include width(14);
+  height: rw(14);
+  background-color: var(--invalid);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scheduleSettingBtn {
+  @include width(87);
+  @include height(30);
+  background-color: var(--primary);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  cursor: pointer;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+  }
+}

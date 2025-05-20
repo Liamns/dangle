@@ -1,0 +1,81 @@
+.tooltip {
+  position: fixed;
+  z-index: 1000;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 8px 12px;
+  max-width: 300px;
+  font-size: 14px;
+  color: #303030;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.tooltipContent {
+  position: relative;
+  z-index: 2;
+}
+
+.arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 1;
+
+  &.arrow-top {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+  }
+
+  &.arrow-bottom {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+  }
+
+  &.arrow-left {
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 8px solid white;
+  }
+
+  &.arrow-right {
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid white;
+  }
+
+  &.arrow-top-left,
+  &.arrow-top-right {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+  }
+
+  &.arrow-bottom-left,
+  &.arrow-bottom-right {
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+  }
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

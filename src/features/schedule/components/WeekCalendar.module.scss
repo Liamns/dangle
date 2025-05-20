@@ -1,0 +1,228 @@
+@use "shared/styles/common" as *;
+
+.weekCalendarContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.yearMonthSection {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  @include ml(30);
+}
+
+.yearMonthSelectContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  @include width(108);
+  @include height(40);
+  cursor: pointer;
+  position: relative;
+  padding-right: 20px;
+}
+
+.dropdownArrow {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid var(--brown);
+  position: absolute;
+  right: 0;
+}
+
+.dayLabelContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  @include height(40);
+  background-color: rgba(127, 76, 47, 0.1);
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+  border-right: none; /* 오른쪽 테두리 제거 */
+  overflow-x: clip; /* overflow 방식 변경 */
+}
+
+.dayLabelScroller {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: calc(100% - 80px); /* 화살표 영역(40px * 2)을 제외한 너비 */
+  height: 100%;
+  overflow-x: hidden;
+  position: relative;
+  box-sizing: border-box;
+  border-right: none; /* 오른쪽 테두리 제거 */
+  background-color: transparent; /* 배경색 투명하게 설정 */
+}
+
+.dayLabelBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  min-width: 36px;
+  height: 100%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+  border-right: none; /* 오른쪽 테두리 제거 */
+}
+
+.selectedDay {
+  color: var(--brown);
+}
+
+.dayContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  @include height(60);
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+  /* 애니메이션을 위한 스타일 추가 */
+  overflow-x: clip; /* 숫자가 화살표 뒤로 보이지 않도록 설정 */
+  isolation: isolate; /* 스택 컨텍스트 생성 */
+}
+
+.weekArrow {
+  width: 40px; /* 52px에서 40px로 줄임 */
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 2; /* z-index 값 증가 */
+  flex-shrink: 0;
+  background-color: transparent;
+  position: relative; /* position 추가 */
+
+  &.left {
+    left: 0;
+  }
+
+  &.right {
+    right: 0;
+  }
+}
+
+.leftTriangle {
+  width: 0;
+  height: 0;
+  border-top: 5.5px solid transparent;
+  border-bottom: 5.5px solid transparent;
+  border-right: 10px solid var(--brown);
+}
+
+.rightTriangle {
+  width: 0;
+  height: 0;
+  border-top: 5.5px solid transparent;
+  border-bottom: 5.5px solid transparent;
+  border-left: 10px solid var(--brown);
+}
+
+.dayScroller {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: calc(100% - 80px); /* 좌우 화살표 영역(40px * 2)을 제외한 너비 */
+  height: 100%;
+  position: relative;
+  transition: transform 0.3s ease;
+  box-sizing: border-box;
+
+  &.slide-left {
+    animation: slide-left 0.3s forwards;
+  }
+
+  &.slide-right {
+    animation: slide-right 0.3s forwards;
+  }
+
+  &.slide-in-left {
+    animation: slide-in-left 0.3s forwards;
+  }
+
+  &.slide-in-right {
+    animation: slide-in-right 0.3s forwards;
+  }
+}
+
+@keyframes slide-left {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.dayBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: rw(36);
+  min-width: rw(36);
+  height: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.selectedDayBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: rw(36);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--brown);
+}

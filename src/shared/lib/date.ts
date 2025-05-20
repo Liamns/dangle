@@ -4,6 +4,18 @@ import { PetType } from "../types/pet";
 
 export const DATE_PLACEHOLDER_EXAMPLE = "예) 20201212";
 
+// 요일 배열 (일~토)
+export const DAYS_OF_WEEK = ["일", "월", "화", "수", "목", "금", "토"];
+
+/**
+ * 날짜의 요일 인덱스를 가져오는 함수 (0: 일요일, 1: 월요일, ..., 6: 토요일)
+ * @param date 요일을 확인할 날짜
+ * @returns 요일 인덱스 (0-6)
+ */
+export const getDayOfWeekIndex = (date: Date): number => {
+  return date.getDay();
+};
+
 /**
  * 날짜를 받아 짧은 형식의 한국어 요일을 반환하는 함수
  * @param date 요일을 확인할 날짜 (기본값: 오늘)

@@ -6,6 +6,7 @@ export const Colors = {
   brown: "#7f4c2f",
   invalid: "#d9d9d9",
   grey: "rgba(48, 48, 48, 0.3)",
+  darkGrey: "rgba(48, 48, 48, 0.5)",
   error: "#ff0000",
   white: "#ffffff",
   background: "#fff",
