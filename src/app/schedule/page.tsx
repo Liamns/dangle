@@ -15,7 +15,7 @@ import { Colors } from "@/shared/consts/colors";
 import { useState } from "react";
 import DatePickerModal from "@/shared/components/DatePickerModal";
 import WeekCalendar from "@/features/schedule/components/WeekCalendar";
-import ScheduleContent from "@/features/schedule/components/ScheduleContent";
+import ScheduleContentBox from "@/features/schedule/components/ScheduleContentBox";
 
 export default function Schedule() {
   const router = useRouter();
@@ -74,7 +74,7 @@ export default function Schedule() {
       <Card mx="30" px="24" py="0" height="504">
         <Spacer height="16" />
 
-        <ScheduleContent
+        <ScheduleContentBox
           isEditMode={isEditMode}
           setIsEditMode={setIsEditMode}
           isFavorite={false}

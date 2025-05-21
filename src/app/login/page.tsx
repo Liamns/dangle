@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EmailInput } from "@/features/auth/components/EmailInput";
 import { useUserStore } from "@/entities/user/store";
+import { setupMockData } from "@/shared/mocks/setupMocks";
 
 export default function Login() {
   const router = useRouter();
@@ -43,6 +44,8 @@ export default function Login() {
   const onSubmit = (data: LoginFormData) => {
     if (isEmailValid) {
       if (email === "test@gmail.com" && data.password === "testest1") {
+        // 테스트 계정으로 로그인 시 모킹 데이터 설정
+        setupMockData({ user: "default", profile: "dog" });
         router.push("/home");
       } else {
         alert("서버통신 로그인 개발 이전");

@@ -33,7 +33,7 @@ export async function getTodaySchedules(
         // resolve([]); // 빈 배열로 응답
         setTimeout(() => {
           // 현재 날짜 기준 (2025년 5월 7일)
-          const today = new Date(2025, 4, 7); // 월은 0부터 시작하므로 5월은 4
+          const today = new Date(); // 월은 0부터 시작하므로 5월은 4
 
           // 시간 설정
           const morning = new Date(today);
@@ -61,46 +61,46 @@ export async function getTodaySchedules(
 
           // 테스트 데이터: 서브 카테고리
           const subCategoriesData: CategorySubModel[] = [
-            // 건강관리 서브 카테고리
+            // 건강 서브 카테고리
             ...healthSubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.건강관리,
+              mainId: mainCategoryIds.건강,
             })),
 
-            // 교육관리 서브 카테고리
+            // 교육 서브 카테고리
             ...educationSubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.교육관리,
+              mainId: mainCategoryIds.교육,
             })),
 
-            // 일상관리 서브 카테고리
+            // 일상 서브 카테고리
             ...dailySubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.일상관리,
+              mainId: mainCategoryIds.일상,
             })),
 
-            // 기념일관리 서브 카테고리
+            // 기념일 서브 카테고리
             ...anniversarySubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.기념일관리,
+              mainId: mainCategoryIds.기념일,
             })),
 
-            // 모임관리 서브 카테고리
+            // 모임 서브 카테고리
             ...meetingSubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.모임관리,
+              mainId: mainCategoryIds.모임,
             })),
 
-            // 외출관리 서브 카테고리
+            // 외출 서브 카테고리
             ...outingSubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.외출관리,
+              mainId: mainCategoryIds.외출,
             })),
           ];
 
@@ -109,7 +109,7 @@ export async function getTodaySchedules(
             {
               id: 1,
               profileId: profileId,
-              createdAt: new Date(2025, 4, 1),
+              createdAt: today,
               scheduleItems: [
                 {
                   id: 1,
@@ -118,13 +118,13 @@ export async function getTodaySchedules(
                   startAt: morning,
                   content: {
                     id: 1,
-                    mainId: mainCategoryIds.건강관리,
+                    mainId: mainCategoryIds.건강,
                     subId: 0, // 영양제 섭취하기
                     description: "멀티비타민 2알 먹이기",
-                    main: mainCategoriesData[mainCategoryIds.건강관리],
+                    main: mainCategoriesData[mainCategoryIds.건강],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.건강관리 && sub.id === 0
+                        sub.mainId === mainCategoryIds.건강 && sub.id === 0
                     )!,
                   },
                 },
@@ -135,13 +135,13 @@ export async function getTodaySchedules(
                   startAt: noon,
                   content: {
                     id: 2,
-                    mainId: mainCategoryIds.일상관리,
+                    mainId: mainCategoryIds.일상,
                     subId: 7, // 식사
                     description: "점심 사료 100g 급여",
-                    main: mainCategoriesData[mainCategoryIds.일상관리],
+                    main: mainCategoriesData[mainCategoryIds.일상],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.일상관리 && sub.id === 7
+                        sub.mainId === mainCategoryIds.일상 && sub.id === 7
                     )!,
                   },
                 },
@@ -152,13 +152,13 @@ export async function getTodaySchedules(
                   startAt: evening,
                   content: {
                     id: 3,
-                    mainId: mainCategoryIds.일상관리,
+                    mainId: mainCategoryIds.일상,
                     subId: 0, // 산책
                     description: "30분 산책",
-                    main: mainCategoriesData[mainCategoryIds.일상관리],
+                    main: mainCategoriesData[mainCategoryIds.일상],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.일상관리 && sub.id === 0
+                        sub.mainId === mainCategoryIds.일상 && sub.id === 0
                     )!,
                   },
                 },
@@ -176,13 +176,13 @@ export async function getTodaySchedules(
                   startAt: afternoon,
                   content: {
                     id: 4,
-                    mainId: mainCategoryIds.교육관리,
+                    mainId: mainCategoryIds.교육,
                     subId: 3, // 배변 훈련
                     description: "실내배변 훈련 15분",
-                    main: mainCategoriesData[mainCategoryIds.교육관리],
+                    main: mainCategoriesData[mainCategoryIds.교육],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.교육관리 && sub.id === 3
+                        sub.mainId === mainCategoryIds.교육 && sub.id === 3
                     )!,
                   },
                 },
@@ -193,13 +193,13 @@ export async function getTodaySchedules(
                   startAt: night,
                   content: {
                     id: 5,
-                    mainId: mainCategoryIds.일상관리,
+                    mainId: mainCategoryIds.일상,
                     subId: 1, // 놀이
                     description: "인형 장난감 놀이 20분",
-                    main: mainCategoriesData[mainCategoryIds.일상관리],
+                    main: mainCategoriesData[mainCategoryIds.일상],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.일상관리 && sub.id === 1
+                        sub.mainId === mainCategoryIds.일상 && sub.id === 1
                     )!,
                   },
                 },
@@ -217,13 +217,13 @@ export async function getTodaySchedules(
                   startAt: morning,
                   content: {
                     id: 6,
-                    mainId: mainCategoryIds.건강관리,
+                    mainId: mainCategoryIds.건강,
                     subId: 1, // 체중체크 하기
                     description: "매주 수요일 체중 체크",
-                    main: mainCategoriesData[mainCategoryIds.건강관리],
+                    main: mainCategoriesData[mainCategoryIds.건강],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.건강관리 && sub.id === 1
+                        sub.mainId === mainCategoryIds.건강 && sub.id === 1
                     )!,
                   },
                 },
@@ -234,13 +234,13 @@ export async function getTodaySchedules(
                   startAt: noon,
                   content: {
                     id: 7,
-                    mainId: mainCategoryIds.모임관리,
+                    mainId: mainCategoryIds.모임,
                     subId: 1, // 동네 모임
                     description: "아파트 단지 내 반려견 모임",
-                    main: mainCategoriesData[mainCategoryIds.모임관리],
+                    main: mainCategoriesData[mainCategoryIds.모임],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.모임관리 && sub.id === 1
+                        sub.mainId === mainCategoryIds.모임 && sub.id === 1
                     )!,
                   },
                 },
@@ -266,13 +266,12 @@ export async function getTodaySchedules(
                 startAt: tomorrowMorning,
                 content: {
                   id: 8,
-                  mainId: mainCategoryIds.일상관리,
+                  mainId: mainCategoryIds.일상,
                   subId: 2, // 미용실 방문
                   description: "월간 미용 예약",
-                  main: mainCategoriesData[mainCategoryIds.일상관리],
+                  main: mainCategoriesData[mainCategoryIds.일상],
                   sub: subCategoriesData.find(
-                    (sub) =>
-                      sub.mainId === mainCategoryIds.일상관리 && sub.id === 2
+                    (sub) => sub.mainId === mainCategoryIds.일상 && sub.id === 2
                   )!,
                 },
               },
@@ -297,13 +296,12 @@ export async function getTodaySchedules(
                 startAt: yesterdayEvening,
                 content: {
                   id: 9,
-                  mainId: mainCategoryIds.외출관리,
+                  mainId: mainCategoryIds.외출,
                   subId: 2, // 애견카페
                   description: "친구와 함께 애견카페 방문",
-                  main: mainCategoriesData[mainCategoryIds.외출관리],
+                  main: mainCategoriesData[mainCategoryIds.외출],
                   sub: subCategoriesData.find(
-                    (sub) =>
-                      sub.mainId === mainCategoryIds.외출관리 && sub.id === 2
+                    (sub) => sub.mainId === mainCategoryIds.외출 && sub.id === 2
                   )!,
                 },
               },
@@ -319,7 +317,7 @@ export async function getTodaySchedules(
           const ddaySchedule: ScheduleWithItemsModel = {
             id: 6,
             profileId: profileId,
-            createdAt: new Date(2025, 4, 1),
+            createdAt: today,
             scheduleItems: [
               {
                 id: 10,
@@ -328,13 +326,13 @@ export async function getTodaySchedules(
                 startAt: ddayNoon,
                 content: {
                   id: 10,
-                  mainId: mainCategoryIds.기념일관리,
+                  mainId: mainCategoryIds.기념일,
                   subId: 1, // 디데이
                   description: "반려동물 입양 1주년 기념일",
-                  main: mainCategoriesData[mainCategoryIds.기념일관리],
+                  main: mainCategoriesData[mainCategoryIds.기념일],
                   sub: subCategoriesData.find(
                     (sub) =>
-                      sub.mainId === mainCategoryIds.기념일관리 && sub.id === 1
+                      sub.mainId === mainCategoryIds.기념일 && sub.id === 1
                   )!,
                 },
               },
@@ -414,46 +412,46 @@ export async function getAllSchedules(
 
           // 테스트 데이터: 서브 카테고리
           const subCategoriesData: CategorySubModel[] = [
-            // 건강관리 서브 카테고리
+            // 건강 서브 카테고리
             ...healthSubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.건강관리,
+              mainId: mainCategoryIds.건강,
             })),
 
-            // 교육관리 서브 카테고리
+            // 교육 서브 카테고리
             ...educationSubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.교육관리,
+              mainId: mainCategoryIds.교육,
             })),
 
-            // 일상관리 서브 카테고리
+            // 일상 서브 카테고리
             ...dailySubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.일상관리,
+              mainId: mainCategoryIds.일상,
             })),
 
-            // 기념일관리 서브 카테고리
+            // 기념일 서브 카테고리
             ...anniversarySubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.기념일관리,
+              mainId: mainCategoryIds.기념일,
             })),
 
-            // 모임관리 서브 카테고리
+            // 모임 서브 카테고리
             ...meetingSubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.모임관리,
+              mainId: mainCategoryIds.모임,
             })),
 
-            // 외출관리 서브 카테고리
+            // 외출 서브 카테고리
             ...outingSubCategories.map((name, index) => ({
               id: index,
               name: name,
-              mainId: mainCategoryIds.외출관리,
+              mainId: mainCategoryIds.외출,
             })),
           ];
 
@@ -462,7 +460,7 @@ export async function getAllSchedules(
             {
               id: 1,
               profileId: profileId,
-              createdAt: new Date(2025, 4, 1),
+              createdAt: today,
               scheduleItems: [
                 {
                   id: 1,
@@ -471,13 +469,13 @@ export async function getAllSchedules(
                   startAt: morning,
                   content: {
                     id: 1,
-                    mainId: mainCategoryIds.건강관리,
+                    mainId: mainCategoryIds.건강,
                     subId: 0, // 영양제 섭취하기
                     description: "멀티비타민 2알 먹이기",
-                    main: mainCategoriesData[mainCategoryIds.건강관리],
+                    main: mainCategoriesData[mainCategoryIds.건강],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.건강관리 && sub.id === 0
+                        sub.mainId === mainCategoryIds.건강 && sub.id === 0
                     )!,
                   },
                 },
@@ -488,13 +486,13 @@ export async function getAllSchedules(
                   startAt: noon,
                   content: {
                     id: 2,
-                    mainId: mainCategoryIds.일상관리,
+                    mainId: mainCategoryIds.일상,
                     subId: 7, // 식사
                     description: "점심 사료 100g 급여",
-                    main: mainCategoriesData[mainCategoryIds.일상관리],
+                    main: mainCategoriesData[mainCategoryIds.일상],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.일상관리 && sub.id === 7
+                        sub.mainId === mainCategoryIds.일상 && sub.id === 7
                     )!,
                   },
                 },
@@ -505,13 +503,13 @@ export async function getAllSchedules(
                   startAt: evening,
                   content: {
                     id: 3,
-                    mainId: mainCategoryIds.일상관리,
+                    mainId: mainCategoryIds.일상,
                     subId: 0, // 산책
                     description: "30분 산책",
-                    main: mainCategoriesData[mainCategoryIds.일상관리],
+                    main: mainCategoriesData[mainCategoryIds.일상],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.일상관리 && sub.id === 0
+                        sub.mainId === mainCategoryIds.일상 && sub.id === 0
                     )!,
                   },
                 },
@@ -529,13 +527,13 @@ export async function getAllSchedules(
                   startAt: afternoon,
                   content: {
                     id: 4,
-                    mainId: mainCategoryIds.교육관리,
+                    mainId: mainCategoryIds.교육,
                     subId: 3, // 배변 훈련
                     description: "실내배변 훈련 15분",
-                    main: mainCategoriesData[mainCategoryIds.교육관리],
+                    main: mainCategoriesData[mainCategoryIds.교육],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.교육관리 && sub.id === 3
+                        sub.mainId === mainCategoryIds.교육 && sub.id === 3
                     )!,
                   },
                 },
@@ -546,13 +544,13 @@ export async function getAllSchedules(
                   startAt: night,
                   content: {
                     id: 5,
-                    mainId: mainCategoryIds.일상관리,
+                    mainId: mainCategoryIds.일상,
                     subId: 1, // 놀이
                     description: "인형 장난감 놀이 20분",
-                    main: mainCategoriesData[mainCategoryIds.일상관리],
+                    main: mainCategoriesData[mainCategoryIds.일상],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.일상관리 && sub.id === 1
+                        sub.mainId === mainCategoryIds.일상 && sub.id === 1
                     )!,
                   },
                 },
@@ -570,13 +568,13 @@ export async function getAllSchedules(
                   startAt: morning,
                   content: {
                     id: 6,
-                    mainId: mainCategoryIds.건강관리,
+                    mainId: mainCategoryIds.건강,
                     subId: 1, // 체중체크 하기
                     description: "매주 수요일 체중 체크",
-                    main: mainCategoriesData[mainCategoryIds.건강관리],
+                    main: mainCategoriesData[mainCategoryIds.건강],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.건강관리 && sub.id === 1
+                        sub.mainId === mainCategoryIds.건강 && sub.id === 1
                     )!,
                   },
                 },
@@ -587,13 +585,13 @@ export async function getAllSchedules(
                   startAt: noon,
                   content: {
                     id: 7,
-                    mainId: mainCategoryIds.모임관리,
+                    mainId: mainCategoryIds.모임,
                     subId: 1, // 동네 모임
                     description: "아파트 단지 내 반려견 모임",
-                    main: mainCategoriesData[mainCategoryIds.모임관리],
+                    main: mainCategoriesData[mainCategoryIds.모임],
                     sub: subCategoriesData.find(
                       (sub) =>
-                        sub.mainId === mainCategoryIds.모임관리 && sub.id === 1
+                        sub.mainId === mainCategoryIds.모임 && sub.id === 1
                     )!,
                   },
                 },
@@ -622,13 +620,12 @@ export async function getAllSchedules(
                 startAt: tomorrowMorning,
                 content: {
                   id: 8,
-                  mainId: mainCategoryIds.일상관리,
+                  mainId: mainCategoryIds.일상,
                   subId: 2, // 미용실 방문
                   description: "월간 미용 예약",
-                  main: mainCategoriesData[mainCategoryIds.일상관리],
+                  main: mainCategoriesData[mainCategoryIds.일상],
                   sub: subCategoriesData.find(
-                    (sub) =>
-                      sub.mainId === mainCategoryIds.일상관리 && sub.id === 2
+                    (sub) => sub.mainId === mainCategoryIds.일상 && sub.id === 2
                   )!,
                 },
               },
@@ -639,13 +636,12 @@ export async function getAllSchedules(
                 startAt: tomorrowAfternoon,
                 content: {
                   id: 11,
-                  mainId: mainCategoryIds.교육관리,
+                  mainId: mainCategoryIds.교육,
                   subId: 0, // 사회화 훈련
                   description: "다른 반려견과 만남 훈련",
-                  main: mainCategoriesData[mainCategoryIds.교육관리],
+                  main: mainCategoriesData[mainCategoryIds.교육],
                   sub: subCategoriesData.find(
-                    (sub) =>
-                      sub.mainId === mainCategoryIds.교육관리 && sub.id === 0
+                    (sub) => sub.mainId === mainCategoryIds.교육 && sub.id === 0
                   )!,
                 },
               },
@@ -673,13 +669,12 @@ export async function getAllSchedules(
                 startAt: yesterdayEvening,
                 content: {
                   id: 9,
-                  mainId: mainCategoryIds.외출관리,
+                  mainId: mainCategoryIds.외출,
                   subId: 2, // 애견카페
                   description: "친구와 함께 애견카페 방문",
-                  main: mainCategoriesData[mainCategoryIds.외출관리],
+                  main: mainCategoriesData[mainCategoryIds.외출],
                   sub: subCategoriesData.find(
-                    (sub) =>
-                      sub.mainId === mainCategoryIds.외출관리 && sub.id === 2
+                    (sub) => sub.mainId === mainCategoryIds.외출 && sub.id === 2
                   )!,
                 },
               },
@@ -690,13 +685,12 @@ export async function getAllSchedules(
                 startAt: yesterdayMorning,
                 content: {
                   id: 12,
-                  mainId: mainCategoryIds.건강관리,
+                  mainId: mainCategoryIds.건강,
                   subId: 3, // 건강 체크
                   description: "구토 증상 관찰",
-                  main: mainCategoriesData[mainCategoryIds.건강관리],
+                  main: mainCategoriesData[mainCategoryIds.건강],
                   sub: subCategoriesData.find(
-                    (sub) =>
-                      sub.mainId === mainCategoryIds.건강관리 && sub.id === 3
+                    (sub) => sub.mainId === mainCategoryIds.건강 && sub.id === 3
                   )!,
                 },
               },
@@ -712,7 +706,7 @@ export async function getAllSchedules(
           const ddaySchedule: ScheduleWithItemsModel = {
             id: 6,
             profileId: profileId,
-            createdAt: new Date(2025, 4, 1),
+            createdAt: today,
             scheduleItems: [
               {
                 id: 10,
@@ -721,13 +715,13 @@ export async function getAllSchedules(
                 startAt: ddayNoon,
                 content: {
                   id: 10,
-                  mainId: mainCategoryIds.기념일관리,
+                  mainId: mainCategoryIds.기념일,
                   subId: 1, // 디데이
                   description: "반려동물 입양 1주년 기념일",
-                  main: mainCategoriesData[mainCategoryIds.기념일관리],
+                  main: mainCategoriesData[mainCategoryIds.기념일],
                   sub: subCategoriesData.find(
                     (sub) =>
-                      sub.mainId === mainCategoryIds.기념일관리 && sub.id === 1
+                      sub.mainId === mainCategoryIds.기념일 && sub.id === 1
                   )!,
                 },
               },
@@ -743,7 +737,7 @@ export async function getAllSchedules(
           const birthdaySchedule: ScheduleWithItemsModel = {
             id: 7,
             profileId: profileId,
-            createdAt: new Date(2025, 4, 1),
+            createdAt: today,
             scheduleItems: [
               {
                 id: 13,
@@ -752,13 +746,13 @@ export async function getAllSchedules(
                 startAt: birthdayNoon,
                 content: {
                   id: 13,
-                  mainId: mainCategoryIds.기념일관리,
+                  mainId: mainCategoryIds.기념일,
                   subId: 0, // 생일
                   description: "2번째 생일 파티",
-                  main: mainCategoriesData[mainCategoryIds.기념일관리],
+                  main: mainCategoriesData[mainCategoryIds.기념일],
                   sub: subCategoriesData.find(
                     (sub) =>
-                      sub.mainId === mainCategoryIds.기념일관리 && sub.id === 0
+                      sub.mainId === mainCategoryIds.기념일 && sub.id === 0
                   )!,
                 },
               },

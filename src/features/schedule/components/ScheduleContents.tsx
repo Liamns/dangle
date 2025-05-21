@@ -1,0 +1,217 @@
+"use client";
+
+import React, { memo, useState, useEffect, useCallback } from "react";
+import { InnerBox, Spacer } from "@/shared/components/layout";
+import { Text } from "@/shared/components/texts";
+import { Colors } from "@/shared/consts/colors";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
+import Image from "next/image";
+import { Button } from "@/shared/components/buttons";
+import Plus from "@/shared/svgs/plus.svg";
+import AddScheduleModal from "./AddScheduleModal";
+import DatePickerModal from "@/shared/components/DatePickerModal";
+import { useUserStore } from "@/entities/user/store";
+import useSWR from "swr";
+import {
+  ScheduleWithItemsModel,
+  ScheduleItemWithContentModel,
+} from "@/entities/schedule/model";
+import {
+  ScheduleContentFormData,
+  ScheduleItemFormData,
+} from "@/entities/schedule/schema";
+import {
+  getSubCategoryImagePath,
+  SubCategory,
+} from "@/shared/types/schedule-category";
+import modalStyles from "./ScheduleBottomModal.module.scss";
+import imgStyles from "@/shared/styles/images.module.scss";
+import { getTodaySchedules } from "../apis";
+import ScheduleItem from "./ScheduleItem";
+
+export interface ScheduleContentsProps {
+  schedules: ScheduleWithItemsModel[] | undefined;
+  isLoading: boolean;
+  error: any;
+  openDatePicker?: (initialDate: Date, callback: (date: Date) => void) => void;
+}
+
+const ScheduleContents = memo(
+  ({ schedules, isLoading, error, openDatePicker }: ScheduleContentsProps) => {
+    const [activeItemId, setActiveItemId] = useState<number | null>(null);
+    const [isAddMode, setIsAddMode] = useState<boolean>(false);
+    const [isEditMode, setIsEditMode] = useState<boolean>(false);
+    const [editingItem, setEditingItem] = useState<
+      | (ScheduleItemWithContentModel & {
+          scheduleId: number;
+          profileId: string;
+        })
+      | null
+    >(null);
+    const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    const [datePickerCallback, setDatePickerCallback] = useState<
+      ((date: Date) => void) | null
+    >(null);
+    const currentUser = useUserStore((state) => state.currentUser);
+    const { mutate } = useSWR("todaySchedules");
+
+    const closeDatePicker = useCallback(() => setShowDatePicker(false), []);
+    const handleDateSelect = useCallback(
+      (date: Date | undefined) => {
+        if (date && datePickerCallback) datePickerCallback(date);
+        closeDatePicker();
+      },
+      [datePickerCallback, closeDatePicker]
+    );
+
+    useEffect(() => {
+      setShowDatePicker(false);
+    }, []);
+
+    if (isLoading) return <LoadingOverlay isLoading={isLoading} />;
+    if (error)
+      return (
+        <InnerBox className={modalStyles.errorContainer}>
+          <div className={imgStyles.square}>
+            <Image
+              src="/images/shared/error.png"
+              alt="error"
+              fill
+              sizes="100%"
+            />
+          </div>
+          <Text text="오류가 발생했습니다." color={Colors.error} />
+        </InnerBox>
+      );
+    if (!schedules || schedules.length === 0)
+      return (
+        <InnerBox className={modalStyles.emptyContainer}>
+          <div className={imgStyles.square}>
+            <Image
+              src="/images/shared/empty.png"
+              alt="empty"
+              fill
+              sizes="100%"
+            />
+          </div>
+          <Button color={Colors.primary} width="250" height="40">
+            <InnerBox direction="row">
+              <Text
+                text={`일정을 추가해주세요\u00a0`}
+                fontWeight="bold"
+                color={Colors.brown}
+              />
+              <Plus color={Colors.brown} />
+            </InnerBox>
+          </Button>
+        </InnerBox>
+      );
+
+    const allScheduleItems = schedules
+      .flatMap((schedule) =>
+        schedule.scheduleItems.map((item) => ({
+          ...item,
+          scheduleId: schedule.id,
+          profileId: schedule.profileId,
+        }))
+      )
+      .sort(
+        (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
+      );
+
+    return (
+      <InnerBox
+        className={modalStyles.scheduleContentContainer}
+        justify="start"
+      >
+        <Spacer height="16" />
+        {allScheduleItems.map((item) => (
+          <ScheduleItem
+            key={item.id}
+            item={item}
+            isActive={activeItemId === item.id}
+            onActivate={() => setActiveItemId(item.id)}
+            onEdit={(it) => {
+              setEditingItem(it);
+              setIsEditMode(true);
+              setActiveItemId(null);
+            }}
+          />
+        ))}
+        <div
+          className={modalStyles.addScheduleButton}
+          onClick={() => setIsAddMode(true)}
+        >
+          <InnerBox direction="row" justify="center">
+            <Text
+              text={`일정 추가하기\u00a0`}
+              fontWeight="bold"
+              color={Colors.black}
+            />
+            <Plus color={Colors.black} />
+          </InnerBox>
+        </div>
+        {schedules && schedules.length > 0 && currentUser && (
+          <AddScheduleModal
+            isOpen={isAddMode}
+            onClose={() => setIsAddMode(false)}
+            scheduleId={schedules[0].id}
+            userId={currentUser.id}
+            onAddScheduleContent={async (
+              scheduleContent: ScheduleContentFormData,
+              scheduleItem: Partial<ScheduleItemFormData>,
+              isFavorite: boolean,
+              userId: string
+            ) => {
+              console.log("일정 추가:", {
+                scheduleContent,
+                scheduleItem,
+                isFavorite,
+                userId,
+              });
+            }}
+            onSuccess={() => {
+              mutate();
+              setIsAddMode(false);
+            }}
+            onDatePickerOpen={openDatePicker!}
+          />
+        )}
+        {isEditMode && editingItem && schedules && currentUser && (
+          <AddScheduleModal
+            isOpen={isEditMode}
+            onClose={() => setIsEditMode(false)}
+            scheduleId={editingItem.scheduleId}
+            userId={currentUser.id}
+            isEditMode
+            editingItem={editingItem}
+            onEditScheduleContent={async (
+              itemId: number,
+              scheduleContent: ScheduleContentFormData,
+              startAt: Date,
+              isFavorite: boolean
+            ) => {
+              console.log("일정 수정:", {
+                itemId,
+                scheduleContent,
+                startAt,
+                isFavorite,
+              });
+            }}
+            onSuccess={() => {
+              mutate();
+              setIsEditMode(false);
+            }}
+            onDatePickerOpen={openDatePicker!}
+          />
+        )}
+        <Spacer height="60" />
+      </InnerBox>
+    );
+  }
+);
+
+ScheduleContents.displayName = "ScheduleContents";
+
+export default ScheduleContents;

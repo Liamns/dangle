@@ -33,7 +33,6 @@ export type HealthSubCategory = (typeof healthSubCategories)[number];
 // 서브 카테고리 정의 - 교육관리
 export const educationSubCategories = [
   "사회화 훈련",
-  "복종 훈련",
   "유치원 등원",
   "배변 훈련",
   "교육 기타",
@@ -75,9 +74,9 @@ export const outingSubCategories = [
   "여행",
   "운동장",
   "애견카페",
-  "외출 기타",
   "애견호텔",
   "동물병원",
+  "외출 기타",
 ] as const;
 
 export type OutingSubCategory = (typeof outingSubCategories)[number];
@@ -92,10 +91,9 @@ export const healthSubCategoryIds: Record<HealthSubCategory, number> = {
 
 export const educationSubCategoryIds: Record<EducationSubCategory, number> = {
   "사회화 훈련": 0,
-  "복종 훈련": 1,
-  "유치원 등원": 2,
-  "배변 훈련": 3,
-  "교육 기타": 4,
+  "유치원 등원": 1,
+  "배변 훈련": 2,
+  "교육 기타": 3,
 };
 
 export const dailySubCategoryIds: Record<DailySubCategory, number> = {
@@ -125,9 +123,9 @@ export const outingSubCategoryIds: Record<OutingSubCategory, number> = {
   여행: 0,
   운동장: 1,
   애견카페: 2,
-  "외출 기타": 3,
-  애견호텔: 4,
-  동물병원: 5,
+  애견호텔: 3,
+  동물병원: 4,
+  "외출 기타": 5,
 };
 
 // 모든 서브 카테고리 타입
@@ -214,7 +212,6 @@ export const subCategoryToImageName: Record<SubCategory, string> = {
 
   // 교육관리 서브 카테고리
   "사회화 훈련": "socialization",
-  "복종 훈련": "obedience",
   "유치원 등원": "kindergarten",
   "배변 훈련": "potty-training",
   "교육 기타": "other-education",
@@ -242,9 +239,9 @@ export const subCategoryToImageName: Record<SubCategory, string> = {
   여행: "travel",
   운동장: "dog-park",
   애견카페: "pet-cafe",
-  "외출 기타": "outing-other",
   애견호텔: "pet-hotel",
   동물병원: "animal-hospital",
+  "외출 기타": "outing-other",
 };
 
 // 서브 카테고리에 해당하는 이미지 경로를 반환하는 함수

@@ -6,23 +6,25 @@ import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import { Tooltip, TooltipContent } from "@/shared/components/tooltip";
 import Setting from "@/shared/svgs/setting.svg";
-import styles from "./ScheduleContent.module.scss";
+import styles from "./ScheduleContentBox.module.scss";
 import Favorite from "@/shared/svgs/favorites.svg";
 
 interface ScheduleContentProps {
   isEditMode: boolean;
   setIsEditMode: (isEditMode: boolean) => void;
   isFavorite?: boolean;
+  selectedDate?: Date;
 }
 
 /**
  * 스케줄 콘텐츠 컴포넌트
  * 즐겨찾기 및 일정관리 버튼을 포함한 스케줄 페이지 상단 영역
  */
-const ScheduleContent: React.FC<ScheduleContentProps> = ({
+const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   isEditMode,
   setIsEditMode,
   isFavorite = false,
+  selectedDate = new Date(),
 }) => {
   // 일정관리 버튼 클릭 시 편집모드 전환
   const handleSettingClick = () => {
@@ -93,4 +95,4 @@ const ScheduleContent: React.FC<ScheduleContentProps> = ({
   );
 };
 
-export default ScheduleContent;
+export default ScheduleContentBox;
