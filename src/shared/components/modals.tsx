@@ -24,6 +24,7 @@ interface BottomModalProps {
   direction?: directionType;
   draggable?: boolean;
   minHeight?: number;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -41,6 +42,7 @@ export const BottomModal: React.FC<BottomModalProps> = ({
   align,
   draggable = false,
   minHeight = 0,
+  style = {},
 }) => {
   // minHeight 값이 필요한지 확인
   if (draggable && minHeight <= 0) {
@@ -418,7 +420,7 @@ export const BottomModal: React.FC<BottomModalProps> = ({
         <div
           ref={contentRef}
           className={styles.bottomSheetContent}
-          style={{ flex: draggable ? 1 : undefined }}
+          style={{ flex: draggable ? 1 : undefined, ...style }}
         >
           {children}
         </div>

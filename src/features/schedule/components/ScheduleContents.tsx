@@ -29,15 +29,24 @@ import imgStyles from "@/shared/styles/images.module.scss";
 import { getTodaySchedules } from "../apis";
 import ScheduleItem from "./ScheduleItem";
 
-export interface ScheduleContentsProps {
+interface ScheduleContentsProps {
   schedules: ScheduleWithItemsModel[] | undefined;
   isLoading: boolean;
   error: any;
   openDatePicker?: (initialDate: Date, callback: (date: Date) => void) => void;
+  hasAddBtn?: boolean;
+  onEmptyAddClick?: () => void;
 }
 
 const ScheduleContents = memo(
-  ({ schedules, isLoading, error, openDatePicker }: ScheduleContentsProps) => {
+  ({
+    schedules,
+    isLoading,
+    error,
+    openDatePicker,
+    hasAddBtn = true,
+    onEmptyAddClick,
+  }: ScheduleContentsProps) => {
     const [activeItemId, setActiveItemId] = useState<number | null>(null);
     const [isAddMode, setIsAddMode] = useState<boolean>(false);
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
@@ -87,6 +96,25 @@ const ScheduleContents = memo(
     if (!schedules || schedules.length === 0)
       return (
         <InnerBox className={modalStyles.emptyContainer}>
+          <InnerBox
+            direction="row"
+            justify="center"
+            style={{ alignItems: "baseline" }}
+          >
+            <Text
+              text="댕글"
+              fontWeight="bold"
+              color={Colors.brown}
+              fontSize="lg"
+              fontFamily="jalnan"
+            />
+            <Text text="로" fontSize="lg" color={Colors.brown} />
+          </InnerBox>
+          <Text
+            text="반려생활을 등록해요!"
+            fontSize="lg"
+            color={Colors.brown}
+          />
           <div className={imgStyles.square}>
             <Image
               src="/images/shared/empty.png"
@@ -95,7 +123,12 @@ const ScheduleContents = memo(
               sizes="100%"
             />
           </div>
-          <Button color={Colors.primary} width="250" height="40">
+          <Button
+            color={Colors.primary}
+            width="250"
+            height="40"
+            onClick={onEmptyAddClick}
+          >
             <InnerBox direction="row">
               <Text
                 text={`일정을 추가해주세요\u00a0`}
@@ -125,7 +158,6 @@ const ScheduleContents = memo(
         className={modalStyles.scheduleContentContainer}
         justify="start"
       >
-        <Spacer height="16" />
         {allScheduleItems.map((item) => (
           <ScheduleItem
             key={item.id}
@@ -139,20 +171,22 @@ const ScheduleContents = memo(
             }}
           />
         ))}
-        <div
-          className={modalStyles.addScheduleButton}
-          onClick={() => setIsAddMode(true)}
-        >
-          <InnerBox direction="row" justify="center">
-            <Text
-              text={`일정 추가하기\u00a0`}
-              fontWeight="bold"
-              color={Colors.black}
-            />
-            <Plus color={Colors.black} />
-          </InnerBox>
-        </div>
-        {schedules && schedules.length > 0 && currentUser && (
+        {hasAddBtn && (
+          <div
+            className={modalStyles.addScheduleButton}
+            onClick={() => setIsAddMode(true)}
+          >
+            <InnerBox direction="row" justify="center">
+              <Text
+                text={`일정 추가하기\u00a0`}
+                fontWeight="bold"
+                color={Colors.black}
+              />
+              <Plus color={Colors.black} />
+            </InnerBox>
+          </div>
+        )}
+        {currentUser && (
           <AddScheduleModal
             isOpen={isAddMode}
             onClose={() => setIsAddMode(false)}
@@ -206,7 +240,6 @@ const ScheduleContents = memo(
             onDatePickerOpen={openDatePicker!}
           />
         )}
-        <Spacer height="60" />
       </InnerBox>
     );
   }

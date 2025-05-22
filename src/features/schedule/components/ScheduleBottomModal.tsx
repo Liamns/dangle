@@ -13,6 +13,7 @@ import Image from "next/image";
 import { Button } from "@/shared/components/buttons";
 import Plus from "@/shared/svgs/plus.svg";
 import React, { useEffect, useState, useCallback, memo, useRef } from "react";
+import cn from "classnames";
 import useSWR from "swr";
 import Edit from "@/shared/svgs/edit.svg";
 import Delete from "@/shared/svgs/delete.svg";
@@ -94,6 +95,10 @@ export default function ScheduleBottomModal({
     isLoading,
   } = useSWR("todaySchedules", () => getTodaySchedules());
 
+  // empty 상태 체크
+  const isEmpty =
+    !isLoading && !error && (!schedules || schedules.length === 0);
+
   /**
    * 공유 버튼 클릭 핸들러
    */
@@ -115,18 +120,24 @@ export default function ScheduleBottomModal({
       justify="start"
       align="center"
       minHeight={innerBoxHeight}
+      style={{ paddingBottom: "calc(100dvh / 740 * 60)" }}
     >
       <ScheduleHeader
         formattedDate={formattedDate}
         dayOfWeek={todayDayOfWeek}
         onShareClick={handleShareClick}
       />
-      <ScheduleContents
-        schedules={schedules}
-        isLoading={isLoading}
-        error={error}
-        openDatePicker={openDatePicker}
-      />
+      <div className={cn(modalStyles.scrollable, isEmpty && modalStyles.empty)}>
+        <ScheduleContents
+          schedules={schedules}
+          isLoading={isLoading}
+          error={error}
+          openDatePicker={openDatePicker}
+          onEmptyAddClick={() => {
+            router.push("/schedule?edit=true");
+          }}
+        />
+      </div>
 
       {/* DatePickerModal은 컴포넌트의 최상위 레벨에서 렌더링하여 중첩 모달 문제 방지 */}
       <DatePickerModal
@@ -157,18 +168,20 @@ interface ScheduleHeaderProps {
 const ScheduleHeader = memo(
   ({ formattedDate, dayOfWeek, onShareClick }: ScheduleHeaderProps) => {
     return (
-      <InnerBox direction="row">
-        <Text
-          text={`${formattedDate} [ ${dayOfWeek}요일 ]`}
-          fontWeight="bold"
-          fontSize="title"
-          color={Colors.brown}
-        />
-        <Spacer width="12" />
-        <div className={styles.share} onClick={onShareClick}>
-          <Share />
-        </div>
-      </InnerBox>
+      <div className={modalStyles.scheduleHeader}>
+        <InnerBox direction="row">
+          <Text
+            text={`${formattedDate} [ ${dayOfWeek}요일 ]`}
+            fontWeight="bold"
+            fontSize="title"
+            color={Colors.brown}
+          />
+          <Spacer width="12" />
+          <div className={styles.share} onClick={onShareClick}>
+            <Share />
+          </div>
+        </InnerBox>
+      </div>
     );
   }
 );

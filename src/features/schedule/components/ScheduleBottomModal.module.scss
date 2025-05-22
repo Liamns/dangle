@@ -1,5 +1,9 @@
 @use "shared/styles/common" as common;
 // 스케줄 콘텐츠 스타일
+.scheduleHeader {
+  padding-bottom: common.rh(16);
+}
+
 .scheduleContentContainer {
   width: 100%;
   m.buttonContainer {
@@ -160,5 +164,23 @@
 
   .emptyContainer {
     flex: 1;
+  }
+
+  &::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+  }
+}
+
+// 스크롤 영역 flex centering
+.scrollable {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+
+  &.empty {
+    justify-content: center;
+    align-items: center;
   }
 }

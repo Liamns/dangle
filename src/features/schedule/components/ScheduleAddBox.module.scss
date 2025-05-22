@@ -1,0 +1,57 @@
+@use "shared/styles/common" as *;
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: rh(16);
+}
+
+.mainGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: start;
+  overflow-x: auto;
+  @include height(30);
+  gap: rw(4);
+  flex-wrap: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+  }
+}
+
+.mainChip {
+  @include width(76);
+  @include height(28);
+  background-color: var(--primary);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid transparent;
+  flex: 0 0 auto;
+
+  &.active {
+    background-color: var(--background);
+    border: 1px solid var(--brown);
+  }
+}
+
+.subGroup {
+  width: 100%;
+  @include height(354);
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: rh(8);
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+  }
+}

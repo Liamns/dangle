@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import cn from "classnames";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
@@ -8,12 +9,17 @@ import { Tooltip, TooltipContent } from "@/shared/components/tooltip";
 import Setting from "@/shared/svgs/setting.svg";
 import styles from "./ScheduleContentBox.module.scss";
 import Favorite from "@/shared/svgs/favorites.svg";
+import useSWR from "swr";
+import { useProfileStore } from "@/entities/profile/store";
+import { getScheduleByDate } from "../apis";
+import ScheduleContents from "./ScheduleContents";
 
 interface ScheduleContentProps {
   isEditMode: boolean;
   setIsEditMode: (isEditMode: boolean) => void;
   isFavorite?: boolean;
-  selectedDate?: Date;
+  selectedDate: Date;
+  openDatePicker: (initialDate: Date, callback: (date: Date) => void) => void;
 }
 
 /**
@@ -24,73 +30,113 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   isEditMode,
   setIsEditMode,
   isFavorite = false,
-  selectedDate = new Date(),
+  selectedDate,
+  openDatePicker,
 }) => {
   // 일정관리 버튼 클릭 시 편집모드 전환
   const handleSettingClick = () => {
     setIsEditMode(!isEditMode);
   };
 
+  // fetch schedules by date
+  const currentProfile = useProfileStore((s) => s.currentProfile);
+  const profileId = currentProfile?.id ?? "";
+  const { data: schedules, error } = useSWR(
+    profileId
+      ? ["scheduleByDate", profileId, selectedDate.toISOString()]
+      : null,
+    () => getScheduleByDate(profileId, selectedDate)
+  );
+  const isLoading = !error && !schedules;
+  // empty 상태 체크
+  const isEmpty =
+    !isLoading && !error && (!schedules || schedules.length === 0);
+
   // 일반모드일 때 렌더링되는 컴포넌트
   return (
     <div className={styles.container}>
-      <InnerBox direction="row" justify="space-between" py="0" px="0">
-        <InnerBox
-          direction="row"
-          justify="start"
-          align="center"
-          style={{ flex: 1 }}
-        >
-          <div
-            className={`${styles.favoriteBtn} ${
-              isFavorite ? styles.active : ""
-            }`}
-          >
-            <Favorite
-              width={14}
-              height={14}
-              color={isFavorite ? Colors.primary : Colors.grey}
-            />
-            <Text
-              text="즐겨찾기"
-              color={isFavorite ? Colors.black : Colors.grey}
-            />
-          </div>
-          <Spacer width="6" />
-          <Tooltip>
-            <div className={styles.favoriteTip}>
-              <Text text="?" color={Colors.white} />
-            </div>
-            <TooltipContent
-              placement="bottom"
-              offset={8}
-              showBackdrop={true}
-              hasArrow={false}
+      {!isEmpty && (
+        <>
+          <Spacer height="16" />
+          <div className={styles.scheduleBtnHeader}>
+            <InnerBox
+              direction="row"
+              justify="start"
+              align="center"
+              style={{ flex: 1 }}
             >
-              <div>
+              <div
+                className={`${styles.favoriteBtn} ${
+                  isFavorite ? styles.active : ""
+                }`}
+                onClick={() => {
+                  alert("즐겨찾기 설정");
+                }}
+              >
+                <Favorite
+                  width={14}
+                  height={14}
+                  color={isFavorite ? Colors.primary : Colors.grey}
+                />
                 <Text
-                  text="'즐겨찾기'를 설정하면 '불러오기'로 일정을 불러올 수 있어요!"
-                  fontSize="sm"
-                  color={Colors.black}
+                  text="즐겨찾기"
+                  color={isFavorite ? Colors.black : Colors.grey}
                 />
               </div>
-            </TooltipContent>
-          </Tooltip>
-        </InnerBox>
+              <Spacer width="6" />
+              <Tooltip>
+                <div className={styles.favoriteTip}>
+                  <Text text="?" color={Colors.white} />
+                </div>
+                <TooltipContent
+                  placement="bottom"
+                  offset={8}
+                  showBackdrop={true}
+                  hasArrow={false}
+                >
+                  <div>
+                    <Text
+                      text="'즐겨찾기'를 설정하면 '불러오기'로 일정을 불러올 수 있어요!"
+                      fontSize="sm"
+                      color={Colors.black}
+                    />
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </InnerBox>
 
-        <div className={styles.scheduleSettingBtn} onClick={handleSettingClick}>
-          <Text
-            text="일정관리"
-            color={Colors.brown}
-            fontWeight="bold"
-            fontSize="sm"
-          />
-          <Spacer width="4" />
-          <Setting width={12} height={12} color={Colors.brown} />
-        </div>
-      </InnerBox>
+            <div
+              className={styles.scheduleSettingBtn}
+              onClick={handleSettingClick}
+            >
+              <Text
+                text="일정관리"
+                color={Colors.brown}
+                fontWeight="bold"
+                fontSize="sm"
+              />
+              <Spacer width="4" />
+              <Setting width={12} height={12} color={Colors.brown} />
+            </div>
+          </div>
+        </>
+      )}
 
-      <Spacer height="15" />
+      <div className={cn(styles.scrollable, isEmpty && styles.empty)}>
+        <ScheduleContents
+          schedules={schedules}
+          isLoading={isLoading}
+          error={error}
+          openDatePicker={openDatePicker}
+          hasAddBtn={false}
+        />
+
+        {schedules && schedules.length !== 0 && (
+          <div className={styles.shareBtn}>
+            <Text text="일정 공유하기" fontWeight="bold" color={Colors.white} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
