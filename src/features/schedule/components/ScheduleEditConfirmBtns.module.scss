@@ -1,0 +1,31 @@
+@use "@/shared/styles/common" as *;
+.container {
+  width: 100%;
+  @include height(37);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.deleteBtn {
+  flex: 3;
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 10px 0 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: rw(4);
+}
+
+.confirmBtn {
+  flex: 4;
+  height: 100%;
+  background-color: var(--brown);
+  border-radius: 0 10px 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: rw(4);
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useState, useEffect, useCallback } from "react";
+import React, { memo, useState } from "react";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
@@ -9,7 +9,6 @@ import Image from "next/image";
 import { Button } from "@/shared/components/buttons";
 import Plus from "@/shared/svgs/plus.svg";
 import AddScheduleModal from "./AddScheduleModal";
-import DatePickerModal from "@/shared/components/DatePickerModal";
 import { useUserStore } from "@/entities/user/store";
 import useSWR from "swr";
 import {
@@ -20,13 +19,8 @@ import {
   ScheduleContentFormData,
   ScheduleItemFormData,
 } from "@/entities/schedule/schema";
-import {
-  getSubCategoryImagePath,
-  SubCategory,
-} from "@/shared/types/schedule-category";
 import modalStyles from "./ScheduleBottomModal.module.scss";
 import imgStyles from "@/shared/styles/images.module.scss";
-import { getTodaySchedules } from "../apis";
 import ScheduleItem from "./ScheduleItem";
 
 interface ScheduleContentsProps {
@@ -57,26 +51,8 @@ const ScheduleContents = memo(
         })
       | null
     >(null);
-    const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [datePickerCallback, setDatePickerCallback] = useState<
-      ((date: Date) => void) | null
-    >(null);
     const currentUser = useUserStore((state) => state.currentUser);
     const { mutate } = useSWR("todaySchedules");
-
-    const closeDatePicker = useCallback(() => setShowDatePicker(false), []);
-    const handleDateSelect = useCallback(
-      (date: Date | undefined) => {
-        if (date && datePickerCallback) datePickerCallback(date);
-        closeDatePicker();
-      },
-      [datePickerCallback, closeDatePicker]
-    );
-
-    useEffect(() => {
-      setShowDatePicker(false);
-    }, []);
 
     if (isLoading) return <LoadingOverlay isLoading={isLoading} />;
     if (error)

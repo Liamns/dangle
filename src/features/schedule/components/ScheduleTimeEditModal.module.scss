@@ -1,7 +1,9 @@
 @use "shared/styles/common" as *;
+
 .container {
-  width: 100%;
-  height: 100%;
+  @include width(250);
+  @include px(11);
+  @include py(16);
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -9,16 +11,18 @@
   gap: rh(16);
 }
 
-.subGroup {
+.title {
   width: 100%;
-  @include height(354);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.titleAffix {
+  display: flex;
+  flex-direction: row;
   justify-content: start;
   align-items: center;
-  gap: rh(8);
-  overflow-y: auto;
-  &::-webkit-scrollbar {
-    display: none; /* Hide scrollbar */
-  }
+  gap: rw(4);
 }

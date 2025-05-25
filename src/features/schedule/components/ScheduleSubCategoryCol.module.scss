@@ -1,15 +1,6 @@
 @use "shared/styles/common" as *;
-.container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: center;
-  gap: rh(16);
-}
 
-.subGroup {
+.container {
   width: 100%;
   @include height(354);
   display: flex;
@@ -18,6 +9,7 @@
   align-items: center;
   gap: rh(8);
   overflow-y: auto;
+  padding-bottom: rh(8);
   &::-webkit-scrollbar {
     display: none; /* Hide scrollbar */
   }

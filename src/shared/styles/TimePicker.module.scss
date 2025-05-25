@@ -1,0 +1,33 @@
+@use "@/shared/styles/common" as common;
+
+.timePickerWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+.timeSelected {
+  width: 100%;
+  @include common.height(30);
+  border-radius: 10px;
+  background-color: var(--primary);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: -1;
+}
+.timePickerLabel {
+  @include common.height(26);
+  @include common.pl(10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.timePickerContainer {
+  flex: 1;
+
+  div div:last-of-type {
+    display: none;
+  }
+}

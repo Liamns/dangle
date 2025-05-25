@@ -13,6 +13,7 @@ import modalStyles from "./ScheduleBottomModal.module.scss";
 import { Text } from "@/shared/components/texts";
 import EditSvg from "@/shared/svgs/edit.svg";
 import DeleteSvg from "@/shared/svgs/delete.svg";
+import { formatTime } from "@/shared/lib/date";
 
 export interface ScheduleItemProps {
   item: ScheduleItemWithContentModel & {
@@ -53,14 +54,6 @@ const ScheduleItem = memo(
       }
       wasActive.current = isActive;
     }, [isActive]);
-
-    const formatTime = (date: Date) => {
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
-      const formattedHours = hours < 10 ? `0${hours}` : hours;
-      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-      return `${formattedHours}:${formattedMinutes}`;
-    };
 
     return (
       <div style={{ width: "100%", position: "relative", marginBottom: "8px" }}>

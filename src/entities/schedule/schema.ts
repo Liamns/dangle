@@ -121,6 +121,19 @@ export const favoriteContentSchema = z.object({
 
 export type FavoriteContentFormData = z.infer<typeof favoriteContentSchema>;
 
+// 사용자-서브 카테고리 즐겨찾기 스키마
+export const favoriteSubCategorySchema = z.object({
+  userId: z.string().uuid("유효한 사용자를 선택해주세요."),
+  subCategoryId: z
+    .number()
+    .int()
+    .positive("유효한 서브 카테고리를 선택해주세요."),
+});
+
+export type FavoriteSubCategoryFormData = z.infer<
+  typeof favoriteSubCategorySchema
+>;
+
 // 일정 생성 시 사용할 확장 스키마 (여러 아이템을 한 번에 등록)
 export const createScheduleSchema = scheduleSchema.extend({
   items: z

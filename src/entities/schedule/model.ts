@@ -81,6 +81,18 @@ export const favoriteContentModelSchema = z.object({
 
 export type FavoriteContentModel = z.infer<typeof favoriteContentModelSchema>;
 
+// 사용자-서브 카테고리 즐겨찾기 모델 (User와 SubCategory N:M 관계)
+export const favoriteSubCategoryModelSchema = z.object({
+  id: z.number().int().positive(),
+  userId: uuidSchema,
+  subCategoryId: z.number().int().positive(),
+  addedAt: z.date(),
+});
+
+export type FavoriteSubCategoryModel = z.infer<
+  typeof favoriteSubCategoryModelSchema
+>;
+
 // 카테고리와 함께 확장된 일정 컨텐츠 모델
 export const extendedScheduleContentModelSchema =
   scheduleContentModelSchema.extend({
@@ -271,3 +283,10 @@ export function groupItemsBySchedule(
     return acc;
   }, {} as Record<number, ScheduleItemModel[]>);
 }
+
+// 생성 전용 DTO 타입
+export type NewScheduleItem = {
+  // 사용자가 설정 전까지 startAt은 optional 또는 null일 수 있음
+  startAt?: Date | null;
+  content: Omit<ScheduleItemWithContentModel["content"], "id">;
+};

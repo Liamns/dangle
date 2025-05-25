@@ -1,11 +1,11 @@
 // 메인 카테고리 정의
 export const mainCategories = [
   "건강",
-  "교육",
-  "일상",
   "기념일",
+  "교육",
   "모임",
   "외출",
+  "일상",
 ] as const;
 
 export type MainCategory = (typeof mainCategories)[number];
@@ -13,43 +13,43 @@ export type MainCategory = (typeof mainCategories)[number];
 // 메인 카테고리 ID 맵핑 (숫자 인덱스용)
 export const mainCategoryIds: Record<MainCategory, number> = {
   건강: 0,
-  교육: 1,
-  일상: 2,
-  기념일: 3,
-  모임: 4,
-  외출: 5,
+  기념일: 1,
+  교육: 2,
+  모임: 3,
+  외출: 4,
+  일상: 5,
 };
 
 // 서브 카테고리 정의 - 건강관리
 export const healthSubCategories = [
-  "영양제 섭취",
-  "체중체크",
-  "예방접종",
   "건강체크",
+  "영양제 섭취",
+  "예방접종",
+  "체중체크",
 ] as const;
 
 export type HealthSubCategory = (typeof healthSubCategories)[number];
 
 // 서브 카테고리 정의 - 교육관리
 export const educationSubCategories = [
+  "교육 기타",
+  "배변 훈련",
   "사회화 훈련",
   "유치원 등원",
-  "배변 훈련",
-  "교육 기타",
 ] as const;
 
 export type EducationSubCategory = (typeof educationSubCategories)[number];
 
 // 서브 카테고리 정의 - 일상관리
 export const dailySubCategories = [
-  "산책",
-  "놀이",
-  "미용실",
-  "목욕",
-  "실외배변",
-  "복용약",
   "간식",
+  "놀이",
+  "목욕",
+  "미용실",
+  "복용약",
+  "산책",
   "식사",
+  "실외배변",
   "일상 기타",
 ] as const;
 
@@ -62,8 +62,8 @@ export type AnniversarySubCategory = (typeof anniversarySubCategories)[number];
 
 // 서브 카테고리 정의 - 모임관리
 export const meetingSubCategories = [
-  "산책모임",
   "동네모임",
+  "산책모임",
   "친구모임",
 ] as const;
 
@@ -71,40 +71,40 @@ export type MeetingSubCategory = (typeof meetingSubCategories)[number];
 
 // 서브 카테고리 정의 - 외출관리
 export const outingSubCategories = [
-  "여행",
-  "운동장",
+  "동물병원",
   "애견카페",
   "애견호텔",
-  "동물병원",
+  "여행",
   "외출 기타",
+  "운동장",
 ] as const;
 
 export type OutingSubCategory = (typeof outingSubCategories)[number];
 
 // 서브 카테고리 ID 맵핑
 export const healthSubCategoryIds: Record<HealthSubCategory, number> = {
-  "영양제 섭취": 0,
-  체중체크: 1,
+  건강체크: 0,
+  "영양제 섭취": 1,
   예방접종: 2,
-  건강체크: 3,
+  체중체크: 3,
 };
 
 export const educationSubCategoryIds: Record<EducationSubCategory, number> = {
-  "사회화 훈련": 0,
-  "유치원 등원": 1,
-  "배변 훈련": 2,
-  "교육 기타": 3,
+  "교육 기타": 0,
+  "배변 훈련": 1,
+  "사회화 훈련": 2,
+  "유치원 등원": 3,
 };
 
 export const dailySubCategoryIds: Record<DailySubCategory, number> = {
-  산책: 0,
+  간식: 0,
   놀이: 1,
-  미용실: 2,
-  목욕: 3,
-  실외배변: 4,
-  복용약: 5,
-  간식: 6,
-  식사: 7,
+  목욕: 2,
+  미용실: 3,
+  복용약: 4,
+  산책: 5,
+  식사: 6,
+  실외배변: 7,
   "일상 기타": 8,
 };
 
@@ -114,18 +114,18 @@ export const anniversarySubCategoryIds: Record<AnniversarySubCategory, number> =
   };
 
 export const meetingSubCategoryIds: Record<MeetingSubCategory, number> = {
-  산책모임: 0,
-  동네모임: 1,
+  동네모임: 0,
+  산책모임: 1,
   친구모임: 2,
 };
 
 export const outingSubCategoryIds: Record<OutingSubCategory, number> = {
-  여행: 0,
-  운동장: 1,
-  애견카페: 2,
-  애견호텔: 3,
-  동물병원: 4,
-  "외출 기타": 5,
+  동물병원: 0,
+  애견카페: 1,
+  애견호텔: 2,
+  여행: 3,
+  "외출 기타": 4,
+  운동장: 5,
 };
 
 // 모든 서브 카테고리 타입
@@ -138,26 +138,27 @@ export type SubCategory =
   | OutingSubCategory;
 
 // 메인 카테고리별 서브 카테고리 목록 맵핑
-export const subCategoriesByMain: Record<MainCategory, readonly string[]> = {
-  건강: healthSubCategories,
-  교육: educationSubCategories,
-  일상: dailySubCategories,
-  기념일: anniversarySubCategories,
-  모임: meetingSubCategories,
-  외출: outingSubCategories,
-};
+export const subCategoriesByMain: Record<MainCategory, readonly SubCategory[]> =
+  {
+    건강: healthSubCategories,
+    기념일: anniversarySubCategories,
+    교육: educationSubCategories,
+    모임: meetingSubCategories,
+    일상: dailySubCategories,
+    외출: outingSubCategories,
+  };
 
 // 메인 카테고리에 따라 해당하는 서브 카테고리 배열을 반환하는 함수
 export function getSubCategoriesByMain(
   mainCategory: MainCategory
-): readonly string[] {
+): readonly SubCategory[] {
   return subCategoriesByMain[mainCategory];
 }
 
 // 메인 카테고리와 서브 카테고리 이름으로 서브 카테고리 ID를 찾는 함수
 export function getSubCategoryId(
   mainCategory: MainCategory,
-  subCategory: string
+  subCategory: SubCategory
 ): number {
   switch (mainCategory) {
     case "건강":
@@ -205,25 +206,25 @@ export function getAllSubCategoriesByMain(
 // 서브 카테고리 영어 이름 매핑 (이미지 아이콘용)
 export const subCategoryToImageName: Record<SubCategory, string> = {
   // 건강관리 서브 카테고리
+  건강체크: "health-check",
+  예방접종: "vaccination",
   "영양제 섭취": "vitamin",
   체중체크: "weight-check",
-  예방접종: "vaccination",
-  건강체크: "health-check",
 
   // 교육관리 서브 카테고리
+  "교육 기타": "other-education",
+  "배변 훈련": "potty-training",
   "사회화 훈련": "socialization",
   "유치원 등원": "kindergarten",
-  "배변 훈련": "potty-training",
-  "교육 기타": "other-education",
 
   // 일상관리 서브 카테고리
-  산책: "walk",
+  간식: "snack",
   놀이: "play",
   미용실: "grooming",
   목욕: "bath",
-  실외배변: "outdoor-potty",
   복용약: "medicine",
-  간식: "snack",
+  산책: "walk",
+  실외배변: "outdoor-potty",
   식사: "meal",
   "일상 기타": "daily-other",
 
@@ -231,17 +232,17 @@ export const subCategoryToImageName: Record<SubCategory, string> = {
   생일: "birthday",
 
   // 모임관리 서브 카테고리
-  산책모임: "community",
   동네모임: "neighborhood",
+  산책모임: "community",
   친구모임: "friends",
 
   // 외출관리 서브 카테고리
-  여행: "travel",
-  운동장: "dog-park",
+  동물병원: "animal-hospital",
   애견카페: "pet-cafe",
   애견호텔: "pet-hotel",
-  동물병원: "animal-hospital",
+  여행: "travel",
   "외출 기타": "outing-other",
+  운동장: "dog-park",
 };
 
 // 서브 카테고리에 해당하는 이미지 경로를 반환하는 함수

@@ -24,8 +24,7 @@ import { ScheduleItemWithContentModel } from "@/entities/schedule/model";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Text } from "@/shared/components/texts";
-import Picker from "react-mobile-picker";
-import { div } from "framer-motion/client";
+import TimePicker, { TimePickerOptions } from "@/shared/components/TimePicker";
 
 /**
  * 일정 추가 모달 컴포넌트 Props
@@ -134,27 +133,6 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
       : new Date()
   );
 
-  // 시간 선택기 관련 상태
-  const generateHours = () =>
-    Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
-  const generateMinutes = () =>
-    Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
-
-  const [pickerValue, setPickerValue] = useState({
-    hour: String(startDate.getHours()).padStart(2, "0"),
-    minute: String(startDate.getMinutes()).padStart(2, "0"),
-  });
-
-  type PickerOptions = {
-    hour: string[];
-    minute: string[];
-  };
-
-  const [pickerOptions] = useState<PickerOptions>({
-    hour: generateHours(),
-    minute: generateMinutes(),
-  });
-
   // 날짜 형식 지정
   const formattedDate = format(startDate, "yyyy년 MM월 dd일", {
     locale: ko,
@@ -204,27 +182,15 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
   // 날짜 선택 모달 열기 핸들러
   const handleOpenDatePicker = () => {
     onDatePickerOpen(startDate, (selectedDate: Date) => {
-      // 기존 시간 정보 유지
-      const newDate = new Date(selectedDate);
-      const hours = parseInt(pickerValue.hour);
-      const minutes = parseInt(pickerValue.minute);
-
-      newDate.setHours(hours);
-      newDate.setMinutes(minutes);
-
+      // 선택된 날짜 부분만 교체하고, 시간은 기존 startDate 유지
+      const newDate = new Date(startDate);
+      newDate.setFullYear(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+      );
       setStartDate(newDate);
     });
-  };
-
-  // 시간 변경 핸들러
-  const handleTimeChange = (newValue: any) => {
-    setPickerValue(newValue);
-
-    // 날짜 객체에 선택된 시간 적용
-    const newDate = new Date(startDate);
-    newDate.setHours(parseInt(newValue.hour));
-    newDate.setMinutes(parseInt(newValue.minute));
-    setStartDate(newDate);
   };
 
   // 즐겨찾기 변경 핸들러 (단순히 상태만 변경)
@@ -355,46 +321,7 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
         <div className={styles.divider}></div>
 
         {/* 시간 선택 UI */}
-        <div className={styles.timePickerWrapper}>
-          <div className={styles.timeSelected}></div>
-          <div className={styles.timePickerLabel}>
-            <Text
-              text="시작시간"
-              color={Colors.black}
-              fontWeight="bold"
-              fontSize="md"
-            />
-          </div>
-          <Spacer width="40" />
-          <div className={styles.timePickerContainer}>
-            <Picker
-              value={pickerValue}
-              onChange={handleTimeChange}
-              height={90}
-              itemHeight={30}
-              wheelMode="natural"
-            >
-              {Object.keys(pickerOptions).map((key) => (
-                <Picker.Column key={key} name={key}>
-                  {pickerOptions[key as keyof PickerOptions].map(
-                    (option: string) => (
-                      <Picker.Item key={option} value={option}>
-                        {({ selected }) => (
-                          <Text
-                            text={option}
-                            color={selected ? Colors.black : Colors.invalid}
-                            fontWeight={selected ? "bold" : "normal"}
-                            fontSize="md"
-                          />
-                        )}
-                      </Picker.Item>
-                    )
-                  )}
-                </Picker.Column>
-              ))}
-            </Picker>
-          </div>
-        </div>
+        <TimePicker value={startDate} onChange={setStartDate} />
 
         <Spacer height="10" />
 

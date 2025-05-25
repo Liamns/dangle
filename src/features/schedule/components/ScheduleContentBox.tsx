@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import cn from "classnames";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
@@ -9,10 +9,10 @@ import { Tooltip, TooltipContent } from "@/shared/components/tooltip";
 import Setting from "@/shared/svgs/setting.svg";
 import styles from "./ScheduleContentBox.module.scss";
 import Favorite from "@/shared/svgs/favorites.svg";
-import useSWR from "swr";
 import { useProfileStore } from "@/entities/profile/store";
-import { getScheduleByDate } from "../apis";
 import ScheduleContents from "./ScheduleContents";
+import { useRouter } from "next/navigation";
+import { useScheduleByDate } from "../hooks/useScheduleByDate";
 
 interface ScheduleContentProps {
   isEditMode: boolean;
@@ -33,6 +33,13 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   selectedDate,
   openDatePicker,
 }) => {
+  const router = useRouter();
+
+  const handleEmptyClick = useCallback(() => {
+    // 빈 상태에서 일정 추가 버튼 클릭 시
+    router.push("/schedule?edit=true");
+  }, [router]);
+
   // 일정관리 버튼 클릭 시 편집모드 전환
   const handleSettingClick = () => {
     setIsEditMode(!isEditMode);
@@ -41,13 +48,12 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   // fetch schedules by date
   const currentProfile = useProfileStore((s) => s.currentProfile);
   const profileId = currentProfile?.id ?? "";
-  const { data: schedules, error } = useSWR(
-    profileId
-      ? ["scheduleByDate", profileId, selectedDate.toISOString()]
-      : null,
-    () => getScheduleByDate(profileId, selectedDate)
-  );
-  const isLoading = !error && !schedules;
+  const {
+    data: schedules,
+    error,
+    isLoading,
+  } = useScheduleByDate(profileId, selectedDate);
+
   // empty 상태 체크
   const isEmpty =
     !isLoading && !error && (!schedules || schedules.length === 0);
@@ -129,6 +135,7 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
           error={error}
           openDatePicker={openDatePicker}
           hasAddBtn={false}
+          onEmptyAddClick={handleEmptyClick}
         />
 
         {schedules && schedules.length !== 0 && (
