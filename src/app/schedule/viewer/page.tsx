@@ -1,5 +1,5 @@
 "use client";
-import { Card, InnerWrapper, Spacer } from "@/shared/components/layout";
+import { Card, Center, InnerWrapper, Spacer } from "@/shared/components/layout";
 import { decrypt } from "@/shared/lib/crypto";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -28,6 +28,10 @@ interface SharedScheduleData {
 }
 
 function ScheduleViewer() {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
   const searchParams = useSearchParams();
   const dataParam = searchParams.get("data");
   const [scheduleData, setScheduleData] = useState<SharedScheduleData | null>(
@@ -68,10 +72,18 @@ function ScheduleViewer() {
     })();
   }, [dataParam]);
 
-  if (!scheduleData) {
+  // render
+  if (!hydrated || !scheduleData) {
     return (
       <InnerWrapper>
-        <Text text="일정 데이터를 불러오는 중입니다…" color={Colors.brown} />
+        <Center>
+          <Text
+            text="일정 데이터를 불러오는 중입니다…"
+            color={Colors.brown}
+            fontSize="lg"
+            fontWeight="bold"
+          />
+        </Center>
       </InnerWrapper>
     );
   }
