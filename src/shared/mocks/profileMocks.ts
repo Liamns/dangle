@@ -10,7 +10,7 @@ export const mockDogProfile: ProfileModel = {
   petAge: "2023-05-15", // yyyy-mm-dd 형식
   petWeight: 5.5,
   petGender: {
-    gender: true, // true: 수컷, false: 암컷, null: 선택 안함
+    gender: false, // true: 수컷, false: 암컷, null: 선택 안함
     isNeutered: true,
   },
   petSpec: 0, // 0: 강아지, 1: 고양이 (null도 가능)

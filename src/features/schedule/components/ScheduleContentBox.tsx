@@ -13,6 +13,7 @@ import { useProfileStore } from "@/entities/profile/store";
 import ScheduleContents from "./ScheduleContents";
 import { useRouter } from "next/navigation";
 import { useScheduleByDate } from "../hooks/useScheduleByDate";
+import { encrypt } from "@/shared/lib/crypto";
 
 interface ScheduleContentProps {
   isEditMode: boolean;
@@ -45,18 +46,51 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
     setIsEditMode(!isEditMode);
   };
 
-  // fetch schedules by date
+  // fetch schedule by date (single)
   const currentProfile = useProfileStore((s) => s.currentProfile);
   const profileId = currentProfile?.id ?? "";
   const {
-    data: schedules,
+    data: schedule,
     error,
     isLoading,
   } = useScheduleByDate(profileId, selectedDate);
 
+  // 일정 공유 버튼 클릭 핸들러
+  const handleShareClick = useCallback(async () => {
+    if (!schedule || !currentProfile) return;
+    try {
+      // Exclude profileId and include pet info
+      const { profileId: _, ...scheduleData } = schedule;
+      const payload = {
+        petName: currentProfile.petname,
+        petType: currentProfile.petSpec,
+        petGender: currentProfile.petGender,
+        schedule: scheduleData,
+      };
+      const json = JSON.stringify(payload);
+      const encrypted = await encrypt(json);
+      const shareUrl = `${
+        window.location.origin
+      }/schedule/viewer?data=${encodeURIComponent(encrypted)}`;
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = shareUrl;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+      alert("공유용 링크가 복사되었습니다.");
+    } catch (e) {
+      console.error("일정 공유 실패", e);
+      alert("공유에 실패했습니다. 다시 시도해주세요.");
+    }
+  }, [schedule, currentProfile]);
+
   // empty 상태 체크
-  const isEmpty =
-    !isLoading && !error && (!schedules || schedules.length === 0);
+  const isEmpty = !isLoading && !error && !schedule;
 
   // 일반모드일 때 렌더링되는 컴포넌트
   return (
@@ -130,7 +164,7 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
 
       <div className={cn(styles.scrollable, isEmpty && styles.empty)}>
         <ScheduleContents
-          schedules={schedules}
+          schedule={schedule}
           isLoading={isLoading}
           error={error}
           openDatePicker={openDatePicker}
@@ -138,8 +172,8 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
           onEmptyAddClick={handleEmptyClick}
         />
 
-        {schedules && schedules.length !== 0 && (
-          <div className={styles.shareBtn}>
+        {schedule && (
+          <div className={styles.shareBtn} onClick={handleShareClick}>
             <Text text="일정 공유하기" fontWeight="bold" color={Colors.white} />
           </div>
         )}

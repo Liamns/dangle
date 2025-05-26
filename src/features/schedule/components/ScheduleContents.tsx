@@ -24,7 +24,7 @@ import imgStyles from "@/shared/styles/images.module.scss";
 import ScheduleItem from "./ScheduleItem";
 
 interface ScheduleContentsProps {
-  schedules: ScheduleWithItemsModel[] | undefined;
+  schedule?: ScheduleWithItemsModel;
   isLoading: boolean;
   error: any;
   openDatePicker?: (initialDate: Date, callback: (date: Date) => void) => void;
@@ -34,7 +34,7 @@ interface ScheduleContentsProps {
 
 const ScheduleContents = memo(
   ({
-    schedules,
+    schedule,
     isLoading,
     error,
     openDatePicker,
@@ -69,7 +69,7 @@ const ScheduleContents = memo(
           <Text text="오류가 발생했습니다." color={Colors.error} />
         </InnerBox>
       );
-    if (!schedules || schedules.length === 0)
+    if (!schedule || schedule.scheduleItems.length === 0)
       return (
         <InnerBox className={modalStyles.emptyContainer}>
           <InnerBox
@@ -117,14 +117,12 @@ const ScheduleContents = memo(
         </InnerBox>
       );
 
-    const allScheduleItems = schedules
-      .flatMap((schedule) =>
-        schedule.scheduleItems.map((item) => ({
-          ...item,
-          scheduleId: schedule.id,
-          profileId: schedule.profileId,
-        }))
-      )
+    const allScheduleItems = schedule.scheduleItems
+      .map((item) => ({
+        ...item,
+        scheduleId: schedule.id,
+        profileId: schedule.profileId,
+      }))
       .sort(
         (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
       );
@@ -166,7 +164,7 @@ const ScheduleContents = memo(
           <AddScheduleModal
             isOpen={isAddMode}
             onClose={() => setIsAddMode(false)}
-            scheduleId={schedules[0].id}
+            scheduleId={schedule.id}
             userId={currentUser.id}
             onAddScheduleContent={async (
               scheduleContent: ScheduleContentFormData,
@@ -188,7 +186,7 @@ const ScheduleContents = memo(
             onDatePickerOpen={openDatePicker!}
           />
         )}
-        {isEditMode && editingItem && schedules && currentUser && (
+        {isEditMode && editingItem && schedule && currentUser && (
           <AddScheduleModal
             isOpen={isEditMode}
             onClose={() => setIsEditMode(false)}
@@ -202,6 +200,7 @@ const ScheduleContents = memo(
               startAt: Date,
               isFavorite: boolean
             ) => {
+              alert("수정사항 서버 적용 후 mutate 호출");
               console.log("일정 수정:", {
                 itemId,
                 scheduleContent,

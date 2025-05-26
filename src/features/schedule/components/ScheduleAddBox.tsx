@@ -16,12 +16,14 @@ import {
   ScheduleItemWithContentModel,
   NewScheduleItem,
 } from "@/entities/schedule/model";
+import { useRouter } from "next/navigation";
 
 interface ScheduleAddBoxProps {
   selectedDate: Date;
 }
 
 const ScheduleAddBox = memo(({ selectedDate }: ScheduleAddBoxProps) => {
+  const router = useRouter();
   const [selectedMain, setSelectedMain] = useState<MainCategory>(
     mainCategories[0]
   );
@@ -56,6 +58,7 @@ const ScheduleAddBox = memo(({ selectedDate }: ScheduleAddBoxProps) => {
     // TODO: integrate persistence API
     alert("수정사항 서버에 반영 후 mutate 호출");
     console.log("Confirm modifications:", modifications);
+    router.back(); // navigate back to the previous page
   }, [modifications]);
 
   const handleDelete = useCallback(() => {

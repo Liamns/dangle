@@ -7,10 +7,10 @@ import { getMockSchedules } from "./mocks/scheduleMocks";
  */
 export async function getTodaySchedules(
   profileId: string = TestUUID[0]
-): Promise<ScheduleWithItemsModel[]> {
+): Promise<ScheduleWithItemsModel> {
   try {
     // simulate network delay and return mock data for current date
-    return await new Promise<ScheduleWithItemsModel[]>((resolve) => {
+    return await new Promise<ScheduleWithItemsModel>((resolve) => {
       // setTimeout(() => resolve([]), 500);
       setTimeout(() => resolve(getMockSchedules(profileId, new Date())), 500);
     });
@@ -25,9 +25,9 @@ export async function getTodaySchedules(
 export async function getScheduleByDate(
   profileId: string,
   date: Date
-): Promise<ScheduleWithItemsModel[]> {
+): Promise<ScheduleWithItemsModel> {
   // simulate network delay and return mock data for the specified date
-  return await new Promise<ScheduleWithItemsModel[]>((resolve) => {
+  return await new Promise<ScheduleWithItemsModel>((resolve) => {
     // setTimeout(() => resolve([]), 500);
     setTimeout(() => resolve(getMockSchedules(profileId, date)), 500);
   });

@@ -88,16 +88,16 @@ export default function ScheduleBottomModal({
     [datePickerCallback, closeDatePicker]
   );
 
-  // useSWR을 사용하여 오늘의 일정 데이터 페칭
+  // useSWR을 사용하여 오늘의 일정 데이터 페칭 (단일 스케줄)
   const {
-    data: schedules,
+    data: schedule,
     error,
     isLoading,
-  } = useSWR("todaySchedules", () => getTodaySchedules());
+  } = useSWR("todaySchedule", () => getTodaySchedules());
 
-  // empty 상태 체크
+  // empty 상태 체크: scheduleItems가 없으면 빈 상태
   const isEmpty =
-    !isLoading && !error && (!schedules || schedules.length === 0);
+    !isLoading && !error && (!schedule || schedule.scheduleItems.length === 0);
 
   /**
    * 공유 버튼 클릭 핸들러
@@ -129,7 +129,7 @@ export default function ScheduleBottomModal({
       />
       <div className={cn(modalStyles.scrollable, isEmpty && modalStyles.empty)}>
         <ScheduleContents
-          schedules={schedules}
+          schedule={schedule}
           isLoading={isLoading}
           error={error}
           openDatePicker={openDatePicker}

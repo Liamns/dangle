@@ -41,12 +41,12 @@ const ScheduleSubCategoryCol = memo(
     const currentProfile = useProfileStore((s) => s.currentProfile);
     const profileId = currentProfile?.id ?? "";
     const {
-      data: schedules,
+      data: schedule,
       error,
       isLoading,
     } = useScheduleByDate(profileId, selectedDate);
 
-    const items = schedules?.[0]?.scheduleItems ?? [];
+    const items = schedule?.scheduleItems ?? [];
     // 선택된 서브 카테고리 및 편집 중인 스케줄(일정 아이템)
     const [modalState, setModalState] = useState<{
       sub: SubCategory;
