@@ -1,0 +1,18 @@
+@use "@/shared/styles/common" as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: rh(40);
+}
+
+.content {
+  width: 100%;
+  @include height(552);
+  padding-top: rh(15);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: rh(13), rw(13);
+}

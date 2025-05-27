@@ -1,0 +1,12 @@
+@use "shared/styles/common" as *;
+
+.upperBtn {
+  @include height(30);
+  border-radius: 10px;
+  @include px(12);
+  background-color: var(--brown);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: rw(6);
+}
