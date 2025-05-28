@@ -11,14 +11,23 @@ export const NewRoutineDtoSchema = z.object({
   type: z.nativeEnum(RoutineType, {
     errorMap: () => ({ message: "유효한 루틴 타입을 선택해주세요." }),
   }),
+  name: z
+    .string()
+    .min(2, "이름은 최소 2자 이상입니다.")
+    .max(8, "이름은 최대 8자 입니다."),
   title: z
     .string()
     .min(2, "제목은 최소 2자 이상입니다.")
-    .max(8, "제목은 최대 8자 입니다."),
+    .max(16, "제목은 최대 16자 입니다."),
   content: z.string().min(2, "내용은 최소 2자 이상입니다."),
   image: z.string().optional(),
 });
 export type NewRoutineDto = z.infer<typeof NewRoutineDtoSchema>;
+
+export const UpdateRoutineDtoSchema = NewRoutineDtoSchema.extend({
+  id: z.number().int().positive("유효한 루틴 ID여야 합니다."),
+});
+export type UpdateRoutineDto = z.infer<typeof UpdateRoutineDtoSchema>;
 
 // 서버 응답용 모델 스키마 (image URL 검증 포함)
 export const RoutineModelSchema = NewRoutineDtoSchema.extend({
@@ -26,5 +35,20 @@ export const RoutineModelSchema = NewRoutineDtoSchema.extend({
   image: z.string().url("유효한 이미지 URL이어야 합니다.").optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  isFavorite: z.boolean(),
 });
 export type RoutineModel = z.infer<typeof RoutineModelSchema>;
+
+// User ↔ Routine N:M 즐겨찾기 스키마
+export const favoriteRoutineSchema = z.object({
+  profileId: z.string().uuid("유효한 프로필 ID여야 합니다."),
+  routineId: z.number().int().positive("유효한 루틴 ID여야 합니다."),
+});
+export type FavoriteRoutineFormData = z.infer<typeof favoriteRoutineSchema>;
+
+// 즐겨찾기 모델 스키마 (DB 저장용)
+export const favoriteRoutineModelSchema = favoriteRoutineSchema.extend({
+  id: z.number().int().positive(),
+  addedAt: z.date(),
+});
+export type FavoriteRoutineModel = z.infer<typeof favoriteRoutineModelSchema>;

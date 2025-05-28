@@ -1,0 +1,64 @@
+@use "shared/styles/common" as *;
+
+.container {
+  @include width(324);
+  @include px(16);
+  @include py(16);
+  border-radius: 10px;
+  background-color: var(--background);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: rh(7);
+}
+
+.categoryRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: rw(4);
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.categoryItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: rw(68);
+  @include py(6);
+  @include px(12);
+  border-radius: 10px;
+  background-color: var(--primary);
+  border: 1px solid transparent;
+
+  &.active {
+    background-color: var(--background);
+    border: 1px solid var(--brown);
+  }
+}
+
+.button {
+  width: 100%;
+  @include py(12);
+  border-radius: 10px;
+  background-color: var(--brown);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+}

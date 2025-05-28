@@ -10,9 +10,14 @@
 
 .content {
   width: 100%;
-  @include height(552);
+  flex: 1;
   padding-top: rh(15);
+  padding-bottom: calc(rh(80) + 7px);
+  @include px(30);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: rh(13), rw(13);
+  overflow-y: auto;
+  justify-content: center;
+  place-items: center;
+  gap: rh(12) rw(12);
 }

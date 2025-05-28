@@ -115,7 +115,7 @@ export type ScheduleItemFormData = z.infer<typeof scheduleItemSchema>;
 
 // 즐겨찾기 일정 컨텐츠 스키마
 export const favoriteContentSchema = z.object({
-  userId: z.string().uuid("유효한 사용자를 선택해주세요."),
+  profileId: z.string().uuid("유효한 프로필을 선택해주세요."),
   contentId: z.number().int().positive("유효한 컨텐츠를 선택해주세요."),
 });
 
@@ -123,7 +123,7 @@ export type FavoriteContentFormData = z.infer<typeof favoriteContentSchema>;
 
 // 사용자-서브 카테고리 즐겨찾기 스키마
 export const favoriteSubCategorySchema = z.object({
-  userId: z.string().uuid("유효한 사용자를 선택해주세요."),
+  profileId: z.string().uuid("유효한 프로필을 선택해주세요."),
   subCategoryId: z
     .number()
     .int()
