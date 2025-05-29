@@ -4,7 +4,7 @@ import {
   RoutineType,
   RoutineTypeKor,
 } from "@/entities/routine/types";
-import styles from "./FirstWriteRoutineModalContent.module.scss";
+import styles from "./WriteRoutine.module.scss";
 import { memo } from "react";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
@@ -13,7 +13,7 @@ import TypeCheckSvg from "@/shared/svgs/type-check.svg";
 import cn from "classnames";
 import { useFormContext } from "react-hook-form";
 
-interface FirstWriteRoutineModalContentProps {
+interface WriteRoutineProps {
   selectedCategory: RoutineCategory;
   isOpenTypeSelect: boolean;
   handleTypeSelect: () => void;
@@ -21,14 +21,14 @@ interface FirstWriteRoutineModalContentProps {
   handleTypeChange: (type: RoutineType) => void;
 }
 
-const FirstWriteRoutineModalContent = memo(
+const WriteRoutine = memo(
   ({
     selectedCategory,
     isOpenTypeSelect,
     handleTypeSelect,
     selectedType,
     handleTypeChange,
-  }: FirstWriteRoutineModalContentProps) => {
+  }: WriteRoutineProps) => {
     const {
       register,
       formState: { errors },
@@ -88,6 +88,7 @@ const FirstWriteRoutineModalContent = memo(
                 src={"/images/brown-triangle.png"}
                 fill
                 alt="루틴 타입선택"
+                sizes="100%"
               />
             </div>
 
@@ -119,5 +120,5 @@ const FirstWriteRoutineModalContent = memo(
   }
 );
 
-FirstWriteRoutineModalContent.displayName = "FirstWriteRoutineModalContent";
-export default FirstWriteRoutineModalContent;
+WriteRoutine.displayName = "WriteRoutine";
+export default WriteRoutine;

@@ -1,10 +1,12 @@
 "use client";
 import {
-  NewRoutineDto,
-  NewRoutineDtoSchema,
-  RoutineModel,
-  UpdateRoutineDto,
-  UpdateRoutineDtoSchema,
+  NewRoutineContentDtoSchema,
+  NewRoutineContentDto,
+  NewRoutineWithContents,
+  NewRoutineWithContentsSchema,
+  RoutineWithContentsModel,
+  UpdateRoutineWithContents,
+  UpdateRoutineWithContentsSchema,
 } from "@/entities/routine/schema";
 import styles from "./WriteRoutineModal.module.scss";
 import { memo, useCallback, useEffect, useState } from "react";
@@ -17,17 +19,18 @@ import {
   RoutineType,
 } from "@/entities/routine/types";
 import cn from "classnames";
-import FirstWriteRoutineModalContent from "./FirstWriteRoutineModalContent";
-import { FormProvider, useForm } from "react-hook-form";
-import { z } from "zod";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import WriteRoutine from "./WriteRoutine";
+import WriteRoutineContent from "./WriteRoutineContent";
+import { div } from "framer-motion/client";
 
 interface WriteRoutineModalProps {
   isOpen: boolean;
   onClose: () => void;
-  routine?: RoutineModel;
-  onSave: (data: NewRoutineDto) => Promise<void>;
-  onEdit: (data: UpdateRoutineDto) => Promise<void>;
+  routine?: RoutineWithContentsModel;
+  onSave: (data: NewRoutineWithContents) => Promise<void>;
+  onEdit: (data: UpdateRoutineWithContents) => Promise<void>;
 }
 
 const WriteRoutineModal = memo(
@@ -42,6 +45,7 @@ const WriteRoutineModal = memo(
     );
     const [isFirst, setIsFirst] = useState(true);
     const categories = Object.values(RoutineCategory);
+    const [currnetIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
       if (isOpen) {
@@ -49,60 +53,121 @@ const WriteRoutineModal = memo(
         setIsOpenTypeSelect(false);
         setSelectedCategory(RoutineCategory.EXERCISE);
         setSelectedType(RoutineType.TIP);
+        setCurrentIndex(0);
+        if (isNew) {
+          replace([{ title: "", memo: "", image: "" }]);
+        } else {
+          replace(
+            routine!.contents.map((c) => ({
+              id: c.id,
+              routineId: c.routineId,
+              title: c.title,
+              memo: c.memo,
+              image: c.image ?? "",
+            }))
+          );
+        }
       }
     }, [isOpen]);
 
-    const formSchema = isNew
-      ? NewRoutineDtoSchema
-      : UpdateRoutineDtoSchema.omit({ id: true });
-    const methods = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-      defaultValues: isNew
+    // 신규 루틴 + 콘텐츠 폼 세팅
+    const newMethods = useForm<NewRoutineWithContents>({
+      resolver: zodResolver(NewRoutineWithContentsSchema),
+      defaultValues: {
+        profileId: "",
+        category: RoutineCategory.EXERCISE,
+        type: RoutineType.TIP,
+        name: "",
+        contents: [{ title: "", memo: "", image: "" }],
+      },
+    });
+    // 수정 루틴 + 콘텐츠 폼 세팅
+    const updateMethods = useForm<UpdateRoutineWithContents>({
+      resolver: zodResolver(UpdateRoutineWithContentsSchema),
+      defaultValues: !isNew
         ? {
-            profileId: "",
-            category: RoutineCategory.EXERCISE,
-            type: RoutineType.TIP,
-            name: "",
-            title: "",
-            content: "",
-            image: "",
-          }
-        : {
+            id: routine!.id,
             profileId: routine!.profileId,
             category: routine!.category,
             type: routine!.type,
             name: routine!.name,
-            title: routine!.title,
-            content: routine!.content,
-            image: routine!.image ?? "",
-          },
+            contents: routine!.contents.map((c) => ({
+              id: c.id,
+              routineId: c.routineId,
+              title: c.title,
+              memo: c.memo,
+              image: c.image ?? "",
+            })),
+          }
+        : undefined,
     });
 
-    const { handleSubmit, setValue, watch } = methods;
+    // 신규/수정 메서드를 하나의 변수로 결합 (any 캐스트로 TS 에러 회피)
+    const methods: any = isNew ? newMethods : updateMethods;
 
-    const onSubmit = handleSubmit(async (data) => {
-      if (isNew) {
-        await onSave({
-          ...data,
-          category: selectedCategory,
-          type: selectedType,
-        });
-      } else {
-        await onEdit({
-          ...data,
-          id: routine!.id,
-          category: selectedCategory,
-          type: selectedType,
-        });
+    const { fields, append, remove, replace } = useFieldArray({
+      name: "contents",
+      control: methods.control,
+    });
+
+    const handleAdd = () => {
+      if (fields.length >= 5) {
+        alert("최대 5개의 슬라이드까지만 추가할 수 있습니다.");
+        return;
       }
+      const currentFields = methods.getValues(`contents.${currnetIndex}`);
+      if (currentFields.title.length < 2) {
+        alert("루틴 내용의 제목은 최소 2자 이상이어야 합니다.");
+        return;
+      }
+      if (currentFields.memo.length < 2) {
+        alert("루틴 내용의 메모는 최소 2자 이상이어야 합니다.");
+        return;
+      }
+      append({ title: "", memo: "", image: "" });
+      setCurrentIndex(fields.length);
+    };
+    const handlePrev = useCallback(() => {
+      if (currnetIndex > 0) {
+        setCurrentIndex(currnetIndex - 1);
+      }
+    }, [currnetIndex, fields.length]);
+    const handleNext = useCallback(() => {
+      if (currnetIndex < fields.length - 1) {
+        setCurrentIndex(currnetIndex + 1);
+      }
+    }, [currnetIndex, fields.length]);
+    const handleRemove = useCallback(
+      (index: number) => {
+        if (fields.length <= 1) return; // 최소 한 개는 남겨두기
+        remove(index);
+        if (currnetIndex === fields.length - 1) {
+          setCurrentIndex(fields.length - 2); // 마지막 슬라이드 제거 시 이전 슬라이드로 이동
+        }
+      },
+      [fields.length, currnetIndex, remove]
+    );
+
+    // submit handlers
+    const onSubmitNew = newMethods.handleSubmit(async (data) => {
+      await onSave(data);
+      onClose();
+    });
+    const onSubmitUpdate = updateMethods.handleSubmit(async (data) => {
+      await onEdit(data);
       onClose();
     });
 
     const handleClickButton = () => {
       if (isFirst) {
+        const name = methods.getValues("name");
+        if (!name || name.length < 2) {
+          alert("루틴 이름은 최소 2자 이상이어야 합니다.");
+          return;
+        }
         setIsFirst(false);
       } else {
-        onSubmit();
+        isNew ? onSubmitNew() : onSubmitUpdate();
       }
     };
 
@@ -113,10 +178,10 @@ const WriteRoutineModal = memo(
     const handleTypeChange = useCallback(
       (type: RoutineType) => {
         setSelectedType(type);
-        setValue("type", type);
+        methods.setValue("type", type);
         setIsOpenTypeSelect(false);
       },
-      [setSelectedType, setIsOpenTypeSelect]
+      [methods, setIsOpenTypeSelect]
     );
 
     const handleClose = () => {
@@ -127,6 +192,7 @@ const WriteRoutineModal = memo(
       <Modal isOpen={isOpen} onClose={handleClose}>
         <FormProvider {...methods}>
           <form className={styles.container}>
+            {/* 루틴 카테고리 선택 */}
             <div className={styles.category}>
               <Text
                 text="루틴 카테고리"
@@ -137,14 +203,16 @@ const WriteRoutineModal = memo(
               <div className={styles.categoryRow}>
                 {categories.map((category) => {
                   const isSelected = selectedCategory === category;
-
                   return (
                     <div
                       key={category}
                       className={cn(styles.categoryItem, {
                         [styles.active]: isSelected,
                       })}
-                      onClick={() => setSelectedCategory(category)}
+                      onClick={() => {
+                        setSelectedCategory(category);
+                        methods.setValue("category", category);
+                      }}
                     >
                       <Text
                         text={RoutineCategoryKor[category]}
@@ -157,15 +225,45 @@ const WriteRoutineModal = memo(
                 })}
               </div>
             </div>
-            {/* End of Category */}
-
-            <FirstWriteRoutineModalContent
-              selectedCategory={selectedCategory}
-              selectedType={selectedType}
-              handleTypeChange={handleTypeChange}
-              handleTypeSelect={handleTypeSelect}
-              isOpenTypeSelect={isOpenTypeSelect}
-            />
+            {/* 루틴 기본 폼 필드 */}
+            {isFirst ? (
+              <WriteRoutine
+                selectedCategory={selectedCategory}
+                selectedType={selectedType}
+                handleTypeChange={handleTypeChange}
+                handleTypeSelect={handleTypeSelect}
+                isOpenTypeSelect={isOpenTypeSelect}
+              />
+            ) : (
+              <div className={styles.routineContentSliderWrapper}>
+                <div
+                  className={styles.routineContentSliderInner}
+                  style={
+                    {
+                      "--slider-translate-x": `${-currnetIndex * 100}%`,
+                    } as React.CSSProperties
+                  }
+                >
+                  {fields.map((field, index) => {
+                    return (
+                      <div key={index} className={styles.routineContentSlide}>
+                        <WriteRoutineContent
+                          key={field.id}
+                          index={index}
+                          length={fields.length}
+                          currentIndex={currnetIndex}
+                          selectedCategory={selectedCategory}
+                          onRemove={() => handleRemove(currnetIndex)}
+                          onAdd={handleAdd}
+                          onPrev={handlePrev}
+                          onNext={handleNext}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className={styles.button} onClick={handleClickButton}>
               <Text
@@ -176,7 +274,6 @@ const WriteRoutineModal = memo(
               />
             </div>
           </form>
-          {/* End of Container */}
         </FormProvider>
       </Modal>
     );

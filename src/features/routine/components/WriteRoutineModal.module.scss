@@ -51,6 +51,23 @@
   }
 }
 
+.routineContentSliderWrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.routineContentSliderInner {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(var(--slider-translate-x, 0));
+}
+
+.routineContentSlide {
+  flex: 0 0 100%;
+  width: 100%;
+}
+
 .button {
   width: 100%;
   @include py(12);

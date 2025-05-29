@@ -1,0 +1,134 @@
+@use "shared/styles/common" as *;
+
+.content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  @include pt(16);
+  @include pb(9);
+  @include px(24);
+  border-radius: 10px;
+  background-color: var(--background);
+  margin: rh(11) 0;
+  border: 3px solid var(--write-routine-modal-content-border);
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.titleBox {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  @include mb(16);
+  gap: rh(3);
+}
+
+.title {
+  width: 80%;
+  @include height(30);
+  text-align: left;
+  vertical-align: middle;
+  border-radius: 10px;
+  border: 1px solid var(--invalid);
+  @include pl(14);
+  font-size: 14px;
+  font-family: var(--inter);
+
+  &:focus {
+    outline: none;
+    border: 1px solid var(--write-routine-content-focus-border);
+  }
+}
+
+.imageBox {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include mb(9);
+  background-color: var(--invalid);
+
+  &.input {
+    background-color: transparent;
+  }
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 266/183;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.memoBox {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: rh(9);
+  @include mb(10);
+}
+
+.memo {
+  width: 100%;
+  @include height(150);
+  @include py(13);
+  @include px(18);
+  font-size: 12px;
+  font-family: var(--inter);
+  border-radius: 10px;
+  border: 1px solid var(--invalid);
+  resize: none;
+  background-color: var(--background);
+
+  &:focus {
+    outline: none;
+    border: 1px solid var(--write-routine-content-focus-border);
+  }
+}
+
+.buttonBox {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rw(10);
+}
+
+.addBtn {
+  width: 100%;
+  border-radius: 10px;
+  background-color: var(--invalid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include height(30);
+  gap: rw(4);
+  cursor: pointer;
+
+  &.double,
+  &.triple {
+    width: unset;
+    flex: 1;
+  }
+}
+
+.moveBtn {
+  flex: 1;
+  @include height(30);
+  background-color: var(--invalid);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &.double,
+  &.triple {
+    display: flex;
+  }
+}
