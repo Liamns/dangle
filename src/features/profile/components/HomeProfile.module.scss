@@ -36,7 +36,7 @@
   border-radius: 10px;
   width: 100%;
   display: flex;
-  justify-content: end;
+  justify-content: center;
   align-items: center;
 }
 
@@ -48,6 +48,5 @@
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-  @include common.ml(24);
   flex-shrink: 0;
 }

@@ -67,6 +67,7 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
     handleSubmit,
     setValue,
     watch,
+    setFocus,
     formState: { errors },
   } = useForm<EditProfileFormData>({
     resolver: zodResolver(editProfileFormSchema),
@@ -83,6 +84,7 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
     handleSubmit: handleSubmitEtc,
     setValue: setValueEtc,
     watch: watchEtc,
+    setFocus: setFocusEtc,
     formState: { errors: errorsEtc },
   } = useForm<EtcFormData>({
     resolver: zodResolver(etcFormSchema),
@@ -163,6 +165,18 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isVaccineSelectOpen]);
+
+  useEffect(() => {
+    if (isEditMode) {
+      setFocus("petAge");
+    }
+  }, [isEditMode, setFocus]);
+
+  useEffect(() => {
+    if (isBackEditMode) {
+      setFocusEtc("etc1");
+    }
+  }, [isBackEditMode, setFocusEtc]);
 
   if (loading) {
     return (

@@ -1,14 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ProfileModel, EditProfileFormData } from "./model";
-import { useUserStore } from "@/entities/user/store";
-import {
-  PetAgeFormData,
-  PetGenderFormData,
-  PetVaccinationFormData,
-  PetPersonalityFormData,
-  PetWeightFormData,
-} from "./schema";
+import { ProfileModel } from "./model";
 import { allVaccines, personalityTraits } from "../../shared/types/pet";
 
 // 비어있는 프로필 모델 상수 정의
@@ -37,6 +29,7 @@ interface ProfileStoreState {
   userProfiles: ProfileModel[];
   isLoaded: boolean;
   isFirstVisit: boolean; // 최초 방문 여부 상태 추가
+  registeringProfile: ProfileModel;
   setCurrentProfile: (profile: ProfileModel | null) => void;
   setUserProfiles: (profiles: ProfileModel[]) => void;
   updateCurrentProfile: (profileData: Partial<ProfileModel>) => void;
@@ -48,6 +41,7 @@ interface ProfileStoreState {
   isProfileValid: (profile: ProfileModel | null) => boolean; // 검증 함수 추가
   getCurrentProfile: () => ProfileModel | null;
   setFirstVisit: (value: boolean) => void; // 상태 변경 메서드 추가
+  updateRegisteringProfile: (profileData: Partial<ProfileModel>) => void;
 }
 
 export const useProfileStore = create(
@@ -57,6 +51,7 @@ export const useProfileStore = create(
       userProfiles: [],
       isLoaded: false,
       isFirstVisit: true, // 기본값 true로 설정
+      registeringProfile: EMPTY_PROFILE,
 
       setCurrentProfile: (profile) => {
         set({ currentProfile: profile, isLoaded: true });
@@ -162,6 +157,16 @@ export const useProfileStore = create(
       },
 
       setFirstVisit: (value) => set({ isFirstVisit: value }), // 상태 변경 메서드 구현
+
+      updateRegisteringProfile: (profileData: Partial<ProfileModel>) =>
+        set((state) => ({
+          registeringProfile: state.registeringProfile
+            ? {
+                ...state.registeringProfile,
+                ...profileData,
+              }
+            : EMPTY_PROFILE,
+        })),
     }),
     {
       name: "profile-store",

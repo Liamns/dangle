@@ -26,10 +26,12 @@ import { useEffect } from "react";
 
 export default function InputPetGender() {
   const router = useRouter();
-  const updateCurrentProfile = useProfileStore(
-    (state) => state.updateCurrentProfile
+  const updateRegisteringProfile = useProfileStore(
+    (state) => state.updateRegisteringProfile
   );
-  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  const name = useProfileStore(
+    (state) => state.registeringProfile?.petname ?? ""
+  );
 
   const {
     register,
@@ -43,7 +45,7 @@ export default function InputPetGender() {
   });
 
   const onSubmit = (data: PetGenderFormData) => {
-    updateCurrentProfile({ petGender: data });
+    updateRegisteringProfile({ petGender: data });
     router.push("/profile/input/pet-vaccines");
   };
 

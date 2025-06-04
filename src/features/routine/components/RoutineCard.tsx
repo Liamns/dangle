@@ -46,7 +46,7 @@ const RoutineCard = memo(
               <ClickSvg color={Colors.white} />
             )}
           </div>
-          <Text text={routine.title} color={Colors.black} />
+          <Text text={routine.name} color={Colors.black} />
         </InnerBox>
 
         <Image

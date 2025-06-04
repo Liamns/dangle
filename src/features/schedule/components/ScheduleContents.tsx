@@ -69,7 +69,10 @@ const ScheduleContents = memo(
           <Text text="오류가 발생했습니다." color={Colors.error} />
         </InnerBox>
       );
-    if (!schedule || schedule.scheduleItems.length === 0)
+    if (
+      !schedule ||
+      (schedule.scheduleItems && schedule.scheduleItems.length === 0)
+    )
       return (
         <InnerBox className={modalStyles.emptyContainer}>
           <InnerBox

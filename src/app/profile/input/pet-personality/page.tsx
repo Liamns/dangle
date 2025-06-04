@@ -24,8 +24,12 @@ import { useEffect } from "react";
 
 export default function InputPetPersonality() {
   const router = useRouter();
-  const updateCurrentProfile = useProfileStore((s) => s.updateCurrentProfile);
-  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  const updateRegisteringProfile = useProfileStore(
+    (s) => s.updateRegisteringProfile
+  );
+  const name = useProfileStore(
+    (state) => state.registeringProfile?.petname ?? ""
+  );
 
   useEffect(() => {
     if (name === "") {
@@ -77,7 +81,7 @@ export default function InputPetPersonality() {
     });
 
     // Directly update the current profile with personality data
-    updateCurrentProfile({
+    updateRegisteringProfile({
       personalityScores: scores,
     });
 

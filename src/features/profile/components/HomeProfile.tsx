@@ -81,7 +81,7 @@ export default function HomeProfile() {
 
         {/* 프로필 라벨 */}
         <div className={styles.labelContainer}>
-          <InnerBox direction="row" justify="end" align="center">
+          <InnerBox direction="row" justify="center" align="center">
             <Text
               text={name}
               color={Colors.brown}

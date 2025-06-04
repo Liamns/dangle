@@ -19,8 +19,8 @@ import { useProfileStore } from "@/entities/profile/store";
 
 export default function InputPetname() {
   const router = useRouter();
-  const updateCurrentProfile = useProfileStore(
-    (state) => state.updateCurrentProfile
+  const updateRegisteringProfile = useProfileStore(
+    (state) => state.updateRegisteringProfile
   );
 
   const {
@@ -33,7 +33,7 @@ export default function InputPetname() {
   });
 
   const petnameSubmit = (data: PetnameFormData) => {
-    updateCurrentProfile({ petname: data.petname });
+    updateRegisteringProfile({ petname: data.petname });
     router.push("/profile/input/pet-age");
   };
 

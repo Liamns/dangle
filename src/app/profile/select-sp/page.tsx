@@ -10,20 +10,23 @@ import { BottomModal } from "../../../shared/components/modals";
 import { Text } from "../../../shared/components/texts";
 import { Colors } from "../../../shared/consts/colors";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./page.module.scss";
 import Dog from "@/shared/svgs/dog.svg";
 import Cat from "@/shared/svgs/cat.svg";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useProfileStore } from "@/entities/profile/store";
 import { useUserStore } from "@/entities/user/store";
 
 export default function SelectSpecies() {
   const router = useRouter();
-  const updateCurrentProfile = useProfileStore(
-    (state) => state.updateCurrentProfile
+  const updateRegisteringProfile = useProfileStore(
+    (state) => state.updateRegisteringProfile
   );
+  const currentUser = useUserStore((state) => state.currentUser);
+  const searchParams = useSearchParams();
+  const isPlus = searchParams.get("isPlus") === "true";
 
   const totalSpecies = 2;
   const [species, setSpecies] = useState<number>(0);
@@ -53,6 +56,18 @@ export default function SelectSpecies() {
       setIsAnimating(false);
     }, 300);
   };
+
+  useEffect(() => {
+    if (!currentUser || !currentUser.id) {
+      alert("잘못된 접근입니다. 다시 로그인 해주세요.");
+      router.replace("/login");
+      return;
+    } else {
+      updateRegisteringProfile({
+        userId: currentUser.id,
+      });
+    }
+  }, [currentUser]);
 
   // 개선된 애니메이션 variants 정의
   const variants = {
@@ -245,8 +260,8 @@ export default function SelectSpecies() {
           color={Colors.brown}
           fontWeight="bold"
           onClick={() => {
-            updateCurrentProfile({ petSpec: species });
-            router.push("/profile/input/username");
+            updateRegisteringProfile({ petSpec: species });
+            router.push(`/profile/input/${isPlus ? "pet-name" : "username"}`);
           }}
         >
           프로필카드 만들기 시작

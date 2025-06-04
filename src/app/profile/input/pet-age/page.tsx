@@ -26,10 +26,12 @@ import {
 
 export default function InputPetage() {
   const router = useRouter();
-  const updateCurrentProfile = useProfileStore(
-    (state) => state.updateCurrentProfile
+  const updateRegisteringProfile = useProfileStore(
+    (state) => state.updateRegisteringProfile
   );
-  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  const name = useProfileStore(
+    (state) => state.registeringProfile?.petname ?? ""
+  );
 
   const {
     register,
@@ -42,13 +44,13 @@ export default function InputPetage() {
   });
 
   const onSubmit = (data: PetAgeFormData) => {
-    updateCurrentProfile({ petAge: data.age }); // Wrap 'age' in an object to match the expected type
+    updateRegisteringProfile({ petAge: data.age }); // Wrap 'age' in an object to match the expected type
     router.push("/profile/input/pet-weight");
   };
 
   const watchData = watch();
   const previewAge = watchData.age;
-  const spec = getPetSpecies(useProfileStore.getState().currentProfile);
+  const spec = getPetSpecies(useProfileStore.getState().registeringProfile);
 
   useEffect(() => {
     if (spec === null) {

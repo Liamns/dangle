@@ -97,10 +97,20 @@ const WriteRoutine = memo(
                 [styles.active]: isOpenTypeSelect,
               })}
             >
-              {Object.values(RoutineType).map((type) => (
+              {Object.values(RoutineType).map((type, index) => (
                 <div
                   key={type}
-                  className={styles.typeOption}
+                  className={cn(
+                    styles.typeOption,
+                    {
+                      [styles.active]: selectedType === type,
+                    },
+                    { [styles.first]: index === 0 },
+                    {
+                      [styles.last]:
+                        index === Object.values(RoutineType).length - 1,
+                    }
+                  )}
                   onClick={() => {
                     handleTypeChange(type);
                   }}
@@ -109,6 +119,7 @@ const WriteRoutine = memo(
                     text={RoutineTypeKor[type]}
                     color={Colors.brown}
                     fontSize="md"
+                    fontWeight={selectedType === type ? "bold" : "normal"}
                   />
                 </div>
               ))}

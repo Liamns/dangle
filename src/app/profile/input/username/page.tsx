@@ -26,8 +26,8 @@ import { useUserStore } from "@/entities/user/store";
 
 export default function InputUsername() {
   const router = useRouter();
-  const updateCurrentProfile = useProfileStore(
-    (state) => state.updateCurrentProfile
+  const updateRegisteringProfile = useProfileStore(
+    (state) => state.updateRegisteringProfile
   );
   const updateCurrentUser = useUserStore((state) => state.updateCurrentUser);
 
@@ -43,7 +43,7 @@ export default function InputUsername() {
   });
 
   const usernameSubmit = (data: UsernameFormData) => {
-    updateCurrentProfile({ username: data.username });
+    updateRegisteringProfile({ username: data.username });
     updateCurrentUser({ username: data.username });
     router.push("/profile/input/pet-name");
   };

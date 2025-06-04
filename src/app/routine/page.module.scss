@@ -11,7 +11,8 @@
 .content {
   width: 100%;
   flex: 1;
-  padding-top: rh(15);
+  @include mt(4);
+  padding-top: rh(11);
   padding-bottom: calc(rh(80) + 7px);
   @include px(30);
   display: grid;

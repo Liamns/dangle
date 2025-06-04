@@ -24,33 +24,36 @@ export default function CompleteInputProfile() {
   const router = useRouter();
   const [front, setFront] = useState(true);
   const [resetRadar, setResetRadar] = useState(false);
-  const currentProfile = useProfileStore((s) => s.currentProfile);
-  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  const registeringProfile = useProfileStore((s) => s.registeringProfile);
+  const name = useProfileStore(
+    (state) => state.registeringProfile?.petname ?? ""
+  );
+  const setCurrentProfile = useProfileStore((state) => state.setCurrentProfile);
 
   // Guard: ensure all registration steps completed, else redirect to the first missing step
   useEffect(() => {
-    if (!currentProfile) return router.replace("/profile/select-sp");
-    if (currentProfile.petSpec == null)
+    if (!registeringProfile) return router.replace("/profile/select-sp");
+    if (registeringProfile.petSpec == null)
       return router.replace("/profile/select-sp");
-    if (!currentProfile.username)
+    if (!registeringProfile.username)
       return router.replace("/profile/input/username");
-    if (!currentProfile.petname)
+    if (!registeringProfile.petname)
       return router.replace("/profile/input/pet-name");
-    if (!currentProfile.petAge)
+    if (!registeringProfile.petAge)
       // petAge를 문자열로 체크
       return router.replace("/profile/input/pet-age");
-    if (!currentProfile.petWeight)
+    if (!registeringProfile.petWeight)
       return router.replace("/profile/input/pet-weight");
-    if (!currentProfile.petGender)
+    if (!registeringProfile.petGender)
       return router.replace("/profile/input/pet-gender");
     if (
-      !currentProfile.vaccinations ||
-      Object.keys(currentProfile.vaccinations).length === 0
+      !registeringProfile.vaccinations ||
+      Object.keys(registeringProfile.vaccinations).length === 0
     )
       return router.replace("/profile/input/pet-vaccines");
-    if (determinePersonalityType(currentProfile) === null)
+    if (determinePersonalityType(registeringProfile) === null)
       return router.replace("/profile/input/pet-personality");
-  }, [currentProfile, router]);
+  }, [registeringProfile, router]);
 
   // Restart radar chart animation when flipping to the back side
   useEffect(() => {
@@ -59,9 +62,9 @@ export default function CompleteInputProfile() {
     }
   }, [front]);
 
-  const petSpec = currentProfile?.petSpec ?? 0;
+  const petSpec = registeringProfile?.petSpec ?? 0;
 
-  const personality = determinePersonalityType(currentProfile);
+  const personality = determinePersonalityType(registeringProfile);
   if (personality === null) {
     if (typeof window !== "undefined") {
       window.alert("성격 유형을 찾을 수 없습니다.");
@@ -75,7 +78,7 @@ export default function CompleteInputProfile() {
     `profile/personality/${petType[petSpec]}/${tag}.gif`
   );
   const data = transformPersonalityToRadarData(
-    currentProfile?.personalityScores
+    registeringProfile?.personalityScores
   );
 
   return (
@@ -108,6 +111,8 @@ export default function CompleteInputProfile() {
             if (front) {
               setFront(false);
             } else {
+              alert("서버에 프로필 등록");
+              setCurrentProfile(registeringProfile);
               router.replace("/home");
             }
           }}

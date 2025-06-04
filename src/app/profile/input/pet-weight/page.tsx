@@ -24,13 +24,17 @@ import { useProfileStore } from "@/entities/profile/store";
 
 export default function InputPetWeight() {
   const router = useRouter();
-  const updateCurrentProfile = useProfileStore(
-    (state) => state.updateCurrentProfile
+  const updateRegisteringProfile = useProfileStore(
+    (state) => state.updateRegisteringProfile
   );
-  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  const name = useProfileStore(
+    (state) => state.registeringProfile?.petname ?? ""
+  );
 
-  const currentProfile = useProfileStore((state) => state.currentProfile);
-  const petSpec = currentProfile?.petSpec ?? 0; // 반려동물 종류 정보 가져오기 (0: 개, 1: 고양이)
+  const registeringProfile = useProfileStore(
+    (state) => state.registeringProfile
+  );
+  const petSpec = registeringProfile?.petSpec ?? 0; // 반려동물 종류 정보 가져오기 (0: 개, 1: 고양이)
   const [previewLabel, setPreviewLabel] = useState("");
 
   const {
@@ -43,7 +47,7 @@ export default function InputPetWeight() {
     mode: "onChange",
     defaultValues: {
       // 기존 값이 있으면 불러오기
-      weight: currentProfile?.petWeight || undefined,
+      weight: registeringProfile?.petWeight || undefined,
     },
   });
 
@@ -62,7 +66,7 @@ export default function InputPetWeight() {
   const onSubmit = (data: PetWeightFormData) => {
     if (isValid) {
       // 직접 숫자 값으로 저장 (객체 형태 대신)
-      updateCurrentProfile({ petWeight: data.weight });
+      updateRegisteringProfile({ petWeight: data.weight });
       router.push("/profile/input/pet-gender");
     }
   };

@@ -3,6 +3,11 @@
 .container {
   @include height(570);
   overflow-y: auto;
+
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+  }
 }
 
 .modalContainer {

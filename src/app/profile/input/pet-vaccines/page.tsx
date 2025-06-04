@@ -25,10 +25,14 @@ import chkbox from "@/shared/styles/buttons.module.scss";
 
 export default function InputPetVaccines() {
   const router = useRouter();
-  const petSpec = useProfileStore((s) => s.currentProfile?.petSpec ?? 0);
-  const name = useProfileStore((state) => state.currentProfile?.petname ?? "");
+  const petSpec = useProfileStore((s) => s.registeringProfile?.petSpec ?? 0);
+  const name = useProfileStore(
+    (state) => state.registeringProfile?.petname ?? ""
+  );
 
-  const updateCurrentProfile = useProfileStore((s) => s.updateCurrentProfile);
+  const updateRegisteringProfile = useProfileStore(
+    (s) => s.updateRegisteringProfile
+  );
   const labels = vaccineListBySpec[petSpec];
 
   // dropdown open state
@@ -99,7 +103,7 @@ export default function InputPetVaccines() {
 
   const onSubmit = (data: PetVaccinationFormData) => {
     if (hasUserMadeSelection) {
-      updateCurrentProfile({ vaccinations: data.vaccinations });
+      updateRegisteringProfile({ vaccinations: data.vaccinations });
       router.push("/profile/input/pet-personality");
     }
   };

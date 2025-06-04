@@ -41,6 +41,9 @@ export default function RegisterPW() {
   const onSubmit = (data: PasswordFormData) => {
     alert("회원가입 처리");
     clearCurrentProfile();
+    updateCurrentUser({
+      password: "null",
+    });
     router.replace("/profile/select-sp");
   };
 

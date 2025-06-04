@@ -8,6 +8,7 @@ export async function getRoutinesByProfile(
   profileId: string
 ): Promise<RoutineModel[]> {
   return new Promise((resolve) => {
+    // resolve([]);
     setTimeout(() => resolve(getMockRoutines(profileId)), 500);
   });
 }

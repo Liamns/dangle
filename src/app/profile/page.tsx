@@ -97,7 +97,9 @@ export default function Profile() {
           width="168"
           height="28"
           style={{ outline: "1.5px solid #fff" }}
-          onClick={() => alert("프로필 추가 페이지로 이동")}
+          onClick={() => {
+            router.push("/profile/select-sp?isPlus=true");
+          }}
         >
           <Text text="프로필 추가" color={Colors.brown} />
           <Spacer width="6" />
