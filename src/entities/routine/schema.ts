@@ -26,7 +26,6 @@ export type UpdateRoutineDto = z.infer<typeof UpdateRoutineDtoSchema>;
 // 서버 응답용 모델 스키마 (image URL 검증 포함)
 export const RoutineModelSchema = NewRoutineDtoSchema.extend({
   id: z.number().int().positive(),
-  image: z.string().url("유효한 이미지 URL이어야 합니다.").optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
   isFavorite: z.boolean(),

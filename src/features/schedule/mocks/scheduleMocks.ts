@@ -10,6 +10,13 @@ import {
   outingSubCategories,
 } from "@/shared/types/schedule-category";
 
+export const EMPTY_SCHEDULE: ScheduleWithItemsModel = {
+  id: 0,
+  profileId: "",
+  createdAt: new Date(),
+  scheduleItems: [],
+};
+
 /**
  * Returns mock schedules for the given profile (only for FIXED_TODAY)
  */

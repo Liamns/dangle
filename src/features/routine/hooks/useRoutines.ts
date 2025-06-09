@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { getRoutinesByProfile } from "@/features/routine/apis";
-import { RoutineModel } from "@/entities/routine/schema";
+import { RoutineWithContentsModel } from "@/entities/routine/schema";
 
 /**
  * profileId 기반 루틴 목록 가져오기
@@ -9,7 +9,7 @@ import { RoutineModel } from "@/entities/routine/schema";
 export function useRoutines(profileId: string) {
   const shouldFetch = Boolean(profileId);
 
-  const { data, error, isLoading } = useSWR<RoutineModel[]>(
+  const { data, error, isLoading } = useSWR<RoutineWithContentsModel[]>(
     shouldFetch ? ["routines", profileId] : null,
     () => getRoutinesByProfile(profileId)
   );

@@ -75,6 +75,10 @@
     justify-content: center;
     align-items: center;
   }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .shareBtn {

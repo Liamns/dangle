@@ -47,29 +47,6 @@ const WriteRoutineModal = memo(
     const categories = Object.values(RoutineCategory);
     const [currnetIndex, setCurrentIndex] = useState(0);
 
-    useEffect(() => {
-      if (isOpen) {
-        setIsFirst(true);
-        setIsOpenTypeSelect(false);
-        setSelectedCategory(RoutineCategory.EXERCISE);
-        setSelectedType(RoutineType.TIP);
-        setCurrentIndex(0);
-        if (isNew) {
-          replace([{ title: "", memo: "", image: "" }]);
-        } else {
-          replace(
-            routine!.contents.map((c) => ({
-              id: c.id,
-              routineId: c.routineId,
-              title: c.title,
-              memo: c.memo,
-              image: c.image ?? "",
-            }))
-          );
-        }
-      }
-    }, [isOpen]);
-
     // 신규 루틴 + 콘텐츠 폼 세팅
     const newMethods = useForm<NewRoutineWithContents>({
       resolver: zodResolver(NewRoutineWithContentsSchema),
@@ -109,6 +86,53 @@ const WriteRoutineModal = memo(
       name: "contents",
       control: methods.control,
     });
+
+    useEffect(() => {
+      if (isOpen) {
+        setIsFirst(true);
+        setIsOpenTypeSelect(false);
+        setSelectedCategory(RoutineCategory.EXERCISE);
+        setSelectedType(RoutineType.TIP);
+        setCurrentIndex(0);
+
+        if (isNew) {
+          // 새 루틴인 경우 모든 폼 초기화
+          methods.reset({
+            profileId: "",
+            category: RoutineCategory.EXERCISE,
+            type: RoutineType.TIP,
+            name: "", // 이름 초기화
+            contents: [{ title: "", memo: "", image: "" }],
+          });
+          replace([{ title: "", memo: "", image: "" }]);
+        } else {
+          // 기존 루틴 편집인 경우 해당 루틴 데이터로 초기화
+          methods.reset({
+            id: routine!.id,
+            profileId: routine!.profileId,
+            category: routine!.category,
+            type: routine!.type,
+            name: routine!.name,
+            contents: routine!.contents.map((c) => ({
+              id: c.id,
+              routineId: c.routineId,
+              title: c.title,
+              memo: c.memo,
+              image: c.image ?? "",
+            })),
+          });
+          replace(
+            routine!.contents.map((c) => ({
+              id: c.id,
+              routineId: c.routineId,
+              title: c.title,
+              memo: c.memo,
+              image: c.image ?? "",
+            }))
+          );
+        }
+      }
+    }, [isOpen, isNew, routine, methods, replace]);
 
     const handleAdd = () => {
       if (fields.length >= 5) {
@@ -187,6 +211,11 @@ const WriteRoutineModal = memo(
     const handleClose = () => {
       onClose();
     };
+
+    useEffect(() => {
+      setIsFirst(true);
+      setCurrentIndex(0);
+    }, [selectedCategory]);
 
     return (
       <Modal isOpen={isOpen} onClose={handleClose}>

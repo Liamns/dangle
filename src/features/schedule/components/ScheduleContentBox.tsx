@@ -90,7 +90,7 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   }, [schedule, currentProfile]);
 
   // empty 상태 체크
-  const isEmpty = !isLoading && !error && !schedule;
+  const isEmpty = !isLoading && !error && schedule?.scheduleItems.length === 0;
 
   // 일반모드일 때 렌더링되는 컴포넌트
   return (
@@ -172,7 +172,7 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
           onEmptyAddClick={handleEmptyClick}
         />
 
-        {schedule && (
+        {schedule && schedule.scheduleItems.length > 0 && (
           <div className={styles.shareBtn} onClick={handleShareClick}>
             <Text text="일정 공유하기" fontWeight="bold" color={Colors.white} />
           </div>

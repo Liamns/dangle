@@ -1,4 +1,4 @@
-import { RoutineModel } from "@/entities/routine/schema";
+import { RoutineWithContentsModel } from "@/entities/routine/schema";
 import { getMockRoutines } from "./mocks/routineMocks";
 
 /**
@@ -6,7 +6,7 @@ import { getMockRoutines } from "./mocks/routineMocks";
  */
 export async function getRoutinesByProfile(
   profileId: string
-): Promise<RoutineModel[]> {
+): Promise<RoutineWithContentsModel[]> {
   return new Promise((resolve) => {
     // resolve([]);
     setTimeout(() => resolve(getMockRoutines(profileId)), 500);

@@ -9,6 +9,7 @@ import {
 import {
   ScheduleItemWithContentModel,
   NewScheduleItem,
+  ScheduleWithItemsModel,
   // 생성 전용 타입
 } from "@/entities/schedule/model";
 
@@ -23,29 +24,30 @@ import ScheduleTimeEditModal from "./ScheduleTimeEditModal";
 
 interface ScheduleSubCategoryColProps {
   mainCategory: MainCategory;
-  selectedDate: Date;
   modifications: Partial<
     Record<
       SubCategory,
-      (ScheduleItemWithContentModel | NewScheduleItem) & { isFavorite?: boolean }
+      (ScheduleItemWithContentModel | NewScheduleItem) & {
+        isFavorite?: boolean;
+      }
     >
   >;
   onModify: (
     sub: SubCategory,
-    updated: (ScheduleItemWithContentModel | NewScheduleItem) & { isFavorite?: boolean }
+    updated: (ScheduleItemWithContentModel | NewScheduleItem) & {
+      isFavorite?: boolean;
+    }
   ) => void;
+  schedule?: ScheduleWithItemsModel;
 }
 
 const ScheduleSubCategoryCol = memo(
-  ({ mainCategory, selectedDate, modifications, onModify }: ScheduleSubCategoryColProps) => {
-    const currentProfile = useProfileStore((s) => s.currentProfile);
-    const profileId = currentProfile?.id ?? "";
-    const {
-      data: schedule,
-      error,
-      isLoading,
-    } = useScheduleByDate(profileId, selectedDate);
-
+  ({
+    mainCategory,
+    modifications,
+    onModify,
+    schedule,
+  }: ScheduleSubCategoryColProps) => {
     const items = schedule?.scheduleItems ?? [];
     // 선택된 서브 카테고리 및 편집 중인 스케줄(일정 아이템)
     const [modalState, setModalState] = useState<{
@@ -55,7 +57,6 @@ const ScheduleSubCategoryCol = memo(
 
     const subs = getSubCategoriesByMain(mainCategory);
     // TODO : 즐겨찾기 여부 찾아서 있으면 맨 위로
-    if (isLoading) return <LoadingOverlay isLoading={isLoading} />;
 
     // 1) sub ↔ scheduleItem 매핑
     const matchedMap = items.reduce<

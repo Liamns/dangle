@@ -3,6 +3,9 @@ import {
   mainCategories,
   MainCategory,
   SubCategory,
+  getSubCategoriesByMain,
+  mainCategoryIds,
+  getSubCategoryId,
 } from "@/shared/types/schedule-category";
 import { memo, useCallback, useState } from "react";
 import styles from "./ScheduleAddBox.module.scss";
@@ -13,16 +16,26 @@ import ScheduleMainCategoryRow from "./ScheduleMainCategoryRow";
 import ScheduleSubCategoryCol from "./ScheduleSubCategoryCol";
 import ScheduleEditConfirmBtns from "./ScheduleEditConfirmBtns";
 import {
-  ScheduleItemWithContentModel,
   NewScheduleItem,
+  ScheduleItemWithContentModel,
 } from "@/entities/schedule/model";
 import { useRouter } from "next/navigation";
+import { useProfileStore } from "@/entities/profile/store";
+import { useScheduleByDate } from "../hooks/useScheduleByDate";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
 
 interface ScheduleAddBoxProps {
   selectedDate: Date;
 }
 
 const ScheduleAddBox = memo(({ selectedDate }: ScheduleAddBoxProps) => {
+  const currentProfile = useProfileStore((s) => s.currentProfile);
+  const profileId = currentProfile?.id ?? "";
+  const {
+    data: schedule,
+    error,
+    isLoading,
+  } = useScheduleByDate(profileId, selectedDate);
   const router = useRouter();
   const [selectedMain, setSelectedMain] = useState<MainCategory>(
     mainCategories[0]
@@ -62,9 +75,35 @@ const ScheduleAddBox = memo(({ selectedDate }: ScheduleAddBoxProps) => {
   }, [modifications]);
 
   const handleDelete = useCallback(() => {
-    // clear all scheduled modifications
-    setModifications({});
-  }, []);
+    // 현재 선택된 메인 카테고리의 서브카테고리들에 대해 "삭제" 마킹
+    const subs = getSubCategoriesByMain(selectedMain);
+
+    const deletedModifications = subs.reduce((acc, subCategory) => {
+      // 필수 필드를 포함한 최소한의 객체를 생성하고 startAt을 null로 설정
+      const mainId = mainCategoryIds[selectedMain];
+      const subId = getSubCategoryId(selectedMain, subCategory);
+
+      acc[subCategory] = {
+        startAt: null,
+        content: {
+          mainId,
+          subId,
+          description: null,
+          main: { id: mainId, name: selectedMain },
+          sub: { id: subId, name: subCategory, mainId },
+        },
+      } as NewScheduleItem;
+
+      return acc;
+    }, {} as Record<SubCategory, (ScheduleItemWithContentModel | NewScheduleItem) & { isFavorite?: boolean }>);
+
+    setModifications((prev) => ({
+      ...prev,
+      ...deletedModifications,
+    }));
+  }, [selectedMain]);
+
+  if (isLoading) return <LoadingOverlay isLoading={isLoading} />;
 
   return (
     <div className={styles.container}>
@@ -75,9 +114,9 @@ const ScheduleAddBox = memo(({ selectedDate }: ScheduleAddBoxProps) => {
 
       <ScheduleSubCategoryCol
         mainCategory={selectedMain}
-        selectedDate={selectedDate}
         modifications={modifications}
         onModify={handleModify}
+        schedule={schedule}
       />
 
       <ScheduleEditConfirmBtns

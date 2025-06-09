@@ -1,6 +1,6 @@
 import { ScheduleWithItemsModel } from "@/entities/schedule/model";
 import { TestUUID } from "@/shared/consts/strings";
-import { getMockSchedules } from "./mocks/scheduleMocks";
+import { EMPTY_SCHEDULE, getMockSchedules } from "./mocks/scheduleMocks";
 
 /**
  * 특정 profileId에 대한 오늘의 일정을 조회하는 API (모의 데이터 활용)
@@ -11,7 +11,7 @@ export async function getTodaySchedules(
   try {
     // simulate network delay and return mock data for current date
     return await new Promise<ScheduleWithItemsModel>((resolve) => {
-      // setTimeout(() => resolve([]), 500);
+      // setTimeout(() => resolve(EMPTY_SCHEDULE), 500);
       setTimeout(() => resolve(getMockSchedules(profileId, new Date())), 500);
     });
   } catch (error) {
@@ -28,7 +28,7 @@ export async function getScheduleByDate(
 ): Promise<ScheduleWithItemsModel> {
   // simulate network delay and return mock data for the specified date
   return await new Promise<ScheduleWithItemsModel>((resolve) => {
-    // setTimeout(() => resolve([]), 500);
+    // setTimeout(() => resolve(EMPTY_SCHEDULE), 500);
     setTimeout(() => resolve(getMockSchedules(profileId, date)), 500);
   });
 }

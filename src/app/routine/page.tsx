@@ -12,13 +12,22 @@ import { useRoutines } from "@/features/routine/hooks/useRoutines";
 import LoadingOverlay from "@/shared/components/LoadingOverlay";
 import RoutineCard from "@/features/routine/components/RoutineCard";
 import WriteRoutineModal from "@/features/routine/components/WriteRoutineModal";
-import { NewRoutineDto, UpdateRoutineDto } from "@/entities/routine/schema";
+import {
+  NewRoutineDto,
+  UpdateRoutineDto,
+  RoutineModel,
+  RoutineWithContentsModel,
+} from "@/entities/routine/schema";
 
 export default function Routine() {
   const router = useRouter();
   const [isEditMode, setIsEditMode] = useState(false);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  // 선택된 루틴을 상태로 관리
+  const [selectedRoutine, setSelectedRoutine] = useState<
+    RoutineWithContentsModel | undefined
+  >(undefined);
   // 현재 프로필 ID로 루틴 불러오기
   const currentProfile = useProfileStore((s) => s.currentProfile);
   const profileId = currentProfile?.id ?? "";
@@ -29,6 +38,7 @@ export default function Routine() {
   }, [router]);
 
   const handleAddClick = useCallback(() => {
+    setSelectedRoutine(undefined); // 선택된 루틴 초기화
     setIsWriteModalOpen(true);
   }, []);
 
@@ -47,6 +57,17 @@ export default function Routine() {
       console.log("Current profile ID:", profileId);
     },
     [profileId]
+  );
+
+  const handleCardClick = useCallback(
+    (routine: RoutineWithContentsModel) => {
+      // 이제 routine은 이미 contents 배열을 포함하고 있으므로 직접 사용
+      setSelectedRoutine(routine);
+      if (isEditMode) {
+        setIsWriteModalOpen(true);
+      }
+    },
+    [isEditMode]
   );
 
   const handleAddRoutine = useCallback(async (data: NewRoutineDto) => {}, []);
@@ -73,7 +94,7 @@ export default function Routine() {
             key={routine.id}
             routine={routine}
             isEditMode={isEditMode}
-            onClick={() => {}}
+            onClick={() => handleCardClick(routine)}
             onFavoriteToggle={handleFavoriteToggle}
           />
         ))}
@@ -88,7 +109,11 @@ export default function Routine() {
 
       <WriteRoutineModal
         isOpen={isWriteModalOpen}
-        onClose={() => setIsWriteModalOpen(false)}
+        onClose={() => {
+          setIsWriteModalOpen(false);
+          setSelectedRoutine(undefined); // 모달 닫을 때 선택된 루틴도 초기화
+        }}
+        routine={selectedRoutine} // 여기서 선택된 루틴 전달
         onSave={handleAddRoutine}
         onEdit={handleEditRoutine}
       />

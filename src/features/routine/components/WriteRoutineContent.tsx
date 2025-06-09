@@ -165,17 +165,20 @@ const WriteRoutineContent = memo(
               <Text text="이전으로" color={Colors.darkGrey} fontWeight="bold" />
             </div>
           )}
-          <div
-            className={cn(
-              styles.addBtn,
-              { [styles.double]: !isMiddle },
-              { [styles.triple]: isMiddle }
-            )}
-            onClick={onAdd}
-          >
-            <Text text="추가하기" color={Colors.darkGrey} fontWeight="bold" />
-            <PlusSvg width={12} height={12} color={Colors.darkGrey} />
-          </div>
+          {/* 추가하기 버튼은 마지막 페이지에서만 노출 (또는 아이템이 없는 첫 페이지) */}
+          {(isLast || (length === 1 && currentIndex === 0)) && (
+            <div
+              className={cn(
+                styles.addBtn,
+                { [styles.double]: !isMiddle },
+                { [styles.triple]: isMiddle }
+              )}
+              onClick={onAdd}
+            >
+              <Text text="추가하기" color={Colors.darkGrey} fontWeight="bold" />
+              <PlusSvg width={12} height={12} color={Colors.darkGrey} />
+            </div>
+          )}
           {!isLast && (
             <div
               className={cn(
