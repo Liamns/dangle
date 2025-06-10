@@ -25,7 +25,7 @@ interface WriteRoutineContentProps {
   onNext: () => void;
 }
 
-const DEFAULT_IMAGE_URL = "/images/empty-image.png";
+export const DEFAULT_ROUTINE_IMAGE_URL = "/images/empty-image.png";
 
 const WriteRoutineContent = memo(
   ({
@@ -58,11 +58,11 @@ const WriteRoutineContent = memo(
     const imageRef = useRef<HTMLInputElement>(null);
     const imageUrl = watch(field("image"));
     const [preview, setPreview] = useState<string>(
-      imageUrl || DEFAULT_IMAGE_URL
+      imageUrl || DEFAULT_ROUTINE_IMAGE_URL
     );
 
     useEffect(() => {
-      setPreview(imageUrl || DEFAULT_IMAGE_URL);
+      setPreview(imageUrl || DEFAULT_ROUTINE_IMAGE_URL);
     }, [imageUrl]);
 
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +120,7 @@ const WriteRoutineContent = memo(
 
         <div
           className={cn(styles.imageBox, {
-            [styles.input]: preview !== DEFAULT_IMAGE_URL,
+            [styles.input]: preview !== DEFAULT_ROUTINE_IMAGE_URL,
           })}
           onClick={() => imageRef.current?.click()}
         >

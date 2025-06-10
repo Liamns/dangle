@@ -1,7 +1,5 @@
 "use client";
 import {
-  NewRoutineContentDtoSchema,
-  NewRoutineContentDto,
   NewRoutineWithContents,
   NewRoutineWithContentsSchema,
   RoutineWithContentsModel,
@@ -23,7 +21,6 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import WriteRoutine from "./WriteRoutine";
 import WriteRoutineContent from "./WriteRoutineContent";
-import { div } from "framer-motion/client";
 
 interface WriteRoutineModalProps {
   isOpen: boolean;
@@ -107,6 +104,8 @@ const WriteRoutineModal = memo(
           replace([{ title: "", memo: "", image: "" }]);
         } else {
           // 기존 루틴 편집인 경우 해당 루틴 데이터로 초기화
+          setSelectedCategory(routine!.category);
+          setSelectedType(routine!.type);
           methods.reset({
             id: routine!.id,
             profileId: routine!.profileId,
@@ -148,7 +147,13 @@ const WriteRoutineModal = memo(
         alert("루틴 내용의 메모는 최소 2자 이상이어야 합니다.");
         return;
       }
-      append({ title: "", memo: "", image: "" });
+      append({
+        id: undefined,
+        routineId: isNew ? undefined : routine?.id,
+        title: "",
+        memo: "",
+        image: "",
+      });
       setCurrentIndex(fields.length);
     };
     const handlePrev = useCallback(() => {
@@ -177,10 +182,16 @@ const WriteRoutineModal = memo(
       await onSave(data);
       onClose();
     });
-    const onSubmitUpdate = updateMethods.handleSubmit(async (data) => {
-      await onEdit(data);
-      onClose();
-    });
+    const onSubmitUpdate = updateMethods.handleSubmit(
+      async (data) => {
+        await onEdit(data);
+        onClose();
+      },
+      (errors) => {
+        // 여기에 에러 처리 로직 추가
+        console.error("검증 오류:", errors);
+      }
+    );
 
     const handleClickButton = () => {
       if (isFirst) {
@@ -191,6 +202,32 @@ const WriteRoutineModal = memo(
         }
         setIsFirst(false);
       } else {
+        const allContents = methods.getValues("contents");
+
+        // 빈 필드 확인
+        const invalidContentIndex = allContents.findIndex(
+          (
+            content: { title: string; memo: string; image?: string },
+            idx: number
+          ) => {
+            return (
+              !content.title ||
+              content.title.length < 2 ||
+              !content.memo ||
+              content.memo.length < 2
+            );
+          }
+        );
+
+        if (invalidContentIndex !== -1) {
+          alert(
+            `${
+              invalidContentIndex + 1
+            }번째 슬라이드의 제목과 내용을 확인해주세요.`
+          );
+          setCurrentIndex(invalidContentIndex);
+          return;
+        }
         isNew ? onSubmitNew() : onSubmitUpdate();
       }
     };

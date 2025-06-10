@@ -3,7 +3,7 @@ import BottomNavBar from "../../shared/components/bottom-nav-bar";
 import { InnerWrapper, Spacer } from "../../shared/components/layout";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.scss";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import MainTitle from "@/features/routine/components/MainTitle";
 import UpperBtn from "@/features/routine/components/UpperBtn";
 import EmptyRoutineCard from "@/features/routine/components/EmptyRoutineCard";
@@ -18,27 +18,40 @@ import {
   RoutineModel,
   RoutineWithContentsModel,
 } from "@/entities/routine/schema";
+import RoutineViewModal from "@/features/routine/components/RoutineViewerModal";
 
 export default function Routine() {
   const router = useRouter();
   const [isEditMode, setIsEditMode] = useState(false);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  // 선택된 루틴을 상태로 관리
-  const [selectedRoutine, setSelectedRoutine] = useState<
-    RoutineWithContentsModel | undefined
+  const [isViewerModalOpen, setIsViewerModalOpen] = useState(false);
+  const [selectedRoutineId, setSelectedRoutineId] = useState<
+    number | undefined
   >(undefined);
-  // 현재 프로필 ID로 루틴 불러오기
   const currentProfile = useProfileStore((s) => s.currentProfile);
   const profileId = currentProfile?.id ?? "";
-  const { routines, isLoading, error } = useRoutines(profileId);
+  // 현재 프로필 ID로 루틴 불러오기
+  const {
+    routines,
+    isLoading,
+    error,
+    mutate,
+    isToggling,
+    getUpdatedRoutine,
+    toggleFavorite,
+  } = useRoutines(profileId);
+  // 선택된 루틴을 상태로 관리
+  const selectedRoutine = useMemo(
+    () => getUpdatedRoutine(selectedRoutineId),
+    [getUpdatedRoutine, selectedRoutineId]
+  );
 
   const handleBackBtn = useCallback(() => {
     router.back();
   }, [router]);
 
   const handleAddClick = useCallback(() => {
-    setSelectedRoutine(undefined); // 선택된 루틴 초기화
+    setSelectedRoutineId(undefined); // 선택된 루틴 초기화
     setIsWriteModalOpen(true);
   }, []);
 
@@ -50,29 +63,35 @@ export default function Routine() {
   }, [isEditMode]);
 
   const handleFavoriteToggle = useCallback(
-    (id: number) => {
-      if (!profileId) return;
-      alert("즐겨찾기 토글");
-      console.log("Toggle favorite for routine ID:", id);
-      console.log("Current profile ID:", profileId);
+    async (id: number) => {
+      try {
+        await toggleFavorite(id);
+      } catch (error) {
+        alert("즐겨찾기를 변경할 수 없습니다.");
+      }
     },
-    [profileId]
+    [toggleFavorite]
   );
 
   const handleCardClick = useCallback(
     (routine: RoutineWithContentsModel) => {
       // 이제 routine은 이미 contents 배열을 포함하고 있으므로 직접 사용
-      setSelectedRoutine(routine);
+      setSelectedRoutineId(routine.id);
       if (isEditMode) {
         setIsWriteModalOpen(true);
+      } else {
+        setIsViewerModalOpen(true);
       }
     },
     [isEditMode]
   );
 
-  const handleAddRoutine = useCallback(async (data: NewRoutineDto) => {}, []);
-  const handleEditRoutine = useCallback(async (data: UpdateRoutineDto) => {},
-  []);
+  const handleAddRoutine = useCallback(async (data: NewRoutineDto) => {
+    console.log("새 루틴 추가:", data);
+  }, []);
+  const handleEditRoutine = useCallback(async (data: UpdateRoutineDto) => {
+    console.log("루틴 수정:", data);
+  }, []);
 
   return (
     <InnerWrapper>
@@ -95,7 +114,7 @@ export default function Routine() {
             routine={routine}
             isEditMode={isEditMode}
             onClick={() => handleCardClick(routine)}
-            onFavoriteToggle={handleFavoriteToggle}
+            onFavoriteToggle={() => handleFavoriteToggle(routine.id)}
           />
         ))}
         {/* 전체 6개 슬롯 또는 6개 이상일 때는 끝에 하나 더 빈 카드 추가 */}
@@ -111,11 +130,23 @@ export default function Routine() {
         isOpen={isWriteModalOpen}
         onClose={() => {
           setIsWriteModalOpen(false);
-          setSelectedRoutine(undefined); // 모달 닫을 때 선택된 루틴도 초기화
+          setSelectedRoutineId(undefined); // 모달 닫을 때 선택된 루틴도 초기화
         }}
         routine={selectedRoutine} // 여기서 선택된 루틴 전달
         onSave={handleAddRoutine}
         onEdit={handleEditRoutine}
+      />
+
+      <RoutineViewModal
+        routine={selectedRoutine}
+        isOpen={isViewerModalOpen}
+        onClose={() => {
+          setIsViewerModalOpen(false);
+          setSelectedRoutineId(undefined); // 모달 닫을 때 선택된 루틴도 초기화
+        }}
+        toggleFavorite={handleFavoriteToggle}
+        isFavorite={selectedRoutine?.isFavorite ?? false}
+        isToggling={selectedRoutineId ? isToggling(selectedRoutineId) : false}
       />
     </InnerWrapper>
   );

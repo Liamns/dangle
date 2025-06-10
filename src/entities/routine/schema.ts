@@ -70,7 +70,7 @@ export const RoutineContentDtoSchema = z.object({
 export type RoutineContentDto = z.infer<typeof RoutineContentDtoSchema>;
 
 export const UpdateRoutineContentDtoSchema = NewRoutineContentDtoSchema.extend({
-  id: z.number().int().positive("유효한 컨텐츠 ID여야 합니다."),
+  id: z.number().int().positive("유효한 컨텐츠 ID여야 합니다.").optional(),
 });
 export type UpdateRoutineContentDto = z.infer<
   typeof UpdateRoutineContentDtoSchema
