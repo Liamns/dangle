@@ -1,10 +1,9 @@
 "use client";
-import { MainCategory } from "@/shared/types/schedule-category";
+import { MainCategory, mainCategories } from "@/entities/schedule/types";
 import styles from "./ScheduleMainCategoryRow.module.scss";
 import cn from "classnames";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
-import { mainCategories } from "@/shared/types/schedule-category";
 import { memo } from "react";
 
 interface ScheduleMainCategoryRowProps {

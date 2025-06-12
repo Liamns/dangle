@@ -6,7 +6,7 @@ import {
   getSubCategoriesByMain,
   mainCategoryIds,
   getSubCategoryId,
-} from "@/shared/types/schedule-category";
+} from "@/entities/schedule/types";
 import { memo, useCallback, useState } from "react";
 import styles from "./ScheduleAddBox.module.scss";
 import cn from "classnames";

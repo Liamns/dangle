@@ -5,7 +5,7 @@ import {
   SubCategory,
   mainCategoryIds,
   getSubCategoryId,
-} from "@/shared/types/schedule-category";
+} from "@/entities/schedule/types";
 import {
   ScheduleItemWithContentModel,
   NewScheduleItem,

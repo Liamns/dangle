@@ -28,6 +28,15 @@ export function getMockRoutines(profileId: string): RoutineWithContentsModel[] {
           createdAt: now,
           updatedAt: now,
         },
+        {
+          id: 102,
+          routineId: 1,
+          title: "아침 밥",
+          memo: "단백질 위주 아침 식사",
+          image: "",
+          createdAt: now,
+          updatedAt: now,
+        },
       ],
     },
     {

@@ -18,7 +18,7 @@ import { text } from "stream/consumers";
 import {
   getSubCategoryImagePath,
   SubCategory,
-} from "@/shared/types/schedule-category";
+} from "@/entities/schedule/types";
 
 interface SharedScheduleData {
   petName: string;

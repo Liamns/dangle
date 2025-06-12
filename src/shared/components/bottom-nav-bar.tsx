@@ -18,7 +18,7 @@ export default function BottomNavBar() {
     {
       href: "/schedule",
       label: "일정",
-      icon: <ScheduleIcon />,
+      icon: <ScheduleIcon className={styles.scheduleSvg} />,
     },
     {
       href: "/profile",
@@ -28,12 +28,12 @@ export default function BottomNavBar() {
     {
       href: "/routine",
       label: "루틴",
-      icon: <RoutineIcon />,
+      icon: <RoutineIcon className={styles.routineSvg} />,
     },
     {
       href: "/favorites",
       label: "즐겨찾기",
-      icon: <FavoritesIcon width={20} height={20} color={Colors.darkGrey} />,
+      icon: <FavoritesIcon className={styles.favoriteSvg} />,
     },
   ];
 

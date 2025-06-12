@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import cn from "classnames";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
@@ -14,11 +14,12 @@ import ScheduleContents from "./ScheduleContents";
 import { useRouter } from "next/navigation";
 import { useScheduleByDate } from "../hooks/useScheduleByDate";
 import { encrypt } from "@/shared/lib/crypto";
+import RegisterFavoriteScheduleModal from "./RegisterFavoriteScheduleModal";
+import { FavoriteScheduleFormData } from "@/entities/schedule/schema";
 
 interface ScheduleContentProps {
   isEditMode: boolean;
   setIsEditMode: (isEditMode: boolean) => void;
-  isFavorite?: boolean;
   selectedDate: Date;
   openDatePicker: (initialDate: Date, callback: (date: Date) => void) => void;
 }
@@ -30,7 +31,6 @@ interface ScheduleContentProps {
 const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   isEditMode,
   setIsEditMode,
-  isFavorite = false,
   selectedDate,
   openDatePicker,
 }) => {
@@ -90,7 +90,36 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   }, [schedule, currentProfile]);
 
   // empty 상태 체크
-  const isEmpty = !isLoading && !error && schedule?.scheduleItems.length === 0;
+  const isEmpty =
+    !isLoading &&
+    !error &&
+    schedule !== undefined &&
+    schedule?.scheduleItems.length === 0;
+
+  const [isFavorite, setIsFavorite] = useState<boolean>(
+    schedule?.isFavorite ?? false
+  );
+  useEffect(() => {
+    // schedule이 변경될 때마다 즐겨찾기 상태 업데이트
+    setIsFavorite(schedule?.isFavorite ?? false);
+  }, [schedule]);
+
+  const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false);
+
+  const handleRegisterFavorite = useCallback(
+    (alias: string) => {
+      if (!schedule || !currentProfile) return;
+
+      const favoriteData: FavoriteScheduleFormData = {
+        profileId: currentProfile.id,
+        scheduleId: schedule.id,
+        alias: alias,
+      };
+      console.log("즐겨찾기 등록 데이터:", favoriteData);
+      alert("즐겨찾기 여부에 따른 기능 구현 필요");
+    },
+    [isFavorite, currentProfile]
+  );
 
   // 일반모드일 때 렌더링되는 컴포넌트
   return (
@@ -110,17 +139,18 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
                   isFavorite ? styles.active : ""
                 }`}
                 onClick={() => {
-                  alert("즐겨찾기 설정");
+                  setIsFavoriteModalOpen(true);
                 }}
               >
                 <Favorite
                   width={14}
                   height={14}
-                  color={isFavorite ? Colors.primary : Colors.grey}
+                  color={isFavorite ? Colors.brown : Colors.grey}
                 />
                 <Text
                   text="즐겨찾기"
-                  color={isFavorite ? Colors.black : Colors.grey}
+                  color={isFavorite ? Colors.brown : Colors.grey}
+                  fontWeight={isFavorite ? "bold" : "normal"}
                 />
               </div>
               <Spacer width="6" />
@@ -159,6 +189,17 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
               <Setting width={12} height={12} color={Colors.brown} />
             </div>
           </div>
+
+          {schedule && (
+            <RegisterFavoriteScheduleModal
+              isOpen={isFavoriteModalOpen}
+              onClose={() => {
+                setIsFavoriteModalOpen(false);
+              }}
+              scheduleId={schedule.id}
+              onRegister={handleRegisterFavorite}
+            />
+          )}
         </>
       )}
 

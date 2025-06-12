@@ -82,7 +82,7 @@ export default function Profile() {
 
       <Spacer height="40" />
       <InnerBox px="30" justify="space-between" direction="row">
-        <ArrowButton ml="0" onClick={() => router.back()}>
+        <ArrowButton ml="0" width="30" onClick={() => router.back()}>
           <Image
             src="/images/white-bracket.png"
             alt="뒤로가기"

@@ -33,3 +33,21 @@
   font-weight: bold;
   color: rgba(45, 45, 45, 0.5);
 }
+
+.favoriteSvg {
+  @include common.width(20);
+  @include common.height(20);
+  color: var(--darkGrey);
+}
+
+.scheduleSvg {
+  @include common.width(27);
+  @include common.height(23);
+  color: var(--darkGrey);
+}
+
+.routineSvg {
+  @include common.width(24);
+  @include common.height(23);
+  color: var(--darkGrey);
+}

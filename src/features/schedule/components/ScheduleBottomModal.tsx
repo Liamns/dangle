@@ -30,7 +30,7 @@ import LoadingOverlay from "@/shared/components/LoadingOverlay";
 import {
   getSubCategoryImagePath,
   SubCategory,
-} from "@/shared/types/schedule-category";
+} from "@/entities/schedule/types";
 import AddScheduleModal from "./AddScheduleModal";
 import DatePickerModal from "@/shared/components/DatePickerModal";
 import ScheduleContents from "./ScheduleContents";
@@ -58,6 +58,9 @@ export default function ScheduleBottomModal({
   // 날짜 선택기 모달 상태 관리
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [datePickerInitialDate, setDatePickerInitialDate] = useState<Date>(
+    new Date()
+  );
   const [datePickerCallback, setDatePickerCallback] = useState<
     ((date: Date) => void) | null
   >(null);
@@ -67,7 +70,8 @@ export default function ScheduleBottomModal({
   // 날짜 선택 핸들러 함수들
   const openDatePicker = useCallback(
     (initialDate: Date, callback: (date: Date) => void) => {
-      setSelectedDate(initialDate);
+      // 날짜 선택기의 초기 날짜만 설정하고, selectedDate는 변경하지 않음
+      setDatePickerInitialDate(initialDate);
       setDatePickerCallback(() => callback);
       setShowDatePicker(true);
     },
@@ -145,7 +149,7 @@ export default function ScheduleBottomModal({
         onClose={closeDatePicker}
         onBack={closeDatePicker}
         title="날짜 선택"
-        selectedDate={selectedDate}
+        selectedDate={datePickerInitialDate}
         onDateSelect={handleDateSelect}
       />
     </BottomModal>

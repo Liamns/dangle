@@ -1,14 +1,17 @@
+/**
+ * 이 파일은 클라이언트 측 입력 검증과 API 요청/응답을 위한 스키마를 정의합니다.
+ * 주로 입력 폼 검증과 API 통신에 사용되는 DTO(Data Transfer Object) 스키마입니다.
+ */
+
 import { z } from "zod";
 import {
-  MainCategory,
-  SubCategory,
   mainCategories,
-  mainCategoryIds,
   getAllSubCategoriesByMain,
-  getSubCategoryNameById,
-} from "@/shared/types/schedule-category";
+} from "@/entities/schedule/types";
 
-// 대분류 카테고리 스키마
+// ===== 입력 폼 검증을 위한 스키마 =====
+
+// 대분류 카테고리 스키마 (입력 폼용)
 export const categoryMainSchema = z.object({
   name: z.enum(mainCategories, {
     errorMap: () => ({ message: "유효한 메인 카테고리를 선택해주세요." }),
@@ -17,7 +20,7 @@ export const categoryMainSchema = z.object({
 
 export type CategoryMainFormData = z.infer<typeof categoryMainSchema>;
 
-// 소분류 카테고리 스키마
+// 소분류 카테고리 스키마 (입력 폼용)
 export const categorySubSchema = z.object({
   name: z
     .string()
@@ -28,7 +31,7 @@ export const categorySubSchema = z.object({
 
 export type CategorySubFormData = z.infer<typeof categorySubSchema>;
 
-// 메인 카테고리 선택 후 서브 카테고리 선택을 위한 스키마
+// 메인 카테고리 선택 후 서브 카테고리 선택을 위한 스키마 (UI 선택용)
 export const categorySelectionSchema = z
   .object({
     mainCategory: z.enum(mainCategories, {
@@ -56,16 +59,13 @@ export const categorySelectionSchema = z
 
 export type CategorySelectionFormData = z.infer<typeof categorySelectionSchema>;
 
-// 일정 컨텐츠 스키마
+// ===== API 요청 DTO 스키마 =====
+
+// 일정 컨텐츠 생성/수정 스키마 (API 요청용)
 export const scheduleContentSchema = z
   .object({
     mainId: z.number().int().positive("유효한 메인 카테고리를 선택해주세요."),
     subId: z.number().int().positive("유효한 서브 카테고리를 선택해주세요."),
-    description: z
-      .string()
-      .max(500, "설명은 최대 500자까지 입력할 수 있습니다.")
-      .optional()
-      .nullable(),
   })
   .refine(
     (data) => {
@@ -88,14 +88,14 @@ export const scheduleContentSchema = z
 
 export type ScheduleContentFormData = z.infer<typeof scheduleContentSchema>;
 
-// 일정 인스턴스 스키마
+// 일정 인스턴스 생성 스키마 (API 요청용)
 export const scheduleSchema = z.object({
   profileId: z.string().uuid("유효한 프로필을 선택해주세요."),
 });
 
 export type ScheduleFormData = z.infer<typeof scheduleSchema>;
 
-// 일정 아이템 스키마
+// 일정 아이템 생성/수정 스키마 (API 요청용)
 export const scheduleItemSchema = z.object({
   scheduleId: z.number().int().positive("유효한 일정을 선택해주세요."),
   contentId: z.number().int().positive("유효한 컨텐츠를 선택해주세요."),
@@ -113,15 +113,22 @@ export const scheduleItemSchema = z.object({
 
 export type ScheduleItemFormData = z.infer<typeof scheduleItemSchema>;
 
-// 즐겨찾기 일정 컨텐츠 스키마
-export const favoriteContentSchema = z.object({
+// ===== 즐겨찾기 관련 DTO 스키마 =====
+
+// 즐겨찾기 일정 컨텐츠 스키마 (API 요청용)
+export const favoriteScheduleSchema = z.object({
   profileId: z.string().uuid("유효한 프로필을 선택해주세요."),
-  contentId: z.number().int().positive("유효한 컨텐츠를 선택해주세요."),
+  scheduleId: z.number().int().positive("유효한 컨텐츠를 선택해주세요."),
+  alias: z
+    .string()
+    .min(2, "별칭은 최소 2자 이상이어야 합니다.")
+    .max(8, "별칭은 최대 8자까지 입력할 수 있습니다.")
+    .optional(),
 });
 
-export type FavoriteContentFormData = z.infer<typeof favoriteContentSchema>;
+export type FavoriteScheduleFormData = z.infer<typeof favoriteScheduleSchema>;
 
-// 사용자-서브 카테고리 즐겨찾기 스키마
+// 사용자-서브 카테고리 즐겨찾기 스키마 (API 요청용)
 export const favoriteSubCategorySchema = z.object({
   profileId: z.string().uuid("유효한 프로필을 선택해주세요."),
   subCategoryId: z
@@ -133,6 +140,8 @@ export const favoriteSubCategorySchema = z.object({
 export type FavoriteSubCategoryFormData = z.infer<
   typeof favoriteSubCategorySchema
 >;
+
+// ===== 복합 작업을 위한 확장 스키마 =====
 
 // 일정 생성 시 사용할 확장 스키마 (여러 아이템을 한 번에 등록)
 export const createScheduleSchema = scheduleSchema.extend({
@@ -157,7 +166,7 @@ export const createScheduleSchema = scheduleSchema.extend({
 
 export type CreateScheduleFormData = z.infer<typeof createScheduleSchema>;
 
-// 일정 검색 스키마
+// 일정 검색 스키마 (API 요청용)
 export const scheduleSearchSchema = z
   .object({
     from: z.string().or(z.date()).pipe(z.coerce.date()).optional(),

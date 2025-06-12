@@ -7,5 +7,8 @@ export function useScheduleByDate(profileId: string, date: Date) {
   const key = profileId
     ? ["scheduleByDate", profileId, date.toISOString()]
     : null;
-  return useSWR<ScheduleWithItemsModel>(key, () => getScheduleByDate(profileId, date));
+
+  return useSWR<ScheduleWithItemsModel>(key, () =>
+    getScheduleByDate(profileId, date)
+  );
 }

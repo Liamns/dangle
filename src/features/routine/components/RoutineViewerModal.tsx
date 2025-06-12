@@ -86,97 +86,103 @@ const RoutineViewModal = memo(
         <div className={styles.container}>
           {/* Slider Wrapper */}
           <div className={styles.sliderWrapper}>
-            {/* Routine Card */}
-            {routine.contents &&
-              routine.contents.map((content, index) => (
-                <div
-                  className={styles.content}
-                  style={
-                    {
-                      "--routine-viewer-category-color": categoryColor,
-                    } as React.CSSProperties
-                  }
-                  key={content.id}
-                >
-                  <FavoriteSvg
-                    className={cn(styles.favoriteToggleButton, {
-                      [styles.active]: isFavorite,
-                      [styles.toggling]: isToggling,
-                    })}
-                    onClick={handleFavoriteToggle}
-                  />
-                  {/* Title */}
-                  <div className={styles.title}>
-                    <Text text={routine.category} color={categoryColor} />
-                    <Text
-                      text={content.title}
-                      color={Colors.black}
-                      fontWeight="bold"
+            {/* Slider Inner with transform for sliding effect */}
+            <div
+              className={styles.sliderInner}
+              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            >
+              {/* Routine Card */}
+              {routine.contents &&
+                routine.contents.map((content, index) => (
+                  <div
+                    className={styles.content}
+                    style={
+                      {
+                        "--routine-viewer-category-color": categoryColor,
+                      } as React.CSSProperties
+                    }
+                    key={content.id}
+                  >
+                    <FavoriteSvg
+                      className={cn(styles.favoriteToggleButton, {
+                        [styles.active]: isFavorite,
+                        [styles.toggling]: isToggling,
+                      })}
+                      onClick={handleFavoriteToggle}
                     />
-                  </div>
-                  {/* End of Title */}
+                    {/* Title */}
+                    <div className={styles.title}>
+                      <Text text={routine.category} color={categoryColor} />
+                      <Text
+                        text={content.title}
+                        color={Colors.black}
+                        fontWeight="bold"
+                      />
+                    </div>
+                    {/* End of Title */}
 
-                  {/* Image */}
-                  <div className={styles.image}>
-                    <Image
-                      src={
-                        content.image
-                          ? content.image
-                          : DEFAULT_ROUTINE_IMAGE_URL
-                      }
-                      alt={`루틴 ${index + 1}번째 내용 이미지`}
-                      fill
-                    />
-                  </div>
-                  {/* End of Image */}
+                    {/* Image */}
+                    <div className={styles.image}>
+                      <Image
+                        src={
+                          content.image
+                            ? content.image
+                            : DEFAULT_ROUTINE_IMAGE_URL
+                        }
+                        alt={`루틴 ${index + 1}번째 내용 이미지`}
+                        fill
+                      />
+                    </div>
+                    {/* End of Image */}
 
-                  {/* Memo */}
-                  <div className={styles.memoBox}>
-                    <Text text="Memo" color={categoryColor} />
-                    <textarea
-                      className={styles.memo}
-                      value={content.memo}
-                      style={{ fontSize: fontSizeMap["sm"] }}
-                    />
-                  </div>
-                  {/* End of Memo */}
+                    {/* Memo */}
+                    <div className={styles.memoBox}>
+                      <Text text="Memo" color={categoryColor} />
+                      <textarea
+                        className={styles.memo}
+                        value={content.memo}
+                        style={{ fontSize: fontSizeMap["sm"] }}
+                        onChange={() => {}}
+                        readOnly
+                      />
+                    </div>
+                    {/* End of Memo */}
 
-                  {/* Navigation Buttons */}
-                  <div className={styles.navBox}>
-                    <div className={styles.navButton}>
-                      <div className={styles.navArrow}>
-                        <Image
-                          src={"/images/white-bracket.png"}
-                          alt="이전으로"
-                          fill
-                          onClick={handlePrev}
-                        />
+                    {/* Navigation Buttons */}
+                    <div className={styles.navBox}>
+                      <div className={styles.navButton} onClick={handlePrev}>
+                        <div className={styles.navArrow}>
+                          <Image
+                            src={"/images/white-bracket.png"}
+                            alt="이전으로"
+                            fill
+                          />
+                        </div>
+                      </div>
+                      <Text
+                        text={`${currentIndex + 1}/${routine.contents.length}`}
+                        color={categoryColor}
+                      />
+                      <div className={styles.navButton} onClick={handleNext}>
+                        <div className={styles.navArrow}>
+                          <Image
+                            src={"/images/white-bracket.png"}
+                            alt="다음으로"
+                            fill
+                            style={
+                              {
+                                transform: "rotate(180deg)",
+                              } as React.CSSProperties
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
-                    <Text
-                      text={`${currentIndex + 1}/${routine.contents.length}`}
-                      color={categoryColor}
-                    />
-                    <div className={styles.navButton}>
-                      <div className={styles.navArrow}>
-                        <Image
-                          src={"/images/white-bracket.png"}
-                          alt="다음으로"
-                          fill
-                          onClick={handleNext}
-                          style={
-                            {
-                              transform: "rotate(180deg)",
-                            } as React.CSSProperties
-                          }
-                        />
-                      </div>
-                    </div>
+                    {/* End of Navigation Buttons */}
                   </div>
-                  {/* End of Navigation Buttons */}
-                </div>
-              ))}
-            {/* End of Routine Card */}
+                ))}
+              {/* End of Routine Card */}
+            </div>
           </div>
           {/* End of Slider Wrapper */}
 

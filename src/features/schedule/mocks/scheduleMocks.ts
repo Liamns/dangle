@@ -8,7 +8,7 @@ import {
   anniversarySubCategories,
   meetingSubCategories,
   outingSubCategories,
-} from "@/shared/types/schedule-category";
+} from "@/entities/schedule/types";
 
 export const EMPTY_SCHEDULE: ScheduleWithItemsModel = {
   id: 0,
@@ -74,6 +74,7 @@ export function getMockSchedules(
     id: 1,
     profileId,
     createdAt: baseDate,
+    isFavorite: false,
     scheduleItems: [
       {
         id: 1,
@@ -84,7 +85,6 @@ export function getMockSchedules(
           id: 1,
           mainId: mainCategoryIds.건강,
           subId: 0,
-          description: "멀티비타민 2알 먹이기",
           main: mainCats[mainCategoryIds.건강],
           sub: subs.find(
             (s) => s.mainId === mainCategoryIds.건강 && s.id === 0
@@ -100,7 +100,6 @@ export function getMockSchedules(
           id: 2,
           mainId: mainCategoryIds.일상,
           subId: 7,
-          description: "점심 사료 100g 급여",
           main: mainCats[mainCategoryIds.일상],
           sub: subs.find(
             (s) => s.mainId === mainCategoryIds.일상 && s.id === 7
@@ -116,7 +115,6 @@ export function getMockSchedules(
           id: 3,
           mainId: mainCategoryIds.일상,
           subId: 0,
-          description: "30분 산책",
           main: mainCats[mainCategoryIds.일상],
           sub: subs.find(
             (s) => s.mainId === mainCategoryIds.일상 && s.id === 0
@@ -132,7 +130,6 @@ export function getMockSchedules(
           id: 4,
           mainId: mainCategoryIds.교육,
           subId: 1,
-          description: "추가 일정 1",
           main: mainCats[mainCategoryIds.교육],
           sub: subs.find(
             (s) => s.mainId === mainCategoryIds.교육 && s.id === 1
@@ -148,7 +145,6 @@ export function getMockSchedules(
           id: 5,
           mainId: mainCategoryIds.일상,
           subId: 2,
-          description: "추가 일정 2",
           main: mainCats[mainCategoryIds.일상],
           sub: subs.find(
             (s) => s.mainId === mainCategoryIds.일상 && s.id === 2
@@ -164,7 +160,6 @@ export function getMockSchedules(
           id: 6,
           mainId: mainCategoryIds.건강,
           subId: 1,
-          description: "체중 검사",
           main: mainCats[mainCategoryIds.건강],
           sub: subs.find(
             (s) => s.mainId === mainCategoryIds.건강 && s.id === 1
@@ -180,7 +175,6 @@ export function getMockSchedules(
           id: 7,
           mainId: mainCategoryIds.외출,
           subId: 0,
-          description: "산책 후 카페 방문",
           main: mainCats[mainCategoryIds.외출],
           sub: subs.find(
             (s) => s.mainId === mainCategoryIds.외출 && s.id === 0
@@ -196,7 +190,6 @@ export function getMockSchedules(
           id: 8,
           mainId: mainCategoryIds.모임,
           subId: 0,
-          description: "친구 모임",
           main: mainCats[mainCategoryIds.모임],
           sub: subs.find(
             (s) => s.mainId === mainCategoryIds.모임 && s.id === 0

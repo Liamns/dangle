@@ -7,7 +7,7 @@ import {
   mainCategories,
   getSubCategoriesByMain,
   getSubCategoryImagePath,
-} from "@/shared/types/schedule-category";
+} from "@/entities/schedule/types";
 import { InnerBox } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
@@ -33,7 +33,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
 }) => {
   // 현재 메인 카테고리에 따른 서브 카테고리 목록 가져오기
   const subCategories = getSubCategoriesByMain(mainCategory) as string[];
-  
+
   // 현재 선택된 서브 카테고리에 해당하는 아이콘 경로
   const iconPath = getSubCategoryImagePath(subCategory);
 
@@ -42,10 +42,12 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const newMainCategory = e.target.value as MainCategory;
-    const newSubCategories = getSubCategoriesByMain(newMainCategory) as string[];
+    const newSubCategories = getSubCategoriesByMain(
+      newMainCategory
+    ) as string[];
     // 새 메인 카테고리에 맞는 첫 번째 서브 카테고리 선택
     const newSubCategory = newSubCategories[0] as SubCategory;
-    
+
     onCategoryChange(newMainCategory, newSubCategory);
   };
 
@@ -77,12 +79,7 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({
       {/* 카테고리 아이콘 */}
       <div className={styles.iconContainer}>
         {iconPath && (
-          <Image
-            src={iconPath}
-            alt={subCategory}
-            width={24}
-            height={24}
-          />
+          <Image src={iconPath} alt={subCategory} width={24} height={24} />
         )}
       </div>
 

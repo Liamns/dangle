@@ -9,14 +9,6 @@ import Close from "@/shared/svgs/close.svg";
 import EmptySchedule from "@/shared/svgs/empty-schedule.svg";
 import CategorySelector from "./CategorySelector";
 import {
-  MainCategory,
-  SubCategory,
-  mainCategoryIds,
-  getSubCategoryId,
-  mainCategories,
-  getSubCategoryNameById,
-} from "@/shared/types/schedule-category";
-import {
   ScheduleContentFormData,
   ScheduleItemFormData,
 } from "@/entities/schedule/schema";
@@ -25,6 +17,14 @@ import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Text } from "@/shared/components/texts";
 import TimePicker, { TimePickerOptions } from "@/shared/components/TimePicker";
+import {
+  getSubCategoryId,
+  getSubCategoryNameById,
+  mainCategories,
+  MainCategory,
+  mainCategoryIds,
+  SubCategory,
+} from "@/entities/schedule/types";
 
 /**
  * 일정 추가 모달 컴포넌트 Props

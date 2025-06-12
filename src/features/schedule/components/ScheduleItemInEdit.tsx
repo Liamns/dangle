@@ -5,7 +5,7 @@ import cn from "classnames";
 import {
   getSubCategoryImagePath,
   SubCategory,
-} from "@/shared/types/schedule-category";
+} from "@/entities/schedule/types";
 import Image from "next/image";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";

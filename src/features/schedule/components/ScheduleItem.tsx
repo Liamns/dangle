@@ -8,7 +8,7 @@ import { ScheduleItemWithContentModel } from "@/entities/schedule/model";
 import {
   getSubCategoryImagePath,
   SubCategory,
-} from "@/shared/types/schedule-category";
+} from "@/entities/schedule/types";
 import modalStyles from "./ScheduleBottomModal.module.scss";
 import { Text } from "@/shared/components/texts";
 import EditSvg from "@/shared/svgs/edit.svg";

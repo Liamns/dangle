@@ -25,6 +25,9 @@ export default function Schedule() {
   const isEditMode = searchParams.get("edit") === "true";
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [datePickerInitialDate, setDatePickerInitialDate] = useState<Date>(
+    new Date()
+  );
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [datePickerCallback, setDatePickerCallback] = useState<
     ((date: Date) => void) | null
@@ -43,7 +46,7 @@ export default function Schedule() {
   const handleDateSelect = useCallback(
     (date: Date | undefined) => {
       if (date) {
-        setSelectedDate(date);
+        // setSelectedDate(date);
         if (datePickerCallback) datePickerCallback(date);
         setShowDatePicker(false);
       }
@@ -54,7 +57,8 @@ export default function Schedule() {
   // openDatePicker: child components trigger date picker
   const openDatePicker = useCallback(
     (initialDate: Date, callback: (date: Date) => void) => {
-      setSelectedDate(initialDate);
+      // 날짜 선택기의 초기 날짜만 설정하고, selectedDate는 변경하지 않음
+      setDatePickerInitialDate(initialDate);
       setDatePickerCallback(() => callback);
       setShowDatePicker(true);
     },
@@ -83,15 +87,17 @@ export default function Schedule() {
           />
         </ArrowButton>
 
-        <div className={styles.importBtn} onClick={() => alert("불러오기")}>
-          <Text text="불러오기" color={Colors.white} fontWeight="bold" />
-          <Image
-            src="/images/schedule/import.png"
-            alt="불러오기"
-            width={10}
-            height={13}
-          />
-        </div>
+        {isEditMode && (
+          <div className={styles.importBtn} onClick={() => alert("불러오기")}>
+            <Text text="불러오기" color={Colors.white} fontWeight="bold" />
+            <Image
+              src="/images/schedule/import.png"
+              alt="불러오기"
+              width={10}
+              height={13}
+            />
+          </div>
+        )}
       </InnerBox>
 
       <Spacer height="8" />
@@ -123,7 +129,6 @@ export default function Schedule() {
           <ScheduleContentBox
             isEditMode={isEditMode}
             setIsEditMode={handleEditModeChange}
-            isFavorite={false}
             selectedDate={selectedDate}
             openDatePicker={openDatePicker}
           />
@@ -134,7 +139,7 @@ export default function Schedule() {
       <DatePickerModal
         isOpen={showDatePicker}
         onClose={() => setShowDatePicker(false)}
-        selectedDate={selectedDate}
+        selectedDate={datePickerInitialDate}
         onDateSelect={handleDateSelect}
         title="날짜 선택"
       />
