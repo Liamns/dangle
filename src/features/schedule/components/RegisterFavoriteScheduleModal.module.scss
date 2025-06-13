@@ -51,7 +51,17 @@
 
 .inputWrapper {
   position: relative;
-  width: 100%;
+  width: 95%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+}
+
+.inputBox {
+  position: relative;
+  width: 80%;
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -90,6 +100,85 @@
   pointer-events: none;
 }
 
+.iconWrapper {
+  position: relative;
+}
+
+.emptyIcon {
+  display: flex;
+  cursor: pointer;
+  width: rw(30);
+  aspect-ratio: 1;
+  color: var(--invalid);
+}
+
+.selectedIconBox {
+  cursor: pointer;
+  width: rw(30);
+  aspect-ratio: 1;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selectedIcon {
+  position: relative;
+  width: rw(22);
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.iconSelector {
+  position: absolute;
+  right: 0;
+  top: rh(30);
+  display: flex;
+  flex-direction: row;
+  gap: rw(12);
+  z-index: 10;
+  padding: rh(8) rw(5);
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.iconOption {
+  @include width(32);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  &.selected {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 0 2px rgba(255, 192, 203, 0.5), 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+  }
+}
+
+.icon {
+  width: rw(20);
+  aspect-ratio: 1;
+  object-fit: contain;
+  position: relative;
+}
+
 .button {
   width: 100%;
   @include height(37);
@@ -99,7 +188,7 @@
   justify-content: center;
   background-color: var(--invalid);
   cursor: none;
-  @include mt(24);
+  @include mt(30);
 
   &.valid {
     background-color: var(--brown);

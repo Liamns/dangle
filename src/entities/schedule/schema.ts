@@ -122,8 +122,8 @@ export const favoriteScheduleSchema = z.object({
   alias: z
     .string()
     .min(2, "별칭은 최소 2자 이상이어야 합니다.")
-    .max(8, "별칭은 최대 8자까지 입력할 수 있습니다.")
-    .optional(),
+    .max(8, "별칭은 최대 8자까지 입력할 수 있습니다."),
+  icon: z.number().int("유효한 아이콘을 선택해주세요."),
 });
 
 export type FavoriteScheduleFormData = z.infer<typeof favoriteScheduleSchema>;

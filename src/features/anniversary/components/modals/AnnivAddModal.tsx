@@ -22,6 +22,7 @@ import {
   AnniversaryModel,
   getAnniversaryIconByType,
 } from "@/entities/anniversary/model";
+import { annivIcon } from "@/shared/types/icon";
 
 interface AnnivAddModalProps {
   isOpen: boolean;
@@ -58,7 +59,6 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
   isHidden = false, // 숨김 상태 (DatePicker 표시 시)
 }) => {
   const [showIconSelector, setShowIconSelector] = useState<boolean>(false);
-  const iconTypes = ["cake", "conical", "gift"];
 
   const {
     register,
@@ -249,7 +249,7 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
                 </div>
                 {showIconSelector && (
                   <div className={styles.iconSelector}>
-                    {iconTypes.map((type, index) => (
+                    {annivIcon.map((type, index) => (
                       <div
                         key={index}
                         className={classNames(styles.iconOption, {

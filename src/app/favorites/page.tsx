@@ -1,19 +1,24 @@
 "use client";
 import { ArrowButton } from "@/shared/components/buttons";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import BottomNavBar from "../../shared/components/bottom-nav-bar";
 import { InnerBox, InnerWrapper, Spacer } from "../../shared/components/layout";
 import styles from "./page.module.scss";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Colors } from "@/shared/consts/colors";
-import { useFavorites } from "@/features/favorites/hooks/useFavorites";
+import {
+  FavoriteItem,
+  useFavorites,
+} from "@/features/favorites/hooks/useFavorites";
 import LoadingOverlay from "@/shared/components/LoadingOverlay";
 import { useProfileStore } from "@/entities/profile/store";
 import { Text } from "@/shared/components/texts";
 import cn from "classnames";
 import ScheduleSvg from "@/shared/svgs/schedule.svg";
 import RoutineSvg from "@/shared/svgs/routine.svg";
+import FavoriteScheduleCard from "@/features/favorites/components/FavoriteScheduleCard";
+import { FavoriteScheduleModel } from "@/entities/schedule/model";
 
 export default function Favorites() {
   const router = useRouter();
@@ -32,6 +37,19 @@ export default function Favorites() {
 
   const isRoutineActive = useMemo(() => activeTab === "routine", [activeTab]);
   const isScheduleActive = useMemo(() => activeTab === "schedule", [activeTab]);
+
+  const handleEmptyClick = useCallback(() => {
+    if (isRoutineActive) router.push("/routine");
+    else if (isScheduleActive) router.push("/schedule");
+  }, [isRoutineActive, isScheduleActive, router]);
+
+  const handleShareClick = useCallback(
+    (data: FavoriteItem[]) => {
+      // 공유 기능 구현
+      console.log("공유할 데이터:", data);
+    },
+    [isRoutineActive, isScheduleActive]
+  );
 
   return (
     <InnerWrapper>
@@ -93,6 +111,17 @@ export default function Favorites() {
           </div>
         </div>
         {/* End of Toggle Tab */}
+
+        {/* Content Card */}
+        {isScheduleActive && (
+          <FavoriteScheduleCard
+            favorites={favorites as FavoriteScheduleModel[]}
+            onEmptyClick={handleEmptyClick}
+            onShareClick={handleShareClick}
+            isSelectMode={isSelectMode}
+          />
+        )}
+        {/* End of Content Card */}
       </div>
 
       <BottomNavBar />

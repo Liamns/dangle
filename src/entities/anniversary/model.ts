@@ -6,6 +6,7 @@ import {
   dateSchema,
   isDdaySchema,
 } from "./schema";
+import { annivIcon, favoriteIcon } from "@/shared/types/icon";
 
 // 기념일 스키마
 export const anniversaryModelSchema = z.object({
@@ -23,15 +24,11 @@ export type AnniversaryModel = z.infer<typeof anniversaryModelSchema>;
 
 // icon 값에 따른 이미지 파일명 반환 함수
 export const getAnniversaryIconByType = (icon: number): string => {
-  switch (icon) {
-    case 0:
-      return "/images/home/anniversary/cake.png";
-    case 1:
-      return "/images/home/anniversary/conical.png";
-    case 2:
-      return "/images/home/anniversary/gift.png";
-    default:
-      return "/images/home/anniversary/gift.png";
+  if (icon < 0 || icon >= annivIcon.length) {
+    console.warn(`Invalid icon index: ${icon}. Returning default icon.`);
+    return "/images/home/anniversary/cake.png"; // 기본 아이콘 경로
+  } else {
+    return `/images/home/anniversary/${annivIcon[icon]}.png`;
   }
 };
 

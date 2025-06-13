@@ -6,6 +6,7 @@
 import { z } from "zod";
 import { uuidSchema } from "@/entities/user/model";
 import { MainCategory, mainCategories } from "@/entities/schedule/types";
+import { favoriteScheduleSchema } from "./schema";
 
 // ===== 데이터베이스 모델 스키마 =====
 
@@ -65,19 +66,16 @@ export type ScheduleItemModel = z.infer<typeof scheduleItemModelSchema>;
 // ===== 즐겨찾기 관련 모델 스키마 =====
 
 // 템플릿 즐겨찾기 모델 (서버에서 불러온 데이터)
-export const favoriteContentModelSchema = z.object({
+export const favoriteScheduleModelSchema = favoriteScheduleSchema.extend({
   id: z.number().int().positive(),
-  userId: uuidSchema,
-  contentId: z.number().int().positive(),
   addedAt: z.date(),
 });
+export type FavoriteScheduleModel = z.infer<typeof favoriteScheduleModelSchema>;
 
-export type FavoriteContentModel = z.infer<typeof favoriteContentModelSchema>;
-
-// 사용자-서브 카테고리 즐겨찾기 모델 (User와 SubCategory N:M 관계)
+// 사용자-서브 카테고리 즐겨찾기 모델 (profile와 SubCategory N:M 관계)
 export const favoriteSubCategoryModelSchema = z.object({
   id: z.number().int().positive(),
-  userId: uuidSchema,
+  profileId: uuidSchema,
   subCategoryId: z.number().int().positive(),
   addedAt: z.date(),
 });

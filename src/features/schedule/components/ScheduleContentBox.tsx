@@ -107,13 +107,14 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false);
 
   const handleRegisterFavorite = useCallback(
-    (alias: string) => {
+    (alias: string, icon: number) => {
       if (!schedule || !currentProfile) return;
 
       const favoriteData: FavoriteScheduleFormData = {
         profileId: currentProfile.id,
         scheduleId: schedule.id,
         alias: alias,
+        icon: icon,
       };
       console.log("즐겨찾기 등록 데이터:", favoriteData);
       alert("즐겨찾기 여부에 따른 기능 구현 필요");
@@ -196,7 +197,6 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
               onClose={() => {
                 setIsFavoriteModalOpen(false);
               }}
-              scheduleId={schedule.id}
               onRegister={handleRegisterFavorite}
             />
           )}

@@ -1,0 +1,31 @@
+@use "shared/styles/common" as *;
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  @include height(161);
+}
+
+.image {
+  @include width(135);
+  aspect-ratio: 135/66;
+  position: relative;
+  @include mt(13);
+  @include mb(30);
+}
+
+.button {
+  width: 100%;
+  @include height(37);
+  border-radius: 10px;
+  background-color: var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
