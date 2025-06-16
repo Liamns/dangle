@@ -96,23 +96,27 @@
     gap: calc(100dvw / 360 * 10);
   }
 
-  /* 버튼 컨테이너 나타나는 애니메이션 */
+  /* 버튼 컨테이너 나타나는 애니메이션 - 속도 조절 */
   @keyframes show-buttons {
     0% {
       width: 0;
+      opacity: 0.8;
     }
     100% {
       width: 50%;
+      opacity: 1;
     }
   }
 
-  /* 버튼 컨테이너 사라지는 애니메이션 */
+  /* 버튼 컨테이너 사라지는 애니메이션 - 속도 조절 */
   @keyframes hide-buttons {
     0% {
       width: 50%;
+      opacity: 1;
     }
     100% {
       width: 0;
+      opacity: 0.5;
     }
   }
 
@@ -127,14 +131,21 @@
     align-items: center;
     overflow: hidden; /* 너비가 0일 때 내용이 보이지 않도록 함 */
     width: 0; /* 기본 너비는 0 */
-    /* 트랜지션 대신 애니메이션 사용으로 변경 */
+    opacity: 1; /* 기본 상태는 반투명 */
+
+    /* 애니메이션 속도 및 타이밍 함수 조정 */
     &.active {
-      animation: show-buttons 0.5s forwards;
-      animation-fill-mode: forwards; /* 애니메이션 완료 후 최종 상태 유지 */
+      animation: show-buttons 0.5s cubic-bezier(0.25, 0, 0.5, 1) forwards;
     }
+
     &.inactive {
-      animation: hide-buttons 0.5s forwards;
-      animation-fill-mode: forwards; /* 애니메이션 완료 후 최종 상태 유지 */
+      animation: hide-buttons 0.5s cubic-bezier(0.4, 0, 1, 1) forwards;
+
+      /* 내부 버튼 즉시 투명하게 */
+      & > * {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
     }
   }
 
@@ -182,5 +193,9 @@
   &.empty {
     justify-content: center;
     align-items: center;
+  }
+
+  &::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
   }
 }

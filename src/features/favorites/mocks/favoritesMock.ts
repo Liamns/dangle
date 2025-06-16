@@ -32,7 +32,19 @@ export function getMockFavoriteSchedules(
   const schedules = [
     { ...getMockSchedules(profileId, now), isFavorite: true },
     { ...getMockSchedules(profileId, yesterday), isFavorite: true },
-    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: false },
+    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
+    { ...getMockSchedules(profileId, now), isFavorite: true },
+    { ...getMockSchedules(profileId, yesterday), isFavorite: true },
+    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
+    { ...getMockSchedules(profileId, now), isFavorite: true },
+    { ...getMockSchedules(profileId, yesterday), isFavorite: true },
+    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
+    { ...getMockSchedules(profileId, now), isFavorite: true },
+    { ...getMockSchedules(profileId, yesterday), isFavorite: true },
+    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
+    { ...getMockSchedules(profileId, now), isFavorite: true },
+    { ...getMockSchedules(profileId, yesterday), isFavorite: true },
+    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
   ];
 
   // 즐겨찾기된 일정만 반환

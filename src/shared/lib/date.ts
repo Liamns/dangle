@@ -39,23 +39,28 @@ export const formatDateToKorean = (date: Date = new Date()): string => {
  * @param input 변환할 yyyymmdd 형식의 문자열 (DATE_PLACEHOLDER_EXAMPLE)
  * @returns yyyy-mm-dd 형식의 문자열 또는 null (유효하지 않은 경우)
  */
-export const transformToDateFormat = (input: string): string | null => {
+export const transformToDateFormat = (
+  input: string,
+  separate?: string
+): string | null => {
   if (!/^[0-9]{8}$/.test(input)) {
     return null; // 입력값이 8자리 숫자가 아니면 null 반환
   }
+
+  const separateChar = separate || "-";
 
   const year = input.substring(0, 4);
   const month = input.substring(4, 6);
   const day = input.substring(6, 8);
 
   // 유효한 날짜인지 확인
-  const date = new Date(`${year}-${month}-${day}`);
+  const date = new Date(`${year}${separateChar}${month}${separateChar}${day}`);
   if (
     date.getFullYear() === parseInt(year, 10) &&
     date.getMonth() + 1 === parseInt(month, 10) &&
     date.getDate() === parseInt(day, 10)
   ) {
-    return `${year}-${month}-${day}`;
+    return `${year}${separateChar}${month}${separateChar}${day}`;
   }
 
   return null; // 유효하지 않은 날짜인 경우 null 반환

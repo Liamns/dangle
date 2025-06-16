@@ -13,14 +13,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import cn from "classnames";
 import EmptyFavoriteIcon from "@/shared/svgs/empty-favorite.svg";
 import { favoriteIcon } from "@/shared/types/icon";
-import { getAnniversaryIconByType } from "@/entities/anniversary/model";
+import ScheduleSvg from "@/shared/svgs/schedule.svg";
 import Image from "next/image";
 import { getFavoriteIconByType } from "@/entities/routine/model";
+import { FavoriteScheduleModel } from "@/entities/schedule/model";
 
 interface RegisterFavoriteScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
   onRegister: (alias: string, icon: number) => void;
+  onEdit?: (id: number, alias: string, icon: number) => void;
+  favorite?: FavoriteScheduleModel;
 }
 
 const aliasSchema = z.object({
@@ -31,9 +34,20 @@ const aliasSchema = z.object({
 type AliasFormData = z.infer<typeof aliasSchema>;
 
 const RegisterFavoriteScheduleModal = memo(
-  ({ isOpen, onClose, onRegister }: RegisterFavoriteScheduleModalProps) => {
+  ({
+    isOpen,
+    onClose,
+    onRegister,
+    onEdit,
+    favorite,
+  }: RegisterFavoriteScheduleModalProps) => {
     const [isSelectMode, setIsSelectMode] = useState(false);
     const iconSelectorRef = useRef<HTMLDivElement>(null);
+
+    // 모달 타이틀 동적 설정
+    const isEditMode = !!favorite;
+    const modalTitle = isEditMode ? "즐겨찾기 수정" : "즐겨찾기 등록";
+    const buttonText = isEditMode ? "수정" : "등록";
     const {
       register,
       handleSubmit,
@@ -46,6 +60,7 @@ const RegisterFavoriteScheduleModal = memo(
       resolver: zodResolver(aliasSchema),
       defaultValues: {
         alias: "",
+        icon: undefined,
       },
       mode: "onChange",
     });
@@ -56,7 +71,16 @@ const RegisterFavoriteScheduleModal = memo(
         alert("별칭은 2자 이상, 8자 이하로 입력해주세요.");
         return;
       }
-      onRegister(data.alias, data.icon);
+
+      if (isEditMode && favorite && onEdit) {
+        // 수정 모드일 경우
+        console.log("Editing favorite:", favorite.id, data);
+        onEdit(favorite.id, data.alias, data.icon);
+      } else {
+        // 생성 모드일 경우
+        onRegister(data.alias, data.icon);
+      }
+
       reset();
       onClose();
     };
@@ -81,14 +105,22 @@ const RegisterFavoriteScheduleModal = memo(
 
     useEffect(() => {
       if (isOpen) {
-        // 모달이 열릴 때 입력값 초기화
-        reset({
-          alias: "",
-          icon: undefined,
-        });
+        if (isEditMode && favorite) {
+          // 수정 모드일 경우 기존 데이터로 폼 초기화
+          reset({
+            alias: favorite.alias,
+            icon: favorite.icon,
+          });
+        } else {
+          // 생성 모드일 경우 빈 값으로 초기화
+          reset({
+            alias: "",
+            icon: undefined,
+          });
+        }
         setIsSelectMode(false);
       }
-    }, [isOpen]);
+    }, [isOpen, favorite, isEditMode, reset]);
 
     return (
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -96,8 +128,12 @@ const RegisterFavoriteScheduleModal = memo(
           <CloseSvg className={styles.closeBtn} onClick={onClose} />
 
           <div className={styles.title}>
-            <FavoriteSvg className={styles.favoriteSvg} />
-            <Text text="즐겨찾기 등록" color={Colors.brown} fontWeight="bold" />
+            {isEditMode ? (
+              <ScheduleSvg className={styles.scheduleSvg} />
+            ) : (
+              <FavoriteSvg className={styles.favoriteSvg} />
+            )}
+            <Text text={modalTitle} color={Colors.brown} fontWeight="bold" />
           </div>
 
           <div className={styles.divider}></div>
@@ -114,7 +150,7 @@ const RegisterFavoriteScheduleModal = memo(
                   placeholder="별칭을 입력하세요."
                 />
                 <span className={styles.suffix}>
-                  {`${watch("alias")?.length}/8`}
+                  {`${watch("alias")?.length || 0}/8`}
                 </span>
               </div>
 
@@ -170,7 +206,7 @@ const RegisterFavoriteScheduleModal = memo(
               className={cn(styles.button, { [styles.valid]: isValid })}
               onClick={handleSubmit(onSubmit)}
             >
-              <Text text="등록" color={Colors.white} fontWeight="bold" />
+              <Text text={buttonText} color={Colors.white} fontWeight="bold" />
             </div>
           </form>
         </div>
