@@ -111,8 +111,6 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
       if (!schedule || !currentProfile) return;
 
       const favoriteData: FavoriteScheduleFormData = {
-        profileId: currentProfile.id,
-        scheduleId: schedule.id,
         alias: alias,
         icon: icon,
       };

@@ -6,17 +6,20 @@ import { getMockSchedules } from "@/features/schedule/mocks/scheduleMocks";
 
 /**
  * 프로필 기반으로 즐겨찾기된 루틴 목록 생성 (모의 데이터)
+ * isFavorite=true인 루틴만 필터링
  */
 export function getMockFavoriteRoutines(
   profileId: string
 ): RoutineWithContentsModel[] {
   const allRoutines = getMockRoutines(profileId);
-  // 즐겨찾기된 루틴만 필터링
+
+  // 기존 루틴 중 isFavorite=true인 것만 반환
   return allRoutines.filter((routine) => routine.isFavorite);
 }
 
 /**
  * 프로필 기반으로 즐겨찾기된 스케줄 생성 (모의 데이터)
+ * isFavorite=true인 스케줄만 필터링
  */
 export function getMockFavoriteSchedules(
   profileId: string
@@ -28,23 +31,44 @@ export function getMockFavoriteSchedules(
   const twoDaysAgo = new Date(now);
   twoDaysAgo.setDate(now.getDate() - 2);
 
-  // 여러 날짜의 일정을 가져와서 즐겨찾기 정보 추가
+  // 여러 날짜의 일정을 가져와서 즐겨찾기 정보와 커스텀 정보 추가
   const schedules = [
-    { ...getMockSchedules(profileId, now), isFavorite: true },
-    { ...getMockSchedules(profileId, yesterday), isFavorite: true },
-    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
-    { ...getMockSchedules(profileId, now), isFavorite: true },
-    { ...getMockSchedules(profileId, yesterday), isFavorite: true },
-    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
-    { ...getMockSchedules(profileId, now), isFavorite: true },
-    { ...getMockSchedules(profileId, yesterday), isFavorite: true },
-    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
-    { ...getMockSchedules(profileId, now), isFavorite: true },
-    { ...getMockSchedules(profileId, yesterday), isFavorite: true },
-    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
-    { ...getMockSchedules(profileId, now), isFavorite: true },
-    { ...getMockSchedules(profileId, yesterday), isFavorite: true },
-    { ...getMockSchedules(profileId, twoDaysAgo), isFavorite: true },
+    {
+      ...getMockSchedules(profileId, now),
+      isFavorite: true,
+      alias: "오늘 일정",
+      icon: 1,
+      addedAt: new Date(),
+    },
+    {
+      ...getMockSchedules(profileId, yesterday),
+      isFavorite: true,
+      alias: "어제 일정",
+      icon: 2,
+      addedAt: new Date(Date.now() - 86400000),
+    },
+    {
+      ...getMockSchedules(profileId, twoDaysAgo),
+      isFavorite: true,
+      alias: "지난 일정",
+      icon: 2,
+      addedAt: new Date(Date.now() - 172800000),
+    },
+    // 더 간결하게 몇 개만 추가
+    {
+      ...getMockSchedules(profileId, now),
+      isFavorite: true,
+      alias: "중요 일정",
+      icon: 0,
+      addedAt: new Date(),
+    },
+    {
+      ...getMockSchedules(profileId, yesterday),
+      isFavorite: true,
+      alias: "정기 일정",
+      icon: 1,
+      addedAt: new Date(Date.now() - 86400000),
+    },
   ];
 
   // 즐겨찾기된 일정만 반환

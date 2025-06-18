@@ -27,6 +27,7 @@ const EmptyFavorites = memo(
             src={"/images/login/dangle.png"}
             alt="즐겨찾기 비어있음"
             fill
+            sizes="100%"
           />
         </div>
         <div className={styles.button} onClick={onEmptyClick}>

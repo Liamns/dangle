@@ -49,6 +49,10 @@ export const scheduleModelSchema = z.object({
   id: z.number().int().positive(),
   profileId: uuidSchema,
   createdAt: z.date(),
+  isFavorite: z.boolean().default(false),
+  alias: z.string().optional(),
+  icon: z.number().int().optional(),
+  addedAt: z.date().optional(),
 });
 
 export type ScheduleModel = z.infer<typeof scheduleModelSchema>;
@@ -65,12 +69,9 @@ export type ScheduleItemModel = z.infer<typeof scheduleItemModelSchema>;
 
 // ===== 즐겨찾기 관련 모델 스키마 =====
 
-// 템플릿 즐겨찾기 모델 (서버에서 불러온 데이터)
-export const favoriteScheduleModelSchema = favoriteScheduleSchema.extend({
-  id: z.number().int().positive(),
-  addedAt: z.date(),
-});
-export type FavoriteScheduleModel = z.infer<typeof favoriteScheduleModelSchema>;
+// 즐겨찾기는 이제 스케줄 모델 자체에 통합됨
+// 기존 코드와의 호환성을 위해 타입 선언은 유지하되 실제 구현은 스케줄 모델에 통합
+export type FavoriteScheduleModel = ScheduleWithItemsModel;
 
 // 사용자-서브 카테고리 즐겨찾기 모델 (profile와 SubCategory N:M 관계)
 export const favoriteSubCategoryModelSchema = z.object({
@@ -110,7 +111,7 @@ export type ScheduleItemWithContentModel = z.infer<
 // 아이템이 포함된 일정 모델
 export const scheduleWithItemsModelSchema = scheduleModelSchema.extend({
   scheduleItems: z.array(scheduleItemWithContentModelSchema),
-  isFavorite: z.boolean().optional(),
+  // isFavorite은 이미 scheduleModelSchema에 포함됨
 });
 
 export type ScheduleWithItemsModel = z.infer<

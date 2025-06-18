@@ -115,10 +115,9 @@ export type ScheduleItemFormData = z.infer<typeof scheduleItemSchema>;
 
 // ===== 즐겨찾기 관련 DTO 스키마 =====
 
-// 즐겨찾기 일정 컨텐츠 스키마 (API 요청용)
+// 즐겨찾기 일정 정보 스키마 (API 요청용)
 export const favoriteScheduleSchema = z.object({
-  profileId: z.string().uuid("유효한 프로필을 선택해주세요."),
-  scheduleId: z.number().int().positive("유효한 컨텐츠를 선택해주세요."),
+  // 즐겨찾기 정보만 포함 (스케줄 ID는 이제 필요 없음)
   alias: z
     .string()
     .min(2, "별칭은 최소 2자 이상이어야 합니다.")

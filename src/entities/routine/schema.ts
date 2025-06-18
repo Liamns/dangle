@@ -32,19 +32,8 @@ export const RoutineModelSchema = NewRoutineDtoSchema.extend({
 });
 export type RoutineModel = z.infer<typeof RoutineModelSchema>;
 
-// User ↔ Routine N:M 즐겨찾기 스키마
-export const favoriteRoutineSchema = z.object({
-  profileId: z.string().uuid("유효한 프로필 ID여야 합니다."),
-  routineId: z.number().int().positive("유효한 루틴 ID여야 합니다."),
-});
-export type FavoriteRoutineFormData = z.infer<typeof favoriteRoutineSchema>;
-
-// 즐겨찾기 모델 스키마 (DB 저장용)
-export const favoriteRoutineModelSchema = favoriteRoutineSchema.extend({
-  id: z.number().int().positive(),
-  addedAt: z.date(),
-});
-export type FavoriteRoutineModel = z.infer<typeof favoriteRoutineModelSchema>;
+// 즐겨찾기는 이제 루틴 모델 자체에 isFavorite 플래그로 관리됩니다.
+// N:M 관계는 제거되고 즐겨찾기된 루틴은 독립적인 복사본으로 생성됩니다.
 
 // 루틴 콘텐츠 전용 DTO/모델 스키마 (1:N 페이지 구성)
 export const NewRoutineContentDtoSchema = z.object({

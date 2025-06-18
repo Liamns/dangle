@@ -16,6 +16,7 @@ import {
   ExtendedScheduleContentModel,
   CategoryWithSubsModel,
 } from "./model";
+import { favoriteIcon } from "@/shared/types/icon";
 
 /**
  * 일정을 시간 순으로 정렬하는 함수
@@ -177,3 +178,13 @@ export function groupItemsBySchedule(
     return acc;
   }, {} as Record<number, ScheduleItemModel[]>);
 }
+
+// icon 값에 따른 이미지 파일명 반환 함수
+export const getFavoriteScheduleIconByType = (icon: number): string => {
+  if (icon < 0 || icon >= favoriteIcon.length) {
+    console.warn(`Invalid icon index: ${icon}. Returning default icon.`);
+    return "/images/favorites/star.png"; // 기본 아이콘 경로
+  } else {
+    return `/images/favorites/${favoriteIcon[icon]}.png`;
+  }
+};

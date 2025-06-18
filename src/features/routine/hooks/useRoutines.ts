@@ -25,7 +25,9 @@ export function useRoutines(profileId: string) {
   );
 
   /**
-   * 즐겨찾기 토글 함수 - 낙관적 UI 업데이트 + API 호출
+   * 즐겨찾기 토글 함수 - isFavorite 플래그 토글 방식
+   * 즐겨찾기 시: 해당 루틴의 isFavorite=true로 설정
+   * 해제 시: 해당 루틴의 isFavorite=false로 설정
    */
   const toggleFavorite = useCallback(
     async (id: number) => {
@@ -44,7 +46,7 @@ export function useRoutines(profileId: string) {
         // 진행 중 표시
         setPendingFavorites((prev) => new Set(prev).add(id));
 
-        // 1. 낙관적 UI 업데이트
+        // 낙관적 UI 업데이트 - isFavorite 플래그만 토글
         mutate(
           (prevRoutines) =>
             prevRoutines?.map((r) =>
@@ -53,27 +55,20 @@ export function useRoutines(profileId: string) {
           false
         );
 
-        // 2. API 호출
-        // 실제 API 호출은 여기에 추가 (예: toggleFavoriteApi(profileId, id))
+        // API 호출 (모의 구현)
         setTimeout(() => {
           console.log(
-            `즐겨찾기 토글 API 호출: ${id}, 현재 상태: ${!currentIsFavorite}`
+            `루틴 즐겨찾기 토글: ${id}, 변경된 상태: ${!currentIsFavorite}`
           );
-        }, 500); // 모의 API 호출 (실제 API로 대체 필요)
+        }, 500);
 
-        // 3. 성공 시 캐시 확인 (선택사항, 대부분의 경우 필요 없음)
+        // 성공 시 캐시 갱신 (선택사항)
         // mutate();
       } catch (error) {
         console.error("즐겨찾기 토글 실패:", error);
 
-        // 실패 시 롤백
-        mutate(
-          (prevRoutines) =>
-            prevRoutines?.map((r) =>
-              r.id === id ? { ...r, isFavorite: currentIsFavorite } : r
-            ),
-          false
-        );
+        // 실패 시 상태 복원
+        mutate();
 
         throw error; // 호출자가 오류 처리할 수 있도록
       } finally {

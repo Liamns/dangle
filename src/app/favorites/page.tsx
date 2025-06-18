@@ -19,6 +19,8 @@ import ScheduleSvg from "@/shared/svgs/schedule.svg";
 import RoutineSvg from "@/shared/svgs/routine.svg";
 import FavoriteScheduleCard from "@/features/favorites/components/FavoriteScheduleCard";
 import { FavoriteScheduleModel } from "@/entities/schedule/model";
+import FavoriteRoutineCard from "@/features/favorites/components/FavoriteRoutineCard";
+import { RoutineWithContentsModel } from "@/entities/routine/schema";
 
 export default function Favorites() {
   const router = useRouter();
@@ -34,6 +36,8 @@ export default function Favorites() {
     profileId,
     activeTab
   );
+
+  console.log("즐겨찾기 데이터:", favorites);
 
   const isRoutineActive = useMemo(() => activeTab === "routine", [activeTab]);
   const isScheduleActive = useMemo(() => activeTab === "schedule", [activeTab]);
@@ -116,6 +120,15 @@ export default function Favorites() {
         {isScheduleActive && (
           <FavoriteScheduleCard
             favorites={favorites as FavoriteScheduleModel[]}
+            onEmptyClick={handleEmptyClick}
+            onShareClick={handleShareClick}
+            isSelectMode={isSelectMode}
+          />
+        )}
+
+        {isRoutineActive && (
+          <FavoriteRoutineCard
+            favorites={favorites as RoutineWithContentsModel[]}
             onEmptyClick={handleEmptyClick}
             onShareClick={handleShareClick}
             isSelectMode={isSelectMode}

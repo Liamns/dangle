@@ -4,13 +4,12 @@ import styles from "./FavoriteScheduleCard.module.scss";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/shared/components/layout";
 import { FavoriteItem } from "../hooks/useFavorites";
-import { FavoriteScheduleModel } from "@/entities/schedule/model";
+import { ScheduleModel } from "@/entities/schedule/model";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import SortSvg from "@/shared/svgs/sort.svg";
 import EmptyFavorites from "./EmptyFavorites";
 import Image from "next/image";
-import { getFavoriteIconByType } from "@/entities/routine/model";
 import EditSvg from "@/shared/svgs/edit.svg";
 import DeleteSvg from "@/shared/svgs/delete.svg"; // 삭제 아이콘 추가
 import { transformToDateFormat } from "@/shared/lib/date";
@@ -18,9 +17,10 @@ import { format } from "date-fns";
 import RegisterFavoriteScheduleModal from "@/features/schedule/components/RegisterFavoriteScheduleModal";
 import chkbox from "@/shared/styles/buttons.module.scss";
 import cn from "classnames";
+import { getFavoriteScheduleIconByType } from "@/entities/schedule/utils";
 
 interface FavoriteScheduleCardProps {
-  favorites: FavoriteScheduleModel[];
+  favorites: ScheduleModel[];
   onEmptyClick: () => void;
   isSelectMode: boolean;
   onShareClick: (data: FavoriteItem[]) => void;
@@ -89,13 +89,16 @@ const FavoriteScheduleCard = memo(
     const sortLabel = useMemo(() => getSortLabel(sortType), [sortType]);
 
     const sorted = useMemo(() => {
-      const sort: FavoriteScheduleModel[] = [...favorites];
+      const sort: ScheduleModel[] = [...favorites];
 
       return sort.sort((a, b) => {
         if (sortType === "date") {
-          return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
+          return (
+            (b.addedAt ? new Date(b.addedAt).getTime() : 0) -
+            (a.addedAt ? new Date(a.addedAt).getTime() : 0)
+          );
         } else {
-          return a.alias.localeCompare(b.alias);
+          return (a.alias ?? "").localeCompare(b.alias ?? "");
         }
       });
     }, [favorites, sortType]);
@@ -266,16 +269,19 @@ const FavoriteScheduleCard = memo(
                         <div className={styles.contentPrefixTitle}>
                           <div className={styles.contentPrefixTitleImg}>
                             <Image
-                              src={getFavoriteIconByType(item.icon)}
+                              src={getFavoriteScheduleIconByType(
+                                item.icon ?? 0
+                              )}
                               alt="일정 즐겨찾기 아이콘"
                               fill
+                              sizes="100%"
                             />
                           </div>
                           <div
                             className={styles.contentPrefixTitleDivider}
                           ></div>
                           <Text
-                            text={item.alias}
+                            text={item.alias ?? ""}
                             color={Colors.black}
                             fontWeight="bold"
                           />
@@ -283,7 +289,7 @@ const FavoriteScheduleCard = memo(
                         <Text
                           text={
                             transformToDateFormat(
-                              format(item.addedAt, "yyyyMMdd"),
+                              format(item.addedAt ?? new Date(), "yyyyMMdd"),
                               "."
                             ) || ""
                           }

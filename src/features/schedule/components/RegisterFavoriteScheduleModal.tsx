@@ -15,15 +15,15 @@ import EmptyFavoriteIcon from "@/shared/svgs/empty-favorite.svg";
 import { favoriteIcon } from "@/shared/types/icon";
 import ScheduleSvg from "@/shared/svgs/schedule.svg";
 import Image from "next/image";
-import { getFavoriteIconByType } from "@/entities/routine/model";
-import { FavoriteScheduleModel } from "@/entities/schedule/model";
+import { ScheduleModel } from "@/entities/schedule/model";
+import { getFavoriteScheduleIconByType } from "@/entities/schedule/utils";
 
 interface RegisterFavoriteScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
   onRegister: (alias: string, icon: number) => void;
   onEdit?: (id: number, alias: string, icon: number) => void;
-  favorite?: FavoriteScheduleModel;
+  favorite?: ScheduleModel;
 }
 
 const aliasSchema = z.object({
@@ -167,7 +167,7 @@ const RegisterFavoriteScheduleModal = memo(
                   >
                     <div className={styles.selectedIcon}>
                       <Image
-                        src={getFavoriteIconByType(getValues("icon"))}
+                        src={getFavoriteScheduleIconByType(getValues("icon"))}
                         alt="selected-icon"
                         fill
                       />
@@ -190,7 +190,7 @@ const RegisterFavoriteScheduleModal = memo(
                       >
                         <div className={styles.icon}>
                           <Image
-                            src={getFavoriteIconByType(index)}
+                            src={getFavoriteScheduleIconByType(index)}
                             alt={`icon-${index}`}
                             fill
                           />
