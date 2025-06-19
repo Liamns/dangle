@@ -51,12 +51,13 @@ export default function ProfileCompletionCard({
           <Card mx="0">
             <InnerBox>
               <CardHeader title={`${name} 프로필`} petSpec={petSpec} />
-              <Spacer height="66" />
+              <Spacer height="36" />
               <div className={styles.imgContainerWrapper}>
                 <div className={styles.imgContainer}>
                   <Image src={imageUrl} fill alt="반려동물 성격유형별 GIF" />
                 </div>
               </div>
+              <Spacer height="18" />
               <PersonalityLabel personality={personality} />
             </InnerBox>
           </Card>
@@ -70,8 +71,9 @@ export default function ProfileCompletionCard({
                 title={`${petSpec === 0 ? "댕댕이" : "야옹이"} 프로필`}
                 petSpec={petSpec}
               />
-              <Spacer height="28" />
+              <Spacer height="38" />
               <RadarChartComponent data={radarData} resetKey={resetKey} />
+              <Spacer height="20" />
               <PersonalityLabel personality={personality} />
             </InnerBox>
           </Card>

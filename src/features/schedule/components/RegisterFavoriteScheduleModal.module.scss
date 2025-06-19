@@ -147,7 +147,7 @@
   gap: rw(12);
   z-index: 10;
   padding: rh(8) rw(5);
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--background);
   border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }

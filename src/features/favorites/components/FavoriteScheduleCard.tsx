@@ -225,7 +225,7 @@ const FavoriteScheduleCard = memo(
                 className={styles.sortBox}
                 onClick={() => setIsSortOpen(!isSortOpen)}
               >
-                <Text text={sortLabel} color={Colors.brown} fontWeight="bold" />
+                <Text text={sortLabel} color={Colors.black} fontWeight="bold" />
                 <SortSvg className={styles.sortSvg} />
 
                 {isSortOpen && (

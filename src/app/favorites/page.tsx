@@ -97,7 +97,7 @@ export default function Favorites() {
             <Text
               text="일정"
               fontWeight="bold"
-              color={isScheduleActive ? Colors.white : Colors.invalid}
+              color={isScheduleActive ? Colors.white : Colors.darkGrey}
             />
           </div>
           <div
@@ -110,7 +110,7 @@ export default function Favorites() {
             <Text
               text="루틴"
               fontWeight="bold"
-              color={isRoutineActive ? Colors.white : Colors.invalid}
+              color={isRoutineActive ? Colors.white : Colors.darkGrey}
             />
           </div>
         </div>

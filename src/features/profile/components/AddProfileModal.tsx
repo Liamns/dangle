@@ -6,6 +6,7 @@ import Close from "@/shared/svgs/close.svg";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import Image from "next/image";
 import { Button } from "@/shared/components/buttons";
+import { useRouter } from "next/navigation";
 
 interface AddProfileModalProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export default function AddProfileModal({
   isOpen,
   onClose,
 }: AddProfileModalProps) {
+  const router = useRouter();
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className={styles.modalContainer}>
@@ -56,7 +59,7 @@ export default function AddProfileModal({
             fontSize="md"
             height="37"
             style={{ boxShadow: "1px 2px 2px rgba(0, 0, 0, 0.1)" }}
-            onClick={() => alert("프로필 추가 페이지로 이동")}
+            onClick={() => router.push("/profile/select-sp?isPlus=true")}
           >
             추가하기
           </Button>
