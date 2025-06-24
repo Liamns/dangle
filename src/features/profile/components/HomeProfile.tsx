@@ -16,10 +16,10 @@ import { useUserStore } from "@/entities/user/store";
 export default function HomeProfile() {
   const hasMultipleProfiles = useUserStore.getState().hasMultipleProfiles();
   const currentProfile = useProfileStore((state) => state.currentProfile);
-  const species: PetSpecFormData = currentProfile?.petSpec ?? null;
+  const species: PetSpecFormData = currentProfile?.petSpec ?? 0;
   const gender: PetGenderFormData["gender"] =
     currentProfile?.petGender?.gender ?? null;
-  const name = currentProfile?.petname ?? "데이터 오류";
+  const name = currentProfile?.petname ?? "댕댕이";
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 

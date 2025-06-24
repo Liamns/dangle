@@ -5,6 +5,8 @@ import BottomNavBar from "../../shared/components/bottom-nav-bar";
 import { InnerBox, InnerWrapper, Spacer } from "../../shared/components/layout";
 import HomeProfile from "@/features/profile/components/HomeProfile";
 import ScheduleBottomModal from "@/features/schedule/components/ScheduleBottomModal";
+import { useUserStore } from "@/entities/user/store";
+import Onboarding from "@/features/onboarding/Onboarding";
 
 /**
  * 홈 페이지 컴포넌트
@@ -13,6 +15,8 @@ import ScheduleBottomModal from "@/features/schedule/components/ScheduleBottomMo
 export default function Home() {
   const innerBoxRef = useRef<HTMLDivElement>(null);
   const [innerBoxHeight, setInnerBoxHeight] = useState(0);
+  const isFirst = useUserStore((state) => state.isFirst);
+  const setIsFirst = useUserStore((state) => state.setIsFirst);
 
   /**
    * InnerBox 아래 공간의 높이를 계산하는 함수
@@ -50,18 +54,24 @@ export default function Home() {
 
   return (
     <InnerWrapper>
-      <InnerBox ref={innerBoxRef}>
-        <Spacer height="32" />
-        <AnnivWidget />
-        <HomeProfile />
-      </InnerBox>
+      {isFirst ? (
+        <Onboarding />
+      ) : (
+        <>
+          <InnerBox ref={innerBoxRef}>
+            <Spacer height="32" />
+            <AnnivWidget />
+            <HomeProfile />
+          </InnerBox>
 
-      {/* 높이 계산이 완료된 후에만 ScheduleBottomModal 렌더링 */}
-      {innerBoxHeight > 0 && (
-        <ScheduleBottomModal initialHeight={innerBoxHeight} />
+          {/* 높이 계산이 완료된 후에만 ScheduleBottomModal 렌더링 */}
+          {innerBoxHeight > 0 && (
+            <ScheduleBottomModal initialHeight={innerBoxHeight} />
+          )}
+
+          <BottomNavBar />
+        </>
       )}
-
-      <BottomNavBar />
     </InnerWrapper>
   );
 }

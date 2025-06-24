@@ -1,0 +1,205 @@
+@use "shared/styles/common" as *;
+
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  @include width(360);
+  @include height(740);
+  background-color: var(--darkGrey);
+  overflow-x: hidden;
+  position: relative;
+}
+
+.sliderWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease-in-out;
+}
+
+.slide {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  &.start {
+    justify-content: flex-start;
+  }
+}
+
+.bgContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; // 배경이 다른 요소 뒤에 위치하도록;
+}
+
+.disabled {
+  pointer-events: none; // 요소가 비활성화되었을 때 클릭 이벤트를 무시하도록 설정
+  position: relative;
+
+  &.overlay {
+    z-index: 1; // 오버레이가 다른 요소 위에 위치하도록 설정
+    opacity: 0.5; // 오버레이의 투명도 설정
+  }
+}
+
+.chevronContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: rh(60); // 애니메이션이 넘치지 않도록 높이 설정
+  overflow: hidden; // 애니메이션이 컨테이너 밖으로 나가지 않도록
+
+  &.reverse {
+    flex-direction: column-reverse; // 아래에서 위로 애니메이션이 진행되도록 설정
+    transform: rotate(
+      180deg
+    ); // 전체 컨테이너를 180도 회전시켜 아래에서 위로 애니메이션이 진행되도록 설정
+  }
+}
+
+// 공통 chevron 스타일
+%chevron-base {
+  @include width(32);
+  @include height(20);
+  color: var(--white);
+  animation-duration: 1.5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+// 첫 번째 chevron 애니메이션
+.upperChevron {
+  @extend %chevron-base;
+  animation-name: upperChevronAnimation;
+  animation-delay: 0s;
+}
+
+// 두 번째 chevron 애니메이션
+.lowerChevron {
+  @extend %chevron-base;
+  animation-name: lowerChevronAnimation;
+  animation-delay: 0.75s; // 첫 번째 애니메이션과 시간차를 두어 연속적인 효과
+}
+
+// 첫 번째 chevron 애니메이션 키프레임 (움직임 없이 색상 변화와 fade 효과만 사용)
+@keyframes upperChevronAnimation {
+  0% {
+    opacity: 0;
+    color: var(--white);
+    transform: scale(1);
+  }
+  20% {
+    opacity: 1;
+    color: var(--white);
+    transform: scale(1);
+  }
+  60% {
+    opacity: 0.6;
+    color: var(--grey500);
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    color: var(--grey500);
+    transform: scale(0.9);
+  }
+}
+
+// 두 번째 chevron 애니메이션 키프레임 (움직임 없이 색상 변화와 fade 효과만 사용)
+@keyframes lowerChevronAnimation {
+  0% {
+    opacity: 0;
+    color: var(--white);
+    transform: scale(1);
+  }
+  20% {
+    opacity: 1;
+    color: var(--white);
+    transform: scale(1);
+  }
+  60% {
+    opacity: 0.6;
+    color: var(--grey500);
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    color: var(--grey500);
+    transform: scale(0.9);
+  }
+}
+
+.prevButton,
+.nextButton {
+  @include width(28);
+  aspect-ratio: 1;
+  border-radius: 5px;
+  background-color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.prevButton {
+  transform: rotate(90deg);
+
+  &.hideButton {
+    display: none;
+  }
+}
+
+.nextButton {
+  transform: rotate(-90deg);
+}
+
+.innerChevron {
+  @include width(10);
+  @include height(6.25);
+  color: var(--white);
+}
+
+.firstImage {
+  @include width(220);
+  aspect-ratio: 220/351;
+  position: relative;
+}
+
+.secondImage,
+.thirdImage,
+.fourthImage {
+  @include width(216);
+  aspect-ratio: 216/411;
+  position: relative;
+}
+
+.fifthImage {
+  @include width(303);
+  aspect-ratio: 303/369;
+  position: relative;
+}

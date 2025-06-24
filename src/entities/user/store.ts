@@ -19,12 +19,15 @@ interface UserStoreState {
   loadUserProfiles: () => Promise<ProfileModel[]>;
   hasMultipleProfiles: () => boolean;
   clearUser: () => void;
+  isFirst: boolean;
+  setIsFirst: (isFirst: boolean) => void;
 }
 
 export const useUserStore = create(
   persist<UserStoreState>(
     (set, get) => ({
       currentUser: null,
+      isFirst: true, // 초기 상태 플래그
 
       setCurrentUser: (user) => {
         set({ currentUser: user });
@@ -86,6 +89,8 @@ export const useUserStore = create(
         // const profileStore = useProfileStore.getState();
         // profileStore.clearProfiles();
       },
+
+      setIsFirst: (value) => set({ isFirst: value }),
     }),
     { name: "user-store" }
   )
