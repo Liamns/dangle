@@ -16,7 +16,6 @@ export default function Home() {
   const innerBoxRef = useRef<HTMLDivElement>(null);
   const [innerBoxHeight, setInnerBoxHeight] = useState(0);
   const isFirst = useUserStore((state) => state.isFirst);
-  const setIsFirst = useUserStore((state) => state.setIsFirst);
 
   /**
    * InnerBox 아래 공간의 높이를 계산하는 함수
@@ -50,7 +49,7 @@ export default function Home() {
       window.removeEventListener("resize", calculateInnerBoxHeight);
       clearTimeout(timer);
     };
-  }, [calculateInnerBoxHeight]);
+  }, [calculateInnerBoxHeight, isFirst]);
 
   return (
     <InnerWrapper>

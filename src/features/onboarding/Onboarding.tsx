@@ -12,14 +12,19 @@ import OnboardingEighthPage from "./OnboardingEighthPage";
 import OnboardingNinthPage from "./OnboardingNinthPage";
 import OnboardingTenthPage from "./OnboardingTenthPage";
 import OnboardingEleventhPage from "./OnboardingEleventhPage";
+import { useUserStore } from "@/entities/user/store";
+import cn from "classnames";
 
 export interface OnboardingProps {
   onNext: () => void; // 다음 페이지로 이동하는 함수
   onPrev: () => void; // 이전 페이지로 이동하는 함수
+  onFinal?: () => void; // 마지막 페이지에서 호출되는 함수
 }
 
 const Onboarding = memo(() => {
+  const setIsFirst = useUserStore((state) => state.setIsFirst);
   const [currentPage, setCurrentPage] = useState(0);
+  const darkerPage = [4, 5, 6];
   // 페이지 이동 함수
   const goToPage = useCallback((index: number) => {
     // 범위 체크
@@ -45,6 +50,10 @@ const Onboarding = memo(() => {
   }, [currentPage, goToPage]);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  const handleFinal = useCallback(() => {
+    setIsFirst(false);
+  }, [currentPage]);
+
   const pages: React.ReactNode[] = [
     <OnboardingFirstPage onNext={handleNext} onPrev={handlePrev} />,
     <OnboardingSecondPage onNext={handleNext} onPrev={handlePrev} />,
@@ -56,11 +65,19 @@ const Onboarding = memo(() => {
     <OnboardingEighthPage onNext={handleNext} onPrev={handlePrev} />,
     <OnboardingNinthPage onNext={handleNext} onPrev={handlePrev} />,
     <OnboardingTenthPage onNext={handleNext} onPrev={handlePrev} />,
-    <OnboardingEleventhPage onNext={handleNext} onPrev={handlePrev} />,
+    <OnboardingEleventhPage
+      onNext={handleNext}
+      onPrev={handlePrev}
+      onFinal={handleFinal}
+    />,
   ];
 
   return (
-    <div className={styles.wrapper}>
+    <div
+      className={cn(styles.wrapper, {
+        [styles.darker]: darkerPage.includes(currentPage),
+      })}
+    >
       <div
         className={styles.sliderWrapper}
         ref={wrapperRef}

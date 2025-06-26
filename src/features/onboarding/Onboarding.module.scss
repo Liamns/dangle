@@ -10,6 +10,10 @@
   background-color: var(--darkGrey);
   overflow-x: hidden;
   position: relative;
+
+  &.darker {
+    background-color: var(--darkerGrey); // 배경색을 더 어둡게 설정
+  }
 }
 
 .sliderWrapper {
@@ -170,7 +174,8 @@
   transform: rotate(90deg);
 
   &.hideButton {
-    display: none;
+    opacity: 0;
+    pointer-events: none; // 버튼이 숨겨졌을 때 클릭 이벤트를 무시하도록 설정
   }
 }
 
@@ -185,16 +190,16 @@
 }
 
 .firstImage {
-  @include width(220);
-  aspect-ratio: 220/351;
+  @include width(282);
+  aspect-ratio: 282/450;
   position: relative;
 }
 
 .secondImage,
 .thirdImage,
 .fourthImage {
-  @include width(216);
-  aspect-ratio: 216/411;
+  @include width(239);
+  aspect-ratio: 239/455;
   position: relative;
 }
 
@@ -202,4 +207,34 @@
   @include width(303);
   aspect-ratio: 303/369;
   position: relative;
+}
+
+.ninthImage {
+  @include width(260);
+  aspect-ratio: 260/472;
+  position: relative;
+}
+
+.tenthImage {
+  @include width(280);
+  aspect-ratio: 280/508;
+  position: relative;
+}
+
+.eleventhImage {
+  @include width(248);
+  aspect-ratio: 248/189;
+  position: relative;
+}
+
+.startButton {
+  width: 100%;
+  aspect-ratio: 234/44;
+  background-color: var(--primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
 }

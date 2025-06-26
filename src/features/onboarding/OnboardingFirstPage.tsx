@@ -20,10 +20,11 @@ const OnboardingFirstPage = memo(({ onNext, onPrev }: OnboardingProps) => {
       />
       <Spacer height="22" />
       <AnimatedChevron />
-      <Spacer height="53" />
+      <Spacer height="13" />
       <OnboardingNav
         onNext={onNext}
         onPrev={onPrev}
+        gap="0"
         showPrev={false}
         content={
           <div className={styles.firstImage}>
