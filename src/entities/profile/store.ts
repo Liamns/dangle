@@ -4,7 +4,7 @@ import { ProfileModel } from "./model";
 import { allVaccines, personalityTraits } from "../../shared/types/pet";
 
 // 비어있는 프로필 모델 상수 정의
-const EMPTY_PROFILE: ProfileModel = {
+export const EMPTY_PROFILE: ProfileModel = {
   id: "00000000-0000-0000-0000-000000000000",
   userId: "00000000-0000-0000-0000-000000000000",
   username: "",

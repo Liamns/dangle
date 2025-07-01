@@ -21,6 +21,7 @@ import FavoriteScheduleCard from "@/features/favorites/components/FavoriteSchedu
 import { FavoriteScheduleModel } from "@/entities/schedule/model";
 import FavoriteRoutineCard from "@/features/favorites/components/FavoriteRoutineCard";
 import { RoutineWithContentsModel } from "@/entities/routine/schema";
+import { encrypt } from "@/shared/lib/crypto";
 
 export default function Favorites() {
   const router = useRouter();
@@ -37,8 +38,6 @@ export default function Favorites() {
     activeTab
   );
 
-  console.log("즐겨찾기 데이터:", favorites);
-
   const isRoutineActive = useMemo(() => activeTab === "routine", [activeTab]);
   const isScheduleActive = useMemo(() => activeTab === "schedule", [activeTab]);
 
@@ -48,9 +47,25 @@ export default function Favorites() {
   }, [isRoutineActive, isScheduleActive, router]);
 
   const handleShareClick = useCallback(
-    (data: FavoriteItem[]) => {
+    async (data: FavoriteItem[]) => {
       // 공유 기능 구현
       console.log("공유할 데이터:", data);
+      const json = JSON.stringify(data);
+      const encrypted = encrypt(json);
+      const url = `${
+        window.location.origin
+      }/favorites/${activeTab}-viewer?data=${encodeURIComponent(encrypted)}`;
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = url;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+      alert("공유용 링크가 복사되었습니다.");
     },
     [isRoutineActive, isScheduleActive]
   );

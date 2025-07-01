@@ -10,7 +10,7 @@ import {
 import { RoutineWithContentsModel } from "@/entities/routine/schema";
 
 export type FavoriteType = "routine" | "schedule";
-export type FavoriteItem = RoutineWithContentsModel | ScheduleModel;
+export type FavoriteItem = RoutineWithContentsModel | ScheduleWithItemsModel;
 
 /**
  * 즐겨찾기 관리 훅 - 루틴 및 스케줄 즐겨찾기를 단일 인터페이스로 관리

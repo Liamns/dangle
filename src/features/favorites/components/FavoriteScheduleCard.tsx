@@ -4,7 +4,10 @@ import styles from "./FavoriteScheduleCard.module.scss";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/shared/components/layout";
 import { FavoriteItem } from "../hooks/useFavorites";
-import { ScheduleModel } from "@/entities/schedule/model";
+import {
+  ScheduleModel,
+  ScheduleWithItemsModel,
+} from "@/entities/schedule/model";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import SortSvg from "@/shared/svgs/sort.svg";
@@ -20,7 +23,7 @@ import cn from "classnames";
 import { getFavoriteScheduleIconByType } from "@/entities/schedule/utils";
 
 interface FavoriteScheduleCardProps {
-  favorites: ScheduleModel[];
+  favorites: ScheduleWithItemsModel[];
   onEmptyClick: () => void;
   isSelectMode: boolean;
   onShareClick: (data: FavoriteItem[]) => void;
@@ -89,7 +92,7 @@ const FavoriteScheduleCard = memo(
     const sortLabel = useMemo(() => getSortLabel(sortType), [sortType]);
 
     const sorted = useMemo(() => {
-      const sort: ScheduleModel[] = [...favorites];
+      const sort: ScheduleWithItemsModel[] = [...favorites];
 
       return sort.sort((a, b) => {
         if (sortType === "date") {
@@ -205,8 +208,8 @@ const FavoriteScheduleCard = memo(
         alert("공유할 일정을 선택해주세요.");
         return;
       }
-      console.log(selectedIndexes);
       const selectedItems = sorted.filter((_, index) => isSelected(index));
+
       onShareClick(selectedItems);
     }, [sorted, isSelected, onShareClick]);
 

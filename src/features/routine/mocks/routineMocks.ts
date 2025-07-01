@@ -17,7 +17,7 @@ export function getMockRoutines(profileId: string): RoutineWithContentsModel[] {
 
       createdAt: now,
       updatedAt: now,
-      isFavorite: false,
+      isFavorite: true,
       contents: [
         {
           id: 101,
@@ -33,6 +33,15 @@ export function getMockRoutines(profileId: string): RoutineWithContentsModel[] {
           routineId: 1,
           title: "아침 밥",
           memo: "단백질 위주 아침 식사",
+          image: "",
+          createdAt: now,
+          updatedAt: now,
+        },
+        {
+          id: 103,
+          routineId: 1,
+          title: "점심 밥",
+          memo: "단백질 위주 점심 식사",
           image: "",
           createdAt: now,
           updatedAt: now,

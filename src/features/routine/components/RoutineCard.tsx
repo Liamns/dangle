@@ -43,7 +43,7 @@ const RoutineCard = memo(
             {isEditMode ? (
               <Edit2Svg color={Colors.white} width={16} height={16} />
             ) : (
-              <ClickSvg color={Colors.white} />
+              <ClickSvg color={Colors.white} width={16} height={16} />
             )}
           </div>
           <Text text={routine.name} color={Colors.black} />

@@ -1,0 +1,215 @@
+@use "shared/styles/common" as *;
+
+.container {
+  flex: 0 0 79%;
+  min-width: 79%;
+  max-width: 79%;
+  position: relative;
+  transition: transform 0.3s ease, scale 0.3s ease;
+  transform: scale(0.85);
+
+  &.selected {
+    transform: scale(1);
+  }
+}
+
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+  @include width(284);
+  @include height(479);
+  @include py(28);
+  @include px(22);
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--routine-card-front-bg);
+  border: 1px solid var(--white);
+  cursor: pointer;
+
+  &.content {
+    border: 1px solid var(--routine-card-front-bg);
+    background-color: var(--white);
+    cursor: default;
+    @include px(16);
+    @include py(10);
+  }
+}
+
+.upper {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  width: 100%;
+}
+
+.category {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clickSvg {
+  @include width(25);
+  height: rw(25);
+  color: var(--white);
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.categoryImg {
+  @include width(200);
+  aspect-ratio: 1;
+  position: relative;
+}
+
+.type {
+  width: 100%;
+  @include height(43);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  background-color: var(--white);
+
+  &.caution {
+    background-color: var(--brown);
+  }
+}
+
+.backContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel {
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+  @include mt(10);
+  @include mb(14);
+  @include mx(-8);
+}
+
+.carouselContainer {
+  display: flex;
+  width: 100%;
+  backface-visibility: hidden; // 성능 최적화
+  height: 100%;
+}
+
+.carouselSlide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  position: relative;
+  @include px(8); // 좌우 여백 8px
+}
+
+.contentBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.contentTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+}
+
+.flipButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include width(68);
+  @include height(21);
+  background-color: var(--routine-card-front-bg);
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.contentImage {
+  width: 100%;
+  aspect-ratio: 251.75/173.2;
+  position: relative;
+}
+
+.memoBox {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  gap: rh(6.82);
+}
+
+.memo {
+  width: 100%;
+  @include height(140);
+  @include py(12);
+  @include px(17);
+  border-radius: 10px;
+  border: 1px solid var(--invalid);
+  font-family: var(--inter);
+  font-size: 12px;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: rw(14);
+}
+
+.navigationButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include width(21);
+  aspect-ratio: 1;
+  border-radius: 5px;
+  background-color: var(--routine-card-front-bg);
+  transform: rotate(90deg);
+  cursor: pointer;
+
+  &.next {
+    transform: rotate(270deg);
+  }
+}
+
+.chevronSvg {
+  @include width(6);
+  aspect-ratio: 3.72/5.95;
+  color: var(--white);
+}
+
+.empty {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}

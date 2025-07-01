@@ -1,0 +1,208 @@
+@use "shared/styles/common" as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  @include px(30);
+  padding-top: calc(rh(33) + rw(30));
+  @include pb(33);
+  width: 100%;
+  height: 100%;
+}
+
+.titleBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 10px;
+}
+
+.badge {
+  @include width(60);
+  aspect-ratio: 1;
+  position: absolute;
+  top: calc(rw(60) * -1 / 3 * 2);
+  right: rw(-30);
+}
+
+.title {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  @include px(10);
+  @include py(6);
+  background-color: rgba(255, 255, 255, 0.5);
+  @include mb(3);
+}
+
+.subTitle {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.contentBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: rh(15);
+}
+
+.indicatorWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: rw(5);
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include width(16);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--invalid);
+  border: 1px solid var(--white);
+
+  &.active {
+    background-color: var(--brown);
+  }
+}
+
+.slideContainer {
+  position: relative;
+  overflow-x: hidden; // 여기서 overflow 제어
+  flex: 1; // 남은 공간 모두 차지
+  width: 100%;
+}
+
+.slideWrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+}
+
+.slide {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  @include mb(30);
+}
+
+.navButton {
+  @include width(34);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--brown);
+  border-radius: 10px;
+  transform: rotate(90deg);
+  cursor: pointer;
+
+  &.inactive {
+    background-color: var(--invalid);
+    pointer-events: none;
+  }
+
+  &.next {
+    transform: rotate(270deg);
+  }
+}
+
+.chevron {
+  @include width(8);
+  aspect-ratio: 6/9.7;
+  color: var(--white);
+}
+
+.cardContentBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  width: 100%;
+  gap: rh(9);
+  overflow-y: auto;
+  @include pb(4);
+
+  &::-webkit-scrollbar {
+    display: none; // Hide scrollbar
+  }
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  @include py(6);
+  @include px(12);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.cardContentPrefix {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: rw(8);
+}
+
+.cardContentPrefixDivider {
+  width: rw(1);
+  height: rw(26);
+  background-color: var(--invalid);
+}
+
+.cardContentPrefixIcon {
+  @include width(26);
+  aspect-ratio: 1;
+  position: relative;
+}
+
+.cardContentSuffix {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: rw(12);
+}
+
+.saveButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 10px;
+  background-color: var(--brown);
+  @include py(12);
+  cursor: pointer;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  @include mb(2);
+}

@@ -48,6 +48,7 @@ const Onboarding = memo(() => {
   const handlePrev = useCallback(() => {
     goToPage(currentPage - 1);
   }, [currentPage, goToPage]);
+
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const handleFinal = useCallback(() => {
