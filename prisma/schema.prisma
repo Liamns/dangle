@@ -1,15 +1,127 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  password   String
+  username   String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  profiles   Profile[]
+}
+
+model Profile {
+  id                String                @id @default(uuid())
+  user              User                  @relation(fields: [userId], references: [id])
+  userId            String
+  username          String
+  petname           String
+  petAge            DateTime
+  petWeight         Float
+  petGender         Json // { isNeutered: boolean }
+  petSpec           Int // 0: dog, 1: cat
+  etc1              String?
+  etc2              String?
+  etc3              String?
+  vaccinations      Json // { [vaccineName: string]: boolean }
+  personalityScores Json // { [trait: string]: number }
+  schedules         Schedule[]
+  favoriteSubCategories FavoriteSubCategory[]
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+}
+
+model Anniversary {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  content   String
+  icon      Int
+  date      DateTime
+  isDday    Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Routine {
+  id          Int      @id @default(autoincrement())
+  profileId   String
+  name        String
+  category    String
+  template    Json // or define a more specific structure
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CategoryMain {
+  id   Int            @id @default(autoincrement())
+  name String         @unique
+  subs CategorySub[]
+}
+
+model CategorySub {
+  id        Int                   @id @default(autoincrement())
+  name      String
+  main      CategoryMain          @relation(fields: [mainId], references: [id])
+  mainId    Int
+  contents  ScheduleContent[]
+  favoritedBy FavoriteSubCategory[]
+}
+
+model ScheduleContent {
+  id          Int             @id @default(autoincrement())
+  mainId      Int
+  subCategory CategorySub     @relation(fields: [subId], references: [id])
+  subId       Int
+  description String?
+  items       ScheduleItem[]
+}
+
+model Schedule {
+  id          Int            @id @default(autoincrement())
+  profile     Profile        @relation(fields: [profileId], references: [id])
+  profileId   String
+  createdAt   DateTime       @default(now())
+  isFavorite  Boolean        @default(false)
+  alias       String?
+  icon        Int?
+  addedAt     DateTime?
+  items       ScheduleItem[]
+}
+
+model ScheduleItem {
+  id         Int             @id @default(autoincrement())
+  schedule   Schedule        @relation(fields: [scheduleId], references: [id])
+  scheduleId Int
+  content    ScheduleContent @relation(fields: [contentId], references: [id])
+  contentId  Int
+  startAt    DateTime
+}
+
+model FavoriteSubCategory {
+  id            Int         @id @default(autoincrement())
+  profile       Profile     @relation(fields: [profileId], references: [id])
+  profileId     String
+  subCategory   CategorySub @relation(fields: [subCategoryId], references: [id])
+  subCategoryId Int
+  addedAt       DateTime    @default(now())
+
+  @@unique([profileId, subCategoryId])
+}
+
+model VerificationToken {
+ id         String   @id @default(cuid())
+ identifier String   // 이메일 주소
+ token      String   @unique // 해싱된 6자리 인증번호
+ expires    DateTime // 만료 시간
+ @@unique([identifier, token])
 }

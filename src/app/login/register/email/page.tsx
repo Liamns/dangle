@@ -22,6 +22,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { EmailInput } from "@/features/auth/components/EmailInput";
 import { useUserStore } from "@/entities/user/store";
+import { commonHeader } from "@/shared/consts/apis";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
 
 export default function RegisterEmail() {
   const router = useRouter();
@@ -29,10 +31,36 @@ export default function RegisterEmail() {
   const [email, setEmail] = useState("");
   const updateCurrentUser = useUserStore((state) => state.updateCurrentUser);
   const [isEmailValid, setIsEmailValid] = useState(false);
-  const handleSubmit = () => {
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
     if (isEmailValid) {
       // 유효한 이메일일 때만 실행
-      alert(`인증번호 요청: ${email}`);
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch("/api/auth/send-verification", {
+          method: "POST",
+          headers: commonHeader,
+          body: JSON.stringify({ email }),
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "인증번호 요청에 실패했습니다.");
+        }
+
+        setIsOpen(true);
+      } catch (e: any) {
+        setError(e.message);
+        alert(e.message);
+      } finally {
+        setIsLoading(false);
+      }
+
       setIsOpen(true);
     }
   };
@@ -48,9 +76,35 @@ export default function RegisterEmail() {
     mode: "onChange",
   });
 
-  const onAuthSubmit = (data: AuthNumberFormData) => {
-    updateCurrentUser({ email });
-    router.push("/login/register/pw");
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+
+  const onAuthSubmit = async (data: AuthNumberFormData) => {
+    if (verifying) return;
+
+    setVerifying(true);
+    setVerifyError(null);
+
+    try {
+      const response = await fetch("/api/auth/confirm-verification", {
+        method: "POST",
+        headers: commonHeader,
+        body: JSON.stringify({ email: email, code: data.authNumber }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "인증번호가 올바르지 않습니다.");
+      }
+
+      updateCurrentUser({ email });
+      router.push("/login/register/pw");
+    } catch (e: any) {
+      setVerifyError(e.message);
+      alert(e.message);
+    } finally {
+      setVerifying(false);
+    }
   };
 
   const onAuthRequest = (e: React.MouseEvent) => {
@@ -60,6 +114,7 @@ export default function RegisterEmail() {
 
   return (
     <>
+      {isLoading && <LoadingOverlay isLoading={isLoading || verifying} />}
       <Card align="center" height="570">
         <Image
           src="/images/login/register/email/title_icon.png"
