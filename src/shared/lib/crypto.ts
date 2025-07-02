@@ -1,9 +1,14 @@
 import CryptoJS from 'crypto-js';
 
 // 환경변수로부터 키 읽기 (32자 이상 권장)
-const SECRET_KEY = process.env.NEXT_PUBLIC_DANGLE_SECRET_KEY;
-if (!SECRET_KEY) {
-  throw new Error('Environment variable NEXT_PUBLIC_DANGLE_SECRET_KEY is not defined');
+const SECRET_KEY = process.env.NEXT_PUBLIC_DANGLE_SECRET_KEY ||
+  'DEFAULT_INSECURE_SECRET_KEY_CHANGE_ME';
+
+if (!process.env.NEXT_PUBLIC_DANGLE_SECRET_KEY) {
+  console.warn(
+    'Environment variable NEXT_PUBLIC_DANGLE_SECRET_KEY is not defined. ' +
+      'Using fallback key which should not be used in production.'
+  );
 }
 
 /**
