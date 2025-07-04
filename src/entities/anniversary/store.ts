@@ -1,16 +1,18 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { AnniversaryModel } from "./model";
 
 interface AnniversaryState {
   annivs: AnniversaryModel[];
   currentAnniv: AnniversaryModel | null;
+  _hasHydrated: boolean;
   setCurrentAnniv: (item: AnniversaryModel | null) => void;
   setAll: (items: AnniversaryModel[]) => void;
   add: (item: AnniversaryModel) => void;
   update: (item: AnniversaryModel) => void;
   remove: (id: number) => void;
   clear: () => void;
+  setHasHydrated: (hydrated: boolean) => void;
 }
 
 export const useAnniversaryStore = create(
@@ -18,6 +20,11 @@ export const useAnniversaryStore = create(
     (set) => ({
       annivs: [],
       currentAnniv: null,
+      _hasHydrated: false,
+
+      setHasHydrated: (hydrated) => {
+        set({ _hasHydrated: hydrated });
+      },
 
       setAll: (items) => set({ annivs: items }),
       setCurrentAnniv: (item) => set({ currentAnniv: item }),
@@ -40,6 +47,10 @@ export const useAnniversaryStore = create(
     }),
     {
       name: "anniversary-store",
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

@@ -19,6 +19,7 @@ import {
   getSubCategoryImagePath,
   SubCategory,
 } from "@/entities/schedule/types";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 interface SharedScheduleData {
   petName: string;
@@ -196,7 +197,7 @@ function ScheduleViewer() {
               })
             ) : (
               <Text
-                text="잘못된 접근입니다."
+                text={COMMON_MESSAGE.WRONG_ACCESS}
                 color={Colors.grey}
                 fontSize="md"
               />

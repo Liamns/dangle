@@ -12,6 +12,7 @@ import cn from "classnames";
 import Image from "next/image";
 import { DEFAULT_ROUTINE_IMAGE_URL } from "./WriteRoutineContent";
 import { fontSizeMap } from "@/shared/types/text";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 interface RoutineViewerModalProps {
   isOpen: boolean;
@@ -33,7 +34,7 @@ const RoutineViewModal = memo(
   }: RoutineViewerModalProps) => {
     if (routine === undefined || routine === null) {
       if (isOpen) {
-        alert("잘못된 접근입니다.");
+        alert(COMMON_MESSAGE.WRONG_ACCESS);
       }
       return null;
     }

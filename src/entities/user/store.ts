@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { UserModel } from "@/entities/user/model";
 import { ProfileModel } from "@/entities/profile/model";
 
@@ -14,6 +14,7 @@ const EMPTY_USER: UserModel = {
 
 interface UserStoreState {
   currentUser: UserModel | null;
+  _hasHydrated: boolean;
   setCurrentUser: (user: UserModel | null) => void;
   updateCurrentUser: (userData: Partial<UserModel>) => void;
   loadUserProfiles: () => Promise<ProfileModel[]>;
@@ -21,6 +22,7 @@ interface UserStoreState {
   clearUser: () => void;
   isFirst: boolean;
   setIsFirst: (isFirst: boolean) => void;
+  setHasHydrated: (hydrated: boolean) => void;
 }
 
 export const useUserStore = create(
@@ -28,6 +30,11 @@ export const useUserStore = create(
     (set, get) => ({
       currentUser: null,
       isFirst: true, // 초기 상태 플래그
+      _hasHydrated: false,
+
+      setHasHydrated: (hydrated) => {
+        set({ _hasHydrated: hydrated });
+      },
 
       setCurrentUser: (user) => {
         set({ currentUser: user });
@@ -92,6 +99,12 @@ export const useUserStore = create(
 
       setIsFirst: (value) => set({ isFirst: value }),
     }),
-    { name: "user-store" }
+    {
+      name: "user-store",
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
+    }
   )
 );

@@ -18,18 +18,17 @@ import { useEffect, useState } from "react";
 import { EmailInput } from "@/features/auth/components/EmailInput";
 import { useUserStore } from "@/entities/user/store";
 import { setupMockData } from "@/shared/mocks/setupMocks";
+import { useSignInMutation } from "@/features/auth/mutations/useAuthMutation";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
 
 export default function Login() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(false);
-  const emailhandleSubmit = () => {
-    if (isEmailValid) {
-      // 유효한 이메일일 때만 실행
-      alert(`인증번호 요청: ${email}`);
-    }
-  };
+  const [error, setError] = useState<string | null>(null);
+
+  const { trigger: signIn, isMutating } = useSignInMutation();
 
   const {
     register,
@@ -41,19 +40,23 @@ export default function Login() {
     mode: "onChange",
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    if (isEmailValid) {
-      if (email === "test@gmail.com" && data.password === "testest1") {
-        // 테스트 계정으로 로그인 시 모킹 데이터 설정
-        setupMockData({ user: "default", profile: "dog" });
-        router.push("/home");
-      } else {
-        alert("서버통신 로그인 개발 이전");
-      }
+  const onSubmit = async (data: LoginFormData) => {
+    setError(null);
+
+    try {
+      await signIn({ email: email, pw: data.password });
+
+      router.push("/home");
+      router.refresh();
+    } catch (e: any) {
+      setError(e.message);
+      alert(error);
     }
   };
 
   const clearUser = useUserStore((state) => state.clearUser);
+
+  if (isMutating) return <LoadingOverlay isLoading={isMutating} />;
 
   return (
     <>

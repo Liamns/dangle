@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { ProfileModel } from "./model";
 import { allVaccines, personalityTraits } from "../../shared/types/pet";
 
@@ -29,6 +29,7 @@ interface ProfileStoreState {
   userProfiles: ProfileModel[];
   isLoaded: boolean;
   isFirstVisit: boolean; // 최초 방문 여부 상태 추가
+  _hasHydrated: boolean;
   registeringProfile: ProfileModel;
   setCurrentProfile: (profile: ProfileModel | null) => void;
   setUserProfiles: (profiles: ProfileModel[]) => void;
@@ -42,6 +43,7 @@ interface ProfileStoreState {
   getCurrentProfile: () => ProfileModel | null;
   setFirstVisit: (value: boolean) => void; // 상태 변경 메서드 추가
   updateRegisteringProfile: (profileData: Partial<ProfileModel>) => void;
+  setHasHydrated: (hydrated: boolean) => void;
 }
 
 export const useProfileStore = create(
@@ -51,7 +53,12 @@ export const useProfileStore = create(
       userProfiles: [],
       isLoaded: false,
       isFirstVisit: true, // 기본값 true로 설정
+      _hasHydrated: false,
       registeringProfile: EMPTY_PROFILE,
+
+      setHasHydrated: (hydrated) => {
+        set({ _hasHydrated: hydrated });
+      },
 
       setCurrentProfile: (profile) => {
         set({ currentProfile: profile, isLoaded: true });
@@ -170,6 +177,10 @@ export const useProfileStore = create(
     }),
     {
       name: "profile-store",
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

@@ -23,6 +23,7 @@ import {
   DATE_PLACEHOLDER_EXAMPLE,
   getPetAgeLabel,
 } from "../../../../shared/lib/date";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 export default function InputPetage() {
   const router = useRouter();
@@ -55,7 +56,7 @@ export default function InputPetage() {
   useEffect(() => {
     if (spec === null) {
       if (typeof window !== "undefined") {
-        alert("잘못된 접근입니다.");
+        alert(COMMON_MESSAGE.WRONG_ACCESS);
       }
       router.push("/profile/select-sp");
     }

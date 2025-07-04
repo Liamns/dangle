@@ -7,6 +7,7 @@ import {
   fontWeightMap,
   FontWeightType,
 } from "../types/text";
+import cn from "classnames";
 
 interface ButtonProps {
   children: ReactNode;
@@ -59,7 +60,9 @@ export const Button = ({
 
   return (
     <button
-      className={`${styles.button} ${className}`}
+      className={cn(styles.button, className, {
+        [styles.invalid]: valid === false,
+      })}
       style={
         {
           "--btn-width": width,

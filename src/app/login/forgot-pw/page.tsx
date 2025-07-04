@@ -1,31 +1,67 @@
 "use client";
 import { Button } from "../../../shared/components/buttons";
-import {
-  Card,
-  Center,
-  Spacer,
-  TextField,
-} from "../../../shared/components/layout";
+import { Card, Center, Spacer } from "../../../shared/components/layout";
 import { Text } from "../../../shared/components/texts";
 import { Colors } from "../../../shared/consts/colors";
-import { EmailFormData, emailFormSchema } from "@/entities/user/schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { EmailInput } from "@/features/auth/components/EmailInput";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
+import {
+  useSendVerificationMutation,
+  useConfirmVerificationMutation,
+} from "@/features/auth/mutations/useVerificationMutations";
+import AuthCodeModal from "@/features/auth/components/AuthCodeModal"; // AuthCodeModal import
+import { useRouter } from "next/navigation";
 
 export default function ForgotPassword() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(false);
-  const emailhandleSubmit = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const {
+    trigger: sendVerification,
+    isMutating: isSending,
+    error: sendError,
+  } = useSendVerificationMutation();
+  const {
+    trigger: confirmVerification,
+    isMutating: isConfirming,
+    error: confirmError,
+  } = useConfirmVerificationMutation();
+
+  const handleSendVerification = async () => {
     if (isEmailValid) {
-      // 유효한 이메일일 때만 실행
-      alert(`인증번호 요청: ${email}`);
+      try {
+        await sendVerification({ email, forgot: true });
+        setIsOpen(true);
+      } catch (e: any) {
+        console.log(`error of send verification fetcher : ${e}`);
+        alert(e.message);
+        // router.replace("/login/register/email");
+      }
     }
+  };
+
+  const handleVerifyCode = async (code: string) => {
+    try {
+      await confirmVerification({ email, code });
+      alert("인증번호 확인 성공! 비밀번호 재설정 페이지로 이동"); // TODO: 비밀번호 재설정 페이지로 이동 로직 추가
+      setIsOpen(false);
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
+  const handleResendCode = async () => {
+    await handleSendVerification();
   };
 
   return (
     <>
+      {(isSending || isConfirming) && (
+        <LoadingOverlay isLoading={isSending || isConfirming} />
+      )}
       <Card height="570">
         <Text
           text="비밀번호 찾기"
@@ -49,17 +85,25 @@ export default function ForgotPassword() {
             }}
           />
           <Spacer height="30" />
-          <Button valid={isEmailValid} onClick={emailhandleSubmit} width="244">
-            링크 요청
+          <Button
+            valid={isEmailValid}
+            onClick={handleSendVerification}
+            width="244"
+          >
+            인증번호 요청
           </Button>
-          <Spacer height="12" />
-
-          <Text
-            text="입력한 이메일주소로 재설정 링크가 발송됩니다."
-            color={Colors.grey}
-          />
         </form>
       </Card>
+
+      <AuthCodeModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        email={email}
+        onVerify={handleVerifyCode}
+        onResendRequest={handleResendCode}
+        isVerifying={isConfirming}
+        isResending={isSending}
+      />
     </>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 import { InnerBox, Spacer } from "../../../../shared/components/layout";
 import { Text } from "../../../../shared/components/texts";
 import { Colors } from "../../../../shared/consts/colors";
@@ -24,7 +25,9 @@ export default function PersonalityLabel({
         }
       >
         <Text
-          text={personality === null ? "잘못된 접근입니다." : personality}
+          text={
+            personality === null ? COMMON_MESSAGE.WRONG_ACCESS : personality
+          }
           fontSize="lg"
           fontWeight="bold"
           color={Colors.white}

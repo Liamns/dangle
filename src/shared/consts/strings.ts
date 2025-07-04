@@ -15,3 +15,5 @@ export const TestUUID: string[] = [
   "4545c297-bd2c-4b95-9e4a-1c12618702e5",
   "b6bdbb5b-85fd-4d3d-968b-9757aa43b122",
 ];
+
+export const DANGLE_DOMAIN = "124.61.220.208:3000";

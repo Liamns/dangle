@@ -22,6 +22,10 @@
   &:hover {
     cursor: pointer;
   }
+
+  &.invalid {
+    pointer-events: none;
+  }
 }
 
 .arrowButton {

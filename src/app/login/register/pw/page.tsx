@@ -6,49 +6,68 @@ import {
   Spacer,
   TextField,
 } from "../../../../shared/components/layout";
-import Modal from "../../../../shared/components/modals";
 import { Text } from "../../../../shared/components/texts";
 import { Colors } from "../../../../shared/consts/colors";
-import {
-  AuthNumberFormData,
-  authNumberFormSchema,
-  PasswordFormData,
-  passwordFormSchema,
-} from "@/entities/user/schema";
+import { PasswordFormData, passwordFormSchema } from "@/entities/user/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect } from "react"; // useState는 더 이상 필요 없습니다.
 import { useForm } from "react-hook-form";
 import { useUserStore } from "@/entities/user/store";
 import { useProfileStore } from "@/entities/profile/store";
-import { clear } from "console";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
+import { useSignUpMutation } from "@/features/auth/mutations/useAuthMutation";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
 
 export default function RegisterPW() {
   const router = useRouter();
-  const updateCurrentUser = useUserStore((state) => state.updateCurrentUser);
+  // 스토어에서 _hasHydrated 상태를 직접 가져옵니다.
+  const { currentUser, updateCurrentUser, _hasHydrated } = useUserStore();
   const clearCurrentProfile = useProfileStore((state) => state.clearProfiles);
 
   const {
     register,
     handleSubmit,
-    formState: { errors: errors, isValid: isValid },
+    formState: { errors, isValid },
   } = useForm<PasswordFormData>({
     resolver: zodResolver(passwordFormSchema),
     mode: "onChange",
   });
 
-  const onSubmit = (data: PasswordFormData) => {
-    alert("회원가입 처리");
-    clearCurrentProfile();
-    updateCurrentUser({
-      password: "null",
-    });
-    router.replace("/profile/select-sp");
+  const { trigger: signUp, isMutating, error } = useSignUpMutation();
+
+  // isMounted 대신 _hasHydrated를 사용하여 이메일 유효성을 검사합니다.
+  useEffect(() => {
+    if (_hasHydrated && !currentUser?.email) {
+      alert(COMMON_MESSAGE.WRONG_ACCESS);
+      router.replace("/login/register/email");
+    }
+  }, [_hasHydrated, currentUser?.email, router]);
+
+  const onSubmit = async (data: PasswordFormData) => {
+    if (!currentUser?.email) return;
+
+    try {
+      await signUp({ email: currentUser.email, password: data.password }); // 'pw'를 'password'로 변경
+      clearCurrentProfile();
+      updateCurrentUser({
+        password: "null",
+      });
+      router.replace("/profile/select-sp");
+    } catch (e: any) {
+      alert(e.message);
+    }
   };
+
+  // Hydration이 완료되지 않았거나 이메일이 없으면 로딩 화면을 보여줍니다.
+  if (!_hasHydrated || !currentUser?.email) {
+    return <LoadingOverlay isLoading={true} />;
+  }
 
   return (
     <>
+      {isMutating && <LoadingOverlay isLoading={isMutating} />}
       <Card align="center" height="570">
         <Image
           src="/images/login/register/pw/title_icon.png"

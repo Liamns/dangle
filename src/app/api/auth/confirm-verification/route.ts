@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import prisma from "@/shared/lib/prisma";
+import { AUTH_ERROR_MESSAGE } from "@/features/auth/consts";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 export async function POST(req: Request) {
   try {
@@ -8,7 +10,7 @@ export async function POST(req: Request) {
 
     if (!email || !code) {
       return NextResponse.json(
-        { error: "인증번호를 입력해주세요." },
+        { error: AUTH_ERROR_MESSAGE.EMPTY_CODE },
         { status: 400 }
       );
     }
@@ -24,7 +26,7 @@ export async function POST(req: Request) {
 
     if (!verificationToken || new Date() > verificationToken.expires) {
       return NextResponse.json(
-        { error: "틀린 인증번호거나 만료된 인증번호 입니다." },
+        { error: AUTH_ERROR_MESSAGE.EMPTY_CODE },
         { status: 400 }
       );
     }
@@ -33,7 +35,7 @@ export async function POST(req: Request) {
 
     if (!isCodeValid) {
       return NextResponse.json(
-        { error: "틀린 인증번호 입니다." },
+        { error: AUTH_ERROR_MESSAGE.WRONG_CODE },
         { status: 400 }
       );
     }
@@ -45,13 +47,13 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { message: "인증에 성공했습니다." },
+      { message: COMMON_MESSAGE.SUCCESS },
       { status: 200 }
     );
   } catch (e) {
     console.error(`인증번호 확인 오류 : ${e}`);
     return NextResponse.json(
-      { error: "인증번호 확인에 오류가 발생했습니다." },
+      { error: COMMON_MESSAGE.UNKNOWN_ERROR },
       { status: 500 }
     );
   }

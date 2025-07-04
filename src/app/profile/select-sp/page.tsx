@@ -18,6 +18,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useProfileStore } from "@/entities/profile/store";
 import { useUserStore } from "@/entities/user/store";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 export default function SelectSpecies() {
   const router = useRouter();
@@ -59,7 +60,7 @@ export default function SelectSpecies() {
 
   useEffect(() => {
     if (!currentUser || !currentUser.id) {
-      alert("잘못된 접근입니다. 다시 로그인 해주세요.");
+      alert(COMMON_MESSAGE.WRONG_ACCESS);
       router.replace("/login");
       return;
     } else {
