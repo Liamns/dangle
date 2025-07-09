@@ -16,7 +16,7 @@ import Dog from "@/shared/svgs/dog.svg";
 import Cat from "@/shared/svgs/cat.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useProfileStore } from "@/entities/profile/store";
+import { EMPTY_PROFILE, useProfileStore } from "@/entities/profile/store";
 import { useUserStore } from "@/entities/user/store";
 import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
@@ -25,7 +25,9 @@ export default function SelectSpecies() {
   const updateRegisteringProfile = useProfileStore(
     (state) => state.updateRegisteringProfile
   );
+  const currentProfile = useProfileStore((state) => state.registeringProfile);
   const currentUser = useUserStore((state) => state.currentUser);
+  const hasHydrated = useUserStore((state) => state._hasHydrated);
   const searchParams = useSearchParams();
   const isPlus = searchParams.get("isPlus") === "true";
 
@@ -59,16 +61,21 @@ export default function SelectSpecies() {
   };
 
   useEffect(() => {
-    if (!currentUser || !currentUser.id) {
-      alert(COMMON_MESSAGE.WRONG_ACCESS);
-      router.replace("/login");
-      return;
-    } else {
-      updateRegisteringProfile({
-        userId: currentUser.id,
-      });
+    if (hasHydrated) {
+      if (!currentUser || !currentUser.id) {
+        alert(COMMON_MESSAGE.WRONG_ACCESS);
+        router.replace("/login");
+        return;
+      } else {
+        updateRegisteringProfile({
+          userId: currentUser.id,
+        });
+        if (currentProfile.petSpec) {
+          setSpecies(currentProfile.petSpec);
+        }
+      }
     }
-  }, [currentUser]);
+  }, [currentUser, hasHydrated]);
 
   // 개선된 애니메이션 variants 정의
   const variants = {
@@ -261,6 +268,7 @@ export default function SelectSpecies() {
           color={Colors.brown}
           fontWeight="bold"
           onClick={() => {
+            updateRegisteringProfile({ ...EMPTY_PROFILE, tags: undefined });
             updateRegisteringProfile({ petSpec: species });
             router.push(`/profile/input/${isPlus ? "pet-name" : "username"}`);
           }}

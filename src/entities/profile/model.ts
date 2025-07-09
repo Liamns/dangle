@@ -19,7 +19,6 @@ import {
 export const profileModelSchema = z.object({
   id: uuidSchema,
   userId: uuidSchema,
-  username: usernameSchema,
   petname: petnameSchema,
   petAge: z
     .string()

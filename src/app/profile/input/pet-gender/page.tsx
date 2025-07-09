@@ -26,6 +26,9 @@ import { useEffect } from "react";
 
 export default function InputPetGender() {
   const router = useRouter();
+  const registeringProfile = useProfileStore(
+    (state) => state.registeringProfile
+  );
   const updateRegisteringProfile = useProfileStore(
     (state) => state.updateRegisteringProfile
   );
@@ -43,6 +46,17 @@ export default function InputPetGender() {
     resolver: zodResolver(petGenderFormSchema),
     mode: "onChange",
   });
+
+  useEffect(() => {
+    if (registeringProfile.petGender) {
+      setValue("gender", registeringProfile.petGender.gender, {
+        shouldValidate: true,
+      });
+      setValue("isNeutered", registeringProfile.petGender.isNeutered, {
+        shouldValidate: true,
+      });
+    }
+  }, [registeringProfile]);
 
   const onSubmit = (data: PetGenderFormData) => {
     updateRegisteringProfile({ petGender: data });

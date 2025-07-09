@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./HomeProfile.module.scss";
@@ -9,22 +10,43 @@ import { Text } from "@/shared/components/texts";
 import Male from "@/shared/svgs/male.svg";
 import Female from "@/shared/svgs/female.svg";
 import { PetGenderFormData, PetSpecFormData } from "@/entities/profile/schema";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddProfileModal from "./AddProfileModal";
 import { useUserStore } from "@/entities/user/store";
+import { useProfile } from "../hooks/useProfiles";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
+import { useRouter } from "next/navigation";
+import { PROFILE_ERROR_MESSAGE } from "../consts";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 export default function HomeProfile() {
-  const hasMultipleProfiles = useUserStore.getState().hasMultipleProfiles();
+  const router = useRouter();
+  const { profiles, isProcessing, fetchError, revalidateProfile } =
+    useProfile();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const currentProfile = useProfileStore((state) => state.currentProfile);
+
+  useEffect(() => {
+    // Only trigger when fetch is done and profiles are defined
+    if (!isProcessing && profiles !== undefined && profiles.length === 0) {
+      alert(PROFILE_ERROR_MESSAGE.EMPTY_PROFILE);
+      router.replace("/profile/select-sp");
+    }
+  }, [isProcessing, profiles, router]);
+
+  if (fetchError) {
+    console.error(`HomeProfile 로딩 에러 : ${fetchError}`);
+  }
+
+  const hasMultipleProfiles = profiles !== undefined && profiles.length > 1;
   const species: PetSpecFormData = currentProfile?.petSpec ?? 0;
   const gender: PetGenderFormData["gender"] =
     currentProfile?.petGender?.gender ?? null;
   const name = currentProfile?.petname ?? "댕댕이";
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
   return (
     <>
+      {isProcessing && <LoadingOverlay isLoading />}
       <div className={styles.container}>
         {/* 프로필 이미지 */}
         <Image

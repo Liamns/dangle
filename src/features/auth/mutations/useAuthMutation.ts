@@ -28,21 +28,44 @@ export function useSignUpMutation() {
 // --- Sign In Logic ---
 async function signInFetcher(
   url: string, // Not used by Supabase client, but required by SWR
-  { arg }: { arg: { email: string; pw: string } }
+  { arg }: { arg: { email: string; password: string } }
 ) {
-  const supabase = createClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: arg.email,
-    password: arg.pw,
+  const response = await fetch(url, {
+    method: "POST",
+    headers: commonHeader,
+    body: JSON.stringify(arg),
   });
 
-  if (error) {
-    throw new Error(error.message || AUTH_ERROR_MESSAGE.FAIL_LOGIN);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || AUTH_ERROR_MESSAGE.FAIL_LOGIN);
   }
 
-  return data;
+  return response.json();
 }
 
 export function useSignInMutation() {
-  return useSWRMutation("supabase/signIn", signInFetcher);
+  return useSWRMutation("/api/auth/sign-in", signInFetcher);
+}
+
+async function resetPasswordFetcher(
+  url: string,
+  { arg }: { arg: { email: string; password: string } }
+) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: commonHeader,
+    body: JSON.stringify(arg),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || AUTH_ERROR_MESSAGE.FAIL_RESET_PASSWORD);
+  }
+
+  return response.json();
+}
+
+export function useResetPasswordMutation() {
+  return useSWRMutation("/api/auth/reset-password", resetPasswordFetcher);
 }

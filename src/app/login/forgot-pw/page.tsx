@@ -12,12 +12,14 @@ import {
 } from "@/features/auth/mutations/useVerificationMutations";
 import AuthCodeModal from "@/features/auth/components/AuthCodeModal"; // AuthCodeModal import
 import { useRouter } from "next/navigation";
+import { useUserStore } from "@/entities/user/store";
 
 export default function ForgotPassword() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { updateCurrentUser } = useUserStore();
 
   const {
     trigger: sendVerification,
@@ -46,8 +48,9 @@ export default function ForgotPassword() {
   const handleVerifyCode = async (code: string) => {
     try {
       await confirmVerification({ email, code });
-      alert("인증번호 확인 성공! 비밀번호 재설정 페이지로 이동"); // TODO: 비밀번호 재설정 페이지로 이동 로직 추가
+      updateCurrentUser({ email: email });
       setIsOpen(false);
+      router.push("/login/register/pw?forgot=true");
     } catch (e: any) {
       alert(e.message);
     }

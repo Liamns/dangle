@@ -18,7 +18,6 @@ const OnboardingFifthPage = memo(({ onNext, onPrev }: OnboardingProps) => {
           src={`/images/onboarding/fifth-bg.png`}
           alt="예시 메인 페이지"
           fill
-          objectFit="contain"
         />
       </div>
       <AnimatedChevron reverse />

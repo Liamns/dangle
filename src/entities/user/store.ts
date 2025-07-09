@@ -54,7 +54,7 @@ export const useUserStore = create(
         set((state) => ({
           currentUser: state.currentUser
             ? { ...state.currentUser, ...userData }
-            : null,
+            : { ...EMPTY_USER, ...userData },
         })),
 
       hasMultipleProfiles: () => {

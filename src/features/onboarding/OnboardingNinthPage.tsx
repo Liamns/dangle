@@ -35,7 +35,6 @@ const OnboardingNinthPage = memo(({ onNext, onPrev }: OnboardingProps) => {
           src={`/images/onboarding/ninth.png`}
           alt="예시 루틴 생성카드 이미지"
           fill
-          objectFit="contain"
         />
       </div>
     </div>

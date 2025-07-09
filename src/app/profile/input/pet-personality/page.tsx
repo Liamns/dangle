@@ -24,6 +24,7 @@ import { useEffect } from "react";
 
 export default function InputPetPersonality() {
   const router = useRouter();
+  const registeringProfile = useProfileStore((s) => s.registeringProfile);
   const updateRegisteringProfile = useProfileStore(
     (s) => s.updateRegisteringProfile
   );
@@ -56,6 +57,15 @@ export default function InputPetPersonality() {
 
   const selectedTags = watch("tags") || [];
 
+  useEffect(() => {
+    if (
+      registeringProfile.personalityScores &&
+      registeringProfile.tags !== null
+    ) {
+      setValue("tags", registeringProfile.tags!, { shouldValidate: true });
+    }
+  }, [registeringProfile]);
+
   const toggleTag = (tag: PetPersonalityFormData["tags"][number]) => {
     if (selectedTags.includes(tag)) {
       setValue(
@@ -84,6 +94,7 @@ export default function InputPetPersonality() {
     updateRegisteringProfile({
       personalityScores: scores,
     });
+    updateRegisteringProfile({ tags: selectedTags });
 
     router.push("/profile/complete");
   };

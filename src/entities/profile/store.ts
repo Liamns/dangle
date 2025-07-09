@@ -1,13 +1,16 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { ProfileModel } from "./model";
-import { allVaccines, personalityTraits } from "../../shared/types/pet";
+import {
+  allVaccines,
+  PersonalityTag,
+  personalityTraits,
+} from "../../shared/types/pet";
 
 // 비어있는 프로필 모델 상수 정의
 export const EMPTY_PROFILE: ProfileModel = {
   id: "00000000-0000-0000-0000-000000000000",
   userId: "00000000-0000-0000-0000-000000000000",
-  username: "",
   petname: "",
   petAge: "", // petAge를 문자열로 수정 (yyyy-mm-dd 형식)
   petWeight: 0,
@@ -30,7 +33,10 @@ interface ProfileStoreState {
   isLoaded: boolean;
   isFirstVisit: boolean; // 최초 방문 여부 상태 추가
   _hasHydrated: boolean;
-  registeringProfile: ProfileModel;
+  registeringProfile: ProfileModel & {
+    tags?: PersonalityTag[];
+    username?: string;
+  };
   setCurrentProfile: (profile: ProfileModel | null) => void;
   setUserProfiles: (profiles: ProfileModel[]) => void;
   updateCurrentProfile: (profileData: Partial<ProfileModel>) => void;
@@ -42,7 +48,12 @@ interface ProfileStoreState {
   isProfileValid: (profile: ProfileModel | null) => boolean; // 검증 함수 추가
   getCurrentProfile: () => ProfileModel | null;
   setFirstVisit: (value: boolean) => void; // 상태 변경 메서드 추가
-  updateRegisteringProfile: (profileData: Partial<ProfileModel>) => void;
+  updateRegisteringProfile: (
+    profileData: Partial<ProfileModel> & {
+      tags?: PersonalityTag[];
+      username?: string;
+    }
+  ) => void;
   setHasHydrated: (hydrated: boolean) => void;
 }
 
@@ -73,7 +84,7 @@ export const useProfileStore = create(
                 ...state.currentProfile,
                 ...profileData,
               }
-            : null,
+            : { ...EMPTY_PROFILE, ...profileData },
         })),
 
       addProfile: (profile) => {

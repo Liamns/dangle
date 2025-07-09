@@ -32,7 +32,10 @@ export type PetnameFormData = z.infer<typeof petnameFormSchema>;
 export const petAgeFormSchema = z.object({
   age: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "날짜는 yyyy-mm-dd 형식이어야 합니다."),
+    .regex(
+      /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/,
+      "날짜는 2000-01-01 형식이어야 합니다."
+    ),
 });
 export type PetAgeFormData = z.infer<typeof petAgeFormSchema>;
 

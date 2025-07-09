@@ -27,7 +27,10 @@ export async function POST(req: Request) {
       });
     }
 
-    return NextResponse.json({ user: data.user, session: data.session });
+    return NextResponse.json(
+      { user: data.user, session: data.session },
+      { status: 200 }
+    );
   } catch (e: any) {
     console.error(`sign-up error : ${e.message}`);
     return NextResponse.json(

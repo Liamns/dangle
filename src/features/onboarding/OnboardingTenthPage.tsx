@@ -35,7 +35,6 @@ const OnboardingTenthPage = memo(({ onNext, onPrev }: OnboardingProps) => {
           src={`/images/onboarding/tenth.png`}
           alt="예시 루틴카드 이미지"
           fill
-          objectFit="contain"
         />
       </div>
     </div>

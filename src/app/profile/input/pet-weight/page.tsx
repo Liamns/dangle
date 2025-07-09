@@ -42,6 +42,7 @@ export default function InputPetWeight() {
     handleSubmit,
     watch,
     formState: { errors, isValid },
+    setValue,
   } = useForm<PetWeightFormData>({
     resolver: zodResolver(petWeightFormSchema),
     mode: "onChange",
@@ -50,6 +51,14 @@ export default function InputPetWeight() {
       weight: registeringProfile?.petWeight || undefined,
     },
   });
+
+  useEffect(() => {
+    if (registeringProfile.petWeight) {
+      setValue("weight", registeringProfile.petWeight, {
+        shouldValidate: true,
+      });
+    }
+  }, [registeringProfile]);
 
   const weight = watch("weight");
 

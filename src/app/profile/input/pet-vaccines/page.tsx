@@ -30,6 +30,7 @@ export default function InputPetVaccines() {
     (state) => state.registeringProfile?.petname ?? ""
   );
 
+  const registeringProfile = useProfileStore((s) => s.registeringProfile);
   const updateRegisteringProfile = useProfileStore(
     (s) => s.updateRegisteringProfile
   );
@@ -59,6 +60,14 @@ export default function InputPetVaccines() {
 
   // subscribe to vaccinations changes for immediate updates
   const vaccinations = useWatch({ control, name: "vaccinations" });
+
+  useEffect(() => {
+    if (registeringProfile.vaccinations) {
+      setValue("vaccinations", registeringProfile.vaccinations, {
+        shouldValidate: true,
+      });
+    }
+  }, [registeringProfile]);
 
   // 미접종 체크 여부 확인
   const isNoVaccineChecked = vaccinations?.[noVaccine] || false;

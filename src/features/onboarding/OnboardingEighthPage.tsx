@@ -18,7 +18,6 @@ const OnboardingEighthPage = memo(({ onNext, onPrev }: OnboardingProps) => {
           src={`/images/onboarding/eighth-bg.png`}
           alt="예시 메인 페이지"
           fill
-          objectFit="contain"
         />
       </div>
 

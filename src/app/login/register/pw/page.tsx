@@ -11,18 +11,23 @@ import { Colors } from "../../../../shared/consts/colors";
 import { PasswordFormData, passwordFormSchema } from "@/entities/user/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react"; // useState는 더 이상 필요 없습니다.
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useUserStore } from "@/entities/user/store";
 import { useProfileStore } from "@/entities/profile/store";
 import { COMMON_MESSAGE } from "@/shared/consts/messages";
-import { useSignUpMutation } from "@/features/auth/mutations/useAuthMutation";
+import {
+  useSignUpMutation,
+  useResetPasswordMutation,
+} from "@/features/auth/mutations/useAuthMutation";
 import LoadingOverlay from "@/shared/components/LoadingOverlay";
 
 export default function RegisterPW() {
   const router = useRouter();
-  // 스토어에서 _hasHydrated 상태를 직접 가져옵니다.
+  const searchParams = useSearchParams();
+  const forgot: boolean = searchParams.get("forgot") === "true";
+
   const { currentUser, updateCurrentUser, _hasHydrated } = useUserStore();
   const clearCurrentProfile = useProfileStore((state) => state.clearProfiles);
 
@@ -35,9 +40,10 @@ export default function RegisterPW() {
     mode: "onChange",
   });
 
-  const { trigger: signUp, isMutating, error } = useSignUpMutation();
+  const { trigger: signUp, isMutating: isSigningUp } = useSignUpMutation();
+  const { trigger: resetPassword, isMutating: isResetting } =
+    useResetPasswordMutation();
 
-  // isMounted 대신 _hasHydrated를 사용하여 이메일 유효성을 검사합니다.
   useEffect(() => {
     if (_hasHydrated && !currentUser?.email) {
       alert(COMMON_MESSAGE.WRONG_ACCESS);
@@ -49,18 +55,33 @@ export default function RegisterPW() {
     if (!currentUser?.email) return;
 
     try {
-      await signUp({ email: currentUser.email, password: data.password }); // 'pw'를 'password'로 변경
-      clearCurrentProfile();
-      updateCurrentUser({
-        password: "null",
-      });
-      router.replace("/profile/select-sp");
+      if (forgot) {
+        await resetPassword({
+          email: currentUser.email,
+          password: data.password,
+        });
+        alert("비밀번호가 성공적으로 재설정되었습니다.");
+        router.replace("/login");
+      } else {
+        const { user } = await signUp({
+          email: currentUser.email,
+          password: data.password,
+        });
+        clearCurrentProfile();
+        updateCurrentUser({
+          password: "null",
+          id: user.id,
+        });
+
+        router.replace("/profile/select-sp");
+      }
     } catch (e: any) {
       alert(e.message);
     }
   };
 
-  // Hydration이 완료되지 않았거나 이메일이 없으면 로딩 화면을 보여줍니다.
+  const isMutating = isSigningUp || isResetting;
+
   if (!_hasHydrated || !currentUser?.email) {
     return <LoadingOverlay isLoading={true} />;
   }
@@ -77,14 +98,22 @@ export default function RegisterPW() {
         />
         <Spacer height="12" />
         <Text
-          text={`사용하실 비밀번호를\n입력해 주세요!`}
+          text={
+            forgot
+              ? `새로운 비밀번호를\n입력해 주세요!`
+              : `사용하실 비밀번호를\n입력해 주세요!`
+          }
           fontSize="title"
           fontWeight="bold"
           color={Colors.brown}
         />
         <Spacer height="24" />
         <Text
-          text={`댕글에서 사용하실 비밀번호를 설정해 주세요!`}
+          text={
+            forgot
+              ? `새로운 비밀번호를 설정해 주세요.`
+              : `댕글에서 사용하실 비밀번호를 설정해 주세요!`
+          }
           color={Colors.brown}
         />
         <Spacer height="24" />
@@ -103,7 +132,7 @@ export default function RegisterPW() {
           />
           <Spacer height="60" />
           <Button width="240" valid={isValid}>
-            다음으로
+            {forgot ? "재설정하기" : "다음으로"}
           </Button>
         </form>
       </Card>

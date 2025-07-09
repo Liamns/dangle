@@ -16,9 +16,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useProfileStore } from "@/entities/profile/store";
+import { useEffect } from "react";
 
 export default function InputPetname() {
   const router = useRouter();
+  const registeringProfile = useProfileStore(
+    (state) => state.registeringProfile
+  );
   const updateRegisteringProfile = useProfileStore(
     (state) => state.updateRegisteringProfile
   );
@@ -27,6 +31,7 @@ export default function InputPetname() {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    setValue,
   } = useForm<PetnameFormData>({
     resolver: zodResolver(petnameFormSchema),
     mode: "onChange",
@@ -36,6 +41,12 @@ export default function InputPetname() {
     updateRegisteringProfile({ petname: data.petname });
     router.push("/profile/input/pet-age");
   };
+
+  useEffect(() => {
+    if (registeringProfile.petname) {
+      setValue("petname", registeringProfile.petname, { shouldValidate: true });
+    }
+  }, [registeringProfile]);
 
   return (
     <div className={layoutStyles.container}>

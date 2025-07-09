@@ -23,7 +23,6 @@ model Profile {
   id                String                @id @default(uuid())
   user              User                  @relation(fields: [userId], references: [id])
   userId            String
-  username          String
   petname           String
   petAge            DateTime
   petWeight         Float

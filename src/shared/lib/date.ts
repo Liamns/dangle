@@ -36,14 +36,14 @@ export const formatDateToKorean = (date: Date = new Date()): string => {
 
 /**
  * yyyymmdd 형식의 문자열을 yyyy-mm-dd 형식으로 변환하는 함수
- * @param input 변환할 yyyymmdd 형식의 문자열 (DATE_PLACEHOLDER_EXAMPLE)
+ * @param input 변환할 yyyymmdd 형식의 문자열 (YYYYMMDD, 월:01~12, 일:01~31)
  * @returns yyyy-mm-dd 형식의 문자열 또는 null (유효하지 않은 경우)
  */
 export const transformToDateFormat = (
   input: string,
   separate?: string
 ): string | null => {
-  if (!/^[0-9]{8}$/.test(input)) {
+  if (!/^\d{4}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$/.test(input)) {
     return null; // 입력값이 8자리 숫자가 아니면 null 반환
   }
 

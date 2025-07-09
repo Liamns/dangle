@@ -54,7 +54,12 @@ export default function ProfileCompletionCard({
               <Spacer height="36" />
               <div className={styles.imgContainerWrapper}>
                 <div className={styles.imgContainer}>
-                  <Image src={imageUrl} fill alt="반려동물 성격유형별 GIF" />
+                  <Image
+                    src={imageUrl}
+                    fill
+                    alt="반려동물 성격유형별 GIF"
+                    unoptimized
+                  />
                 </div>
               </div>
               <Spacer height="18" />

@@ -20,6 +20,8 @@ import { useUserStore } from "@/entities/user/store";
 import { setupMockData } from "@/shared/mocks/setupMocks";
 import { useSignInMutation } from "@/features/auth/mutations/useAuthMutation";
 import LoadingOverlay from "@/shared/components/LoadingOverlay";
+import { AUTH_ERROR_MESSAGE } from "@/features/auth/consts";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 export default function Login() {
   const router = useRouter();
@@ -29,6 +31,9 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
 
   const { trigger: signIn, isMutating } = useSignInMutation();
+
+  const clearUser = useUserStore((state) => state.clearUser);
+  const updateCurrentUser = useUserStore((state) => state.updateCurrentUser);
 
   const {
     register,
@@ -44,17 +49,21 @@ export default function Login() {
     setError(null);
 
     try {
-      await signIn({ email: email, pw: data.password });
-
-      router.push("/home");
-      router.refresh();
+      const { user, message } = await signIn({
+        email: email,
+        password: data.password,
+      });
+      updateCurrentUser({ id: user.id, username: user.username });
+      router.replace("/home");
     } catch (e: any) {
       setError(e.message);
-      alert(error);
+      if (e.message === "Invalid login credentials") {
+        alert(AUTH_ERROR_MESSAGE.UNKNOWN_EMAIL);
+      } else {
+        alert(COMMON_MESSAGE.WRONG_ACCESS);
+      }
     }
   };
-
-  const clearUser = useUserStore((state) => state.clearUser);
 
   if (isMutating) return <LoadingOverlay isLoading={isMutating} />;
 

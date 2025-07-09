@@ -29,7 +29,11 @@ export default function InputUsername() {
   const updateRegisteringProfile = useProfileStore(
     (state) => state.updateRegisteringProfile
   );
+  const registeringProfile = useProfileStore(
+    (state) => state.registeringProfile
+  );
   const updateCurrentUser = useUserStore((state) => state.updateCurrentUser);
+  const currentUser = useUserStore((state) => state.currentUser);
 
   const {
     register,
@@ -44,6 +48,7 @@ export default function InputUsername() {
 
   const usernameSubmit = (data: UsernameFormData) => {
     updateRegisteringProfile({ username: data.username });
+    updateRegisteringProfile({ userId: currentUser?.id });
     updateCurrentUser({ username: data.username });
     router.push("/profile/input/pet-name");
   };
@@ -64,6 +69,14 @@ export default function InputUsername() {
   useEffect(() => {
     setRendered(true);
   }, []);
+
+  useEffect(() => {
+    if (registeringProfile.username) {
+      setValue("username", registeringProfile.username, {
+        shouldValidate: true,
+      });
+    }
+  }, [registeringProfile]);
 
   return (
     <div className={layoutStyles.container}>

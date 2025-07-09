@@ -27,6 +27,9 @@ import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 export default function InputPetage() {
   const router = useRouter();
+  const registeringProfile = useProfileStore(
+    (state) => state.registeringProfile
+  );
   const updateRegisteringProfile = useProfileStore(
     (state) => state.updateRegisteringProfile
   );
@@ -39,6 +42,7 @@ export default function InputPetage() {
     handleSubmit,
     watch,
     formState: { errors, isValid },
+    setValue,
   } = useForm<PetAgeFormData>({
     resolver: zodResolver(petAgeFormSchema),
     mode: "onChange",
@@ -61,6 +65,12 @@ export default function InputPetage() {
       router.push("/profile/select-sp");
     }
   }, [spec, router]);
+
+  useEffect(() => {
+    if (registeringProfile.petAge) {
+      setValue("age", registeringProfile.petAge, { shouldValidate: true });
+    }
+  }, [registeringProfile]);
 
   const previewLabel =
     spec !== null ? getPetAgeLabel(spec as PetType, previewAge) : "";
