@@ -5,8 +5,10 @@
   min-width: 79%;
   max-width: 79%;
   position: relative;
-  transition: transform 0.3s ease, scale 0.3s ease;
-  transform: scale(0.85);
+  transition:
+    transform 0.3s ease,
+    scale 0.3s ease;
+  transform: scale(0.9);
 
   &.selected {
     transform: scale(1);

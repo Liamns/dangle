@@ -21,6 +21,10 @@ import {
   getAnniversaryDday,
   getAnniversaryIconByType,
 } from "@/entities/anniversary/model";
+import { useAnniversaries } from "../hooks/useAnniversaries";
+import { useUserStore } from "@/entities/user/store";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
+import { ANNIV_ERROR_MESSAGE } from "../consts";
 
 export default function AnnivWidget() {
   const [showListModal, setShowListModal] = React.useState<boolean>(false);
@@ -46,10 +50,19 @@ export default function AnnivWidget() {
   const [isAddModalHidden, setIsAddModalHidden] =
     React.useState<boolean>(false);
 
-  const { data, error, isLoading, mutate } = useSWR<AnniversaryModel[]>(
-    "/api/anniversary",
-    getAnniversaryList
-  );
+  const userId = useUserStore((state) => state.currentUser?.id);
+
+  const { annivs: data } = useAnniversaryStore();
+
+  const {
+    fetchError: error,
+    isProcessing: isLoading,
+    revalidateAnniv: mutate,
+    registerAnniv,
+    registerError,
+    updateAnniv,
+    updateError,
+  } = useAnniversaries();
 
   // 신규 모드로 모달 열기
   const handleAddClick = () => {
@@ -77,28 +90,37 @@ export default function AnnivWidget() {
     }, 100);
   };
 
-  // 추가 제출 (id는 사용되지 않음)
-  const handleAddSubmit = (data: AnniversaryFormData & { id?: number }) => {
-    setShowAddModal(false);
-    // 폼 제출 시 임시 데이터 초기화
-    setTempFormData(null);
-    setTimeout(() => {
-      setShowListModal(true);
-    }, 100);
-    alert("기념일 추가 API 구현 필요");
-    mutate();
-  };
+  const handleSubmit = async (
+    data: AnniversaryFormData & { id?: number; userId?: string }
+  ) => {
+    if (!userId) {
+      alert(COMMON_MESSAGE.WRONG_ACCESS);
+      return;
+    }
+    try {
+      data = { ...data, userId: userId };
+      if (editMode) {
+        if (!data.id) {
+          alert(COMMON_MESSAGE.WRONG_ACCESS);
+          return;
+        }
+        await updateAnniv({ inputData: { ...data, id: data.id } });
+      } else {
+        await registerAnniv({ inputData: data });
+      }
 
-  // 수정 제출 (id 활용)
-  const handleEditSubmit = (data: AnniversaryFormData & { id?: number }) => {
-    setShowAddModal(false);
-    // 폼 제출 시 임시 데이터 초기화
-    setTempFormData(null);
-    setTimeout(() => {
-      setShowListModal(true);
-    }, 100);
-    alert(`기념일 수정 API 구현 필요`);
-    mutate();
+      setShowAddModal(false);
+      // 폼 제출 시 임시 데이터 초기화
+      setTempFormData(null);
+      mutate();
+
+      setTimeout(() => {
+        setShowListModal(true);
+      }, 100);
+    } catch (e: any) {
+      console.warn(e);
+      console.log(updateError);
+    }
   };
 
   // 날짜 선택 핸들러
@@ -156,8 +178,8 @@ export default function AnnivWidget() {
               <Text text={storedCurrent.content} color={Colors.brown} />
               <Text
                 text={new Date(storedCurrent.date)
-                  .toISOString()
-                  .split("T")[0]
+                  .toLocaleString()
+                  .split("오")[0]
                   .replace(/-/g, ".")}
                 color={Colors.brown}
               />
@@ -203,7 +225,7 @@ export default function AnnivWidget() {
           setShowAddModal(false);
           setTimeout(() => setShowListModal(true), 100);
         }}
-        onSubmit={editMode ? handleEditSubmit : handleAddSubmit}
+        onSubmit={handleSubmit}
         onDatePickerOpen={(formData) => {
           // 현재 폼 데이터 임시 저장
           setTempFormData(formData);

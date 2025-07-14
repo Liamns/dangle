@@ -17,6 +17,7 @@ model User {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   profiles   Profile[]
+  anniversaries Anniversary[]
 }
 
 model Profile {
@@ -41,11 +42,11 @@ model Profile {
 
 model Anniversary {
   id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
   content   String
   icon      Int
   date      DateTime
-  isDday    Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

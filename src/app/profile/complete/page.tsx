@@ -21,16 +21,19 @@ import styles from "./page.module.scss";
 import ProfileCompletionCard from "./components/ProfileCompletionCard";
 import { useProfile } from "@/features/profile/hooks/useProfiles";
 import LoadingOverlay from "@/shared/components/LoadingOverlay";
+import { useUserStore } from "@/entities/user/store";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 export default function CompleteInputProfile() {
   const router = useRouter();
   const [front, setFront] = useState(true);
   const [resetRadar, setResetRadar] = useState(false);
-  const registeringProfile = useProfileStore((s) => s.registeringProfile);
-  const updateCurrentProfile = useProfileStore((s) => s.updateCurrentProfile);
+  const { registeringProfile, updateRegisteringProfile } = useProfileStore();
+  const setCurrentProfile = useProfileStore((s) => s.setCurrentProfile);
   const name = useProfileStore(
     (state) => state.registeringProfile?.petname ?? ""
   );
+  const { currentUser } = useUserStore();
   const {
     registerProfile,
     isProcessing,
@@ -67,12 +70,16 @@ export default function CompleteInputProfile() {
 
   const handleSubmit = async () => {
     const { tags, ...core } = registeringProfile;
+    if (!currentUser || !currentUser.id) {
+      alert(COMMON_MESSAGE.WRONG_ACCESS);
+      return;
+    }
+    updateRegisteringProfile({ userId: currentUser?.id });
     await registerProfile({ profileData: core });
     await revalidateProfile();
 
     if (profiles !== undefined) {
-      console.log(profiles[profiles.length - 1]);
-      updateCurrentProfile(profiles[profiles.length - 1]);
+      setCurrentProfile(profiles[profiles.length - 1]);
       router.replace("/home");
     }
   };

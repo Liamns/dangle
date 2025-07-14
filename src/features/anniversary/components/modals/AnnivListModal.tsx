@@ -124,8 +124,8 @@ const AnnivListModal: React.FC<AnnivListModalProps> = ({
                     <Text text={anniversary.content} color={Colors.brown} />
                     <Text
                       text={new Date(anniversary.date)
-                        .toISOString()
-                        .split("T")[0]
+                        .toLocaleString()
+                        .split("오")[0]
                         .replace(/-/g, ".")}
                       color={Colors.brown}
                     />
@@ -180,8 +180,8 @@ const AnnivListModal: React.FC<AnnivListModalProps> = ({
               error
                 ? location.reload()
                 : !data || data.length === 0
-                ? onAddClick()
-                : handleRegister()
+                  ? onAddClick()
+                  : handleRegister()
             }
           >
             <Text
@@ -189,10 +189,10 @@ const AnnivListModal: React.FC<AnnivListModalProps> = ({
                 isLoading
                   ? "불러오는 중"
                   : error
-                  ? "다시 시도하기"
-                  : data?.length === 0
-                  ? `기념일 추가하기`
-                  : `등록하기`
+                    ? "다시 시도하기"
+                    : data?.length === 0
+                      ? `기념일 추가하기`
+                      : `등록하기`
               }
               color={isActionDisabled ? Colors.white : Colors.brown}
               fontWeight="bold"

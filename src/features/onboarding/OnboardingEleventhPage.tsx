@@ -5,80 +5,41 @@ import { OnboardingProps } from "./Onboarding";
 import OnboardingNav from "./OnboardingNav";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
-import { Card, Spacer } from "@/shared/components/layout";
+import { Spacer } from "@/shared/components/layout";
 import AnimatedChevron from "./AnimatedChevron";
 import Image from "next/image";
 
-const OnboardingEleventhPage = memo(
-  ({ onNext, onPrev, onFinal }: OnboardingProps) => {
-    return (
-      <div className={styles.container}>
-        {/* <OnboardingNav
-          onNext={onFinal ? onFinal : onNext}
-          onPrev={onPrev}
-          gap="58"
-          content={
-            <Text
-              color={Colors.white}
-              fontWeight="bold"
-              fontSize="lg"
-              text={`슬기로운 반려생활을\n시작해 볼까요?`}
-            />
-          }
-        /> */}
-        <Text
-          color={Colors.white}
-          fontWeight="bold"
-          fontSize="lg"
-          text={`슬기로운 반려생활을\n시작해 볼까요?`}
-        />
-
-        <Spacer height="15" />
-        <AnimatedChevron />
-        <Spacer height="15" />
-
-        <Card
-          width="280"
-          height="446"
-          px="22"
-          py="22"
-          justify="center"
-          align="center"
-        >
+const OnboardingEleventhPage = memo(({ onNext, onPrev }: OnboardingProps) => {
+  return (
+    <div className={styles.container}>
+      <OnboardingNav
+        onNext={onNext}
+        onPrev={onPrev}
+        gap="17"
+        content={
           <Text
-            text="편리한 반려생활을 위한"
-            color={Colors.brown}
+            color={Colors.white}
             fontWeight="bold"
-            fontSize="md"
+            fontSize="lg"
+            text={`내가 즐겨찾기한\n일정과 루틴을 바로 공유해보세요!`}
           />
-          <Spacer height="32" />
-          <div className={styles.eleventhImage}>
-            <Image
-              src="/images/onboarding/eleventh.png"
-              alt="반려생활 시작하기"
-              fill
-              priority
-            />
-          </div>
-          <Spacer height="16" />
-          <Text
-            text="댕글"
-            fontFamily="jalnan"
-            fontSize="logo"
-            color={Colors.brown}
-          />
-          <Spacer height="23" />
-          <div
-            className={styles.startButton}
-            onClick={onFinal ? onFinal : onNext}
-          >
-            <Text text="시작하기" color={Colors.brown} fontWeight="bold" />
-          </div>
-        </Card>
+        }
+      />
+
+      <Spacer height="14" />
+      <AnimatedChevron />
+      <Spacer height="14" />
+
+      <div className={styles.eleventhImage}>
+        <Image
+          src={`/images/onboarding/eleventh.png`}
+          alt="예시 즐겨찾기 이미지"
+          fill
+        />
       </div>
-    );
-  }
-);
+    </div>
+  );
+});
 
 OnboardingEleventhPage.displayName = "OnboardingEleventhPage";
 export default OnboardingEleventhPage;

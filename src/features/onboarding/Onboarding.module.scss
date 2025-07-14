@@ -222,6 +222,12 @@
 }
 
 .eleventhImage {
+  @include width(300);
+  aspect-ratio: 300/489;
+  position: relative;
+}
+
+.twelfthImage {
   @include width(248);
   aspect-ratio: 248/189;
   position: relative;

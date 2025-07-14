@@ -1,53 +1,38 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { ProfileModel } from "./model";
-import {
-  allVaccines,
-  PersonalityTag,
-  personalityTraits,
-} from "../../shared/types/pet";
+import { PersonalityTag } from "../../shared/types/pet";
 
 // 비어있는 프로필 모델 상수 정의
 export const EMPTY_PROFILE: ProfileModel = {
   id: "00000000-0000-0000-0000-000000000000",
   userId: "00000000-0000-0000-0000-000000000000",
   petname: "",
-  petAge: "", // petAge를 문자열로 수정 (yyyy-mm-dd 형식)
+  petAge: "",
   petWeight: 0,
   petGender: { gender: null, isNeutered: false },
   petSpec: null,
   etc1: null,
   etc2: null,
   etc3: null,
-  vaccinations: Object.fromEntries(
-    allVaccines.map((vaccine) => [vaccine, false])
-  ),
-  personalityScores: Object.fromEntries(
-    personalityTraits.map((trait) => [trait, 0])
-  ),
+  vaccinations: {},
+  personalityScores: {},
 };
 
-interface ProfileStoreState {
+interface ProfileState {
+  profiles: ProfileModel[];
   currentProfile: ProfileModel | null;
-  userProfiles: ProfileModel[];
-  isLoaded: boolean;
-  isFirstVisit: boolean; // 최초 방문 여부 상태 추가
-  _hasHydrated: boolean;
   registeringProfile: ProfileModel & {
     tags?: PersonalityTag[];
     username?: string;
   };
+  _hasHydrated: boolean;
+  setProfiles: (profiles: ProfileModel[]) => void;
   setCurrentProfile: (profile: ProfileModel | null) => void;
-  setUserProfiles: (profiles: ProfileModel[]) => void;
-  updateCurrentProfile: (profileData: Partial<ProfileModel>) => void;
   addProfile: (profile: ProfileModel) => void;
   updateProfile: (profile: ProfileModel) => void;
   removeProfile: (profileId: string) => void;
-  loadProfilesByUserId: (userId: string) => Promise<void>;
   clearProfiles: () => void;
-  isProfileValid: (profile: ProfileModel | null) => boolean; // 검증 함수 추가
-  getCurrentProfile: () => ProfileModel | null;
-  setFirstVisit: (value: boolean) => void; // 상태 변경 메서드 추가
   updateRegisteringProfile: (
     profileData: Partial<ProfileModel> & {
       tags?: PersonalityTag[];
@@ -58,49 +43,41 @@ interface ProfileStoreState {
 }
 
 export const useProfileStore = create(
-  persist<ProfileStoreState>(
+  persist<ProfileState>(
     (set, get) => ({
+      profiles: [],
       currentProfile: null,
-      userProfiles: [],
-      isLoaded: false,
-      isFirstVisit: true, // 기본값 true로 설정
+      registeringProfile: { ...EMPTY_PROFILE, tags: [], username: "" },
       _hasHydrated: false,
-      registeringProfile: EMPTY_PROFILE,
 
-      setHasHydrated: (hydrated) => {
-        set({ _hasHydrated: hydrated });
+      setHasHydrated: (hydrated) => set({ _hasHydrated: hydrated }),
+
+      setProfiles: (profiles) => {
+        const currentProfile = get().currentProfile;
+        const isCurrentProfileStillValid = profiles.some(
+          (p) => p.id === currentProfile?.id
+        );
+
+        set({
+          profiles: profiles,
+          currentProfile: isCurrentProfileStillValid
+            ? currentProfile
+            : profiles[profiles.length - 1] || null,
+        });
       },
 
-      setCurrentProfile: (profile) => {
-        set({ currentProfile: profile, isLoaded: true });
-      },
-
-      setUserProfiles: (profiles) => set({ userProfiles: profiles }),
-
-      updateCurrentProfile: (profileData) =>
-        set((state) => ({
-          currentProfile: state.currentProfile
-            ? {
-                ...state.currentProfile,
-                ...profileData,
-              }
-            : { ...EMPTY_PROFILE, ...profileData },
-        })),
+      setCurrentProfile: (profile) => set({ currentProfile: profile }),
 
       addProfile: (profile) => {
         set((state) => ({
-          userProfiles: [...state.userProfiles, profile],
+          profiles: [...state.profiles, profile],
+          currentProfile: profile,
         }));
-
-        const { currentProfile } = get();
-        if (!currentProfile) {
-          set({ currentProfile: profile, isLoaded: true });
-        }
       },
 
       updateProfile: (profile) =>
         set((state) => ({
-          userProfiles: state.userProfiles.map((p) =>
+          profiles: state.profiles.map((p) =>
             p.id === profile.id ? { ...p, ...profile } : p
           ),
           currentProfile:
@@ -111,9 +88,7 @@ export const useProfileStore = create(
 
       removeProfile: (profileId) =>
         set((state) => {
-          const newProfiles = state.userProfiles.filter(
-            (p) => p.id !== profileId
-          );
+          const newProfiles = state.profiles.filter((p) => p.id !== profileId);
           const newCurrentProfile =
             state.currentProfile?.id === profileId
               ? newProfiles.length > 0
@@ -122,68 +97,23 @@ export const useProfileStore = create(
               : state.currentProfile;
 
           return {
-            userProfiles: newProfiles,
+            profiles: newProfiles,
             currentProfile: newCurrentProfile,
           };
         }),
 
-      loadProfilesByUserId: async (userId) => {
-        try {
-          const profiles: ProfileModel[] = [];
-
-          set({
-            userProfiles: profiles,
-            currentProfile: profiles.length > 0 ? profiles[0] : null,
-            isLoaded: true,
-          });
-        } catch (error) {
-          console.error("프로필 로드 중 오류 발생:", error);
-        }
-
-        return Promise.resolve();
-      },
-
       clearProfiles: () =>
         set({
-          currentProfile: EMPTY_PROFILE,
-          userProfiles: [],
-          isLoaded: false,
+          profiles: [],
+          currentProfile: null,
         }),
 
-      isProfileValid: (profile) => {
-        if (!profile) return false;
-        const { petname, petAge, petWeight, petGender, petSpec, vaccinations } =
-          profile;
-        return (
-          !!petname &&
-          !!petAge && // petAge를 문자열로 검사
-          !!petWeight &&
-          petSpec !== null &&
-          petSpec !== undefined &&
-          !!petGender &&
-          Object.keys(vaccinations || {}).length > 0
-          // etc1, etc2, etc3는 필수가 아니므로 검사에서 제외
-        );
-      },
-
-      getCurrentProfile: () => {
-        const state = get();
-        if (!state.isLoaded) {
-          set({ isLoaded: true });
-        }
-        return state.currentProfile;
-      },
-
-      setFirstVisit: (value) => set({ isFirstVisit: value }), // 상태 변경 메서드 구현
-
-      updateRegisteringProfile: (profileData: Partial<ProfileModel>) =>
+      updateRegisteringProfile: (profileData) =>
         set((state) => ({
-          registeringProfile: state.registeringProfile
-            ? {
-                ...state.registeringProfile,
-                ...profileData,
-              }
-            : EMPTY_PROFILE,
+          registeringProfile: {
+            ...state.registeringProfile,
+            ...profileData,
+          },
         })),
     }),
     {

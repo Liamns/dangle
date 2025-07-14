@@ -75,7 +75,6 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
       content: "",
       icon: undefined,
       date: new Date(),
-      isDday: true,
     },
   });
 
@@ -99,7 +98,6 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
           content: initialData.content,
           icon: initialData.icon,
           date: new Date(initialData.date),
-          isDday: initialData.isDday,
         });
       } else {
         // 신규 추가 모드: 빈 상태로 초기화
@@ -107,7 +105,6 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
           content: "",
           icon: undefined,
           date: new Date(),
-          isDday: true,
         });
       }
     }
@@ -136,23 +133,9 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
 
   const content = watch("content") || "";
   const selectedIcon = watch("icon");
-  const isDday = watch("isDday");
 
   const handleIconSelect = (iconIndex: number) => {
     setValue("icon", iconIndex, { shouldValidate: true });
-  };
-
-  // 날짜 선택 핸들러
-  const handleDateSelect = (date: Date | undefined) => {
-    if (date) {
-      const currentValues = getValues();
-      setValue("date", date, { shouldValidate: true });
-      if (currentValues.isDday !== undefined) {
-        setValue("isDday", currentValues.isDday, { shouldValidate: true });
-      } else {
-        setValue("isDday", true, { shouldValidate: true });
-      }
-    }
   };
 
   const formattedDate = format(selectedDate, "yyyy년 MM월 dd일", {
@@ -289,7 +272,6 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
                   const currentData = {
                     content: content,
                     icon: selectedIcon,
-                    isDday: isDday,
                   };
                   onDatePickerOpen(currentData);
                 }}

@@ -11,9 +11,10 @@ import OnboardingSeventhPage from "./OnboardingSeventhPage";
 import OnboardingEighthPage from "./OnboardingEighthPage";
 import OnboardingNinthPage from "./OnboardingNinthPage";
 import OnboardingTenthPage from "./OnboardingTenthPage";
-import OnboardingEleventhPage from "./OnboardingEleventhPage";
 import { useUserStore } from "@/entities/user/store";
 import cn from "classnames";
+import OnboardingTwelfthPage from "./OnboardingTwelfthPage";
+import OnboardingEleventhPage from "./OnboardingEleventhPage";
 
 export interface OnboardingProps {
   onNext: () => void; // 다음 페이지로 이동하는 함수
@@ -28,7 +29,7 @@ const Onboarding = memo(() => {
   // 페이지 이동 함수
   const goToPage = useCallback((index: number) => {
     // 범위 체크
-    if (index < 0 || index >= 11) return;
+    if (index < 0 || index >= 12) return;
 
     // 페이지 상태 업데이트
     setCurrentPage(index);
@@ -66,7 +67,8 @@ const Onboarding = memo(() => {
     <OnboardingEighthPage onNext={handleNext} onPrev={handlePrev} />,
     <OnboardingNinthPage onNext={handleNext} onPrev={handlePrev} />,
     <OnboardingTenthPage onNext={handleNext} onPrev={handlePrev} />,
-    <OnboardingEleventhPage
+    <OnboardingEleventhPage onNext={handleNext} onPrev={handlePrev} />,
+    <OnboardingTwelfthPage
       onNext={handleNext}
       onPrev={handlePrev}
       onFinal={handleFinal}

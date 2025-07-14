@@ -3,8 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./HomeProfile.module.scss";
 import { useProfileStore } from "@/entities/profile/store";
-import { InnerBox, Spacer } from "@/shared/components/layout";
-import { ArrowButton } from "@/shared/components/buttons";
+import { InnerBox } from "@/shared/components/layout";
 import { Colors } from "@/shared/consts/colors";
 import { Text } from "@/shared/components/texts";
 import Male from "@/shared/svgs/male.svg";
@@ -12,33 +11,69 @@ import Female from "@/shared/svgs/female.svg";
 import { PetGenderFormData, PetSpecFormData } from "@/entities/profile/schema";
 import { useEffect, useState } from "react";
 import AddProfileModal from "./AddProfileModal";
-import { useUserStore } from "@/entities/user/store";
 import { useProfile } from "../hooks/useProfiles";
 import LoadingOverlay from "@/shared/components/LoadingOverlay";
 import { useRouter } from "next/navigation";
 import { PROFILE_ERROR_MESSAGE } from "../consts";
 import { COMMON_MESSAGE } from "@/shared/consts/messages";
+import { ProfileModel } from "@/entities/profile/model";
 
 export default function HomeProfile() {
   const router = useRouter();
-  const { profiles, isProcessing, fetchError, revalidateProfile } =
-    useProfile();
+  const { isProcessing, fetchError } = useProfile();
+
+  // 모든 데이터를 Zustand 스토어에서 가져옵니다.
+  const {
+    profiles,
+    currentProfile,
+    setCurrentProfile,
+    _hasHydrated: hasHydrated,
+  } = useProfileStore();
+
+  // ====================================================================
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const currentProfile = useProfileStore((state) => state.currentProfile);
 
   useEffect(() => {
-    // Only trigger when fetch is done and profiles are defined
-    if (!isProcessing && profiles !== undefined && profiles.length === 0) {
+    // 데이터 로딩이 끝났고, 수화가 완료되었을 때 프로필이 없으면 페이지 이동
+    if (!isProcessing && hasHydrated && profiles.length === 0) {
       alert(PROFILE_ERROR_MESSAGE.EMPTY_PROFILE);
       router.replace("/profile/select-sp");
     }
-  }, [isProcessing, profiles, router]);
+  }, [isProcessing, hasHydrated, profiles, router]);
 
   if (fetchError) {
     console.error(`HomeProfile 로딩 에러 : ${fetchError}`);
+    // 필요하다면 에러 UI를 여기에 표시할 수 있습니다.
   }
 
-  const hasMultipleProfiles = profiles !== undefined && profiles.length > 1;
+  const hasMultipleProfiles = profiles.length > 1;
+
+  const handleClickArrow = (isPrev: boolean) => {
+    // 이제 profiles와 currentProfile 모두 같은 소스(Zustand)에서 오므로 안전합니다.
+    if (!currentProfile) {
+      alert(COMMON_MESSAGE.WRONG_ACCESS);
+      return;
+    }
+    try {
+      const currentIndex = profiles.findIndex(
+        (item) => item.id === currentProfile.id
+      );
+
+      if (isPrev) {
+        const nextIndex =
+          currentIndex === 0 ? profiles.length - 1 : currentIndex - 1;
+        setCurrentProfile(profiles[nextIndex]);
+      } else {
+        const nextIndex =
+          currentIndex === profiles.length - 1 ? 0 : currentIndex + 1;
+        setCurrentProfile(profiles[nextIndex]);
+      }
+    } catch (e: any) {
+      console.error(e);
+    }
+  };
+
   const species: PetSpecFormData = currentProfile?.petSpec ?? 0;
   const gender: PetGenderFormData["gender"] =
     currentProfile?.petGender?.gender ?? null;
@@ -46,7 +81,7 @@ export default function HomeProfile() {
 
   return (
     <>
-      {isProcessing && <LoadingOverlay isLoading />}
+      {(isProcessing || !hasHydrated) && <LoadingOverlay isLoading />}
       <div className={styles.container}>
         {/* 프로필 이미지 */}
         <Image
@@ -64,7 +99,7 @@ export default function HomeProfile() {
               className={styles.arrowBox}
               onClick={() => {
                 if (hasMultipleProfiles) {
-                  alert("다중 프로필 기능 개발 예정");
+                  handleClickArrow(true);
                 } else {
                   setIsAddModalOpen(true);
                 }
@@ -83,7 +118,7 @@ export default function HomeProfile() {
               className={styles.arrowBox}
               onClick={() => {
                 if (hasMultipleProfiles) {
-                  alert("다중 프로필 기능 개발 예정");
+                  handleClickArrow(false);
                 } else {
                   setIsAddModalOpen(true);
                 }

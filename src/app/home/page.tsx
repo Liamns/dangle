@@ -7,6 +7,8 @@ import HomeProfile from "@/features/profile/components/HomeProfile";
 import ScheduleBottomModal from "@/features/schedule/components/ScheduleBottomModal";
 import { useUserStore } from "@/entities/user/store";
 import Onboarding from "@/features/onboarding/Onboarding";
+import { useProfile } from "@/features/profile/hooks/useProfiles";
+import { useAnniversaries } from "@/features/anniversary/hooks/useAnniversaries";
 
 /**
  * 홈 페이지 컴포넌트
@@ -16,6 +18,10 @@ export default function Home() {
   const innerBoxRef = useRef<HTMLDivElement>(null);
   const [innerBoxHeight, setInnerBoxHeight] = useState(0);
   const isFirst = useUserStore((state) => state.isFirst);
+  // 데이터 로딩을 시작시키기 위해 훅을 호출합니다.
+  // 반환된 profiles, isProcessing 등은 여기서 직접 사용하지 않습니다.
+  useProfile();
+  useAnniversaries();
 
   /**
    * InnerBox 아래 공간의 높이를 계산하는 함수

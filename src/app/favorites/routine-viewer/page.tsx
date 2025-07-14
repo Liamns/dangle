@@ -5,15 +5,13 @@ import { useSearchParams } from "next/navigation";
 import { RoutineWithContentsModel } from "@/entities/routine/schema";
 import { decrypt } from "@/shared/lib/crypto";
 import { EMPTY_PROFILE, useProfileStore } from "@/entities/profile/store";
-import { Card, InnerWrapper } from "@/shared/components/layout";
+import { InnerWrapper } from "@/shared/components/layout";
 import LoadingOverlay from "@/shared/components/LoadingOverlay";
 import Image from "next/image";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import useEmblaCarousel from "embla-carousel-react";
 import cn from "classnames";
-import ClickSvg from "@/shared/svgs/click.svg";
-import { RoutineCategoryColors, RoutineType } from "@/entities/routine/types";
 import FavoriteRoutineViewerCard from "@/features/favorites/components/FavoriteRoutineViewerCard";
 
 function FavoriteRoutineViewer() {

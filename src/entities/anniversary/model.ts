@@ -1,11 +1,6 @@
 import { z } from "zod";
 import { uuidSchema } from "../user/model";
-import {
-  anniversaryIconSchema,
-  contentSchema,
-  dateSchema,
-  isDdaySchema,
-} from "./schema";
+import { anniversaryIconSchema, contentSchema, dateSchema } from "./schema";
 import { annivIcon, favoriteIcon } from "@/shared/types/icon";
 
 // 기념일 스키마
@@ -15,7 +10,6 @@ export const anniversaryModelSchema = z.object({
   content: contentSchema,
   icon: anniversaryIconSchema,
   date: dateSchema,
-  isDday: isDdaySchema,
   createdAt: z.date(),
   updatedAt: z.date(),
 });

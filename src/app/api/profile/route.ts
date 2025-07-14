@@ -1,4 +1,5 @@
 import { ProfileModel } from "@/entities/profile/model";
+import { EMPTY_PROFILE } from "@/entities/profile/store";
 import { PROFILE_ERROR_MESSAGE } from "@/features/profile/consts";
 import { COMMON_MESSAGE } from "@/shared/consts/messages";
 import prisma from "@/shared/lib/prisma";
@@ -11,7 +12,7 @@ export async function GET(req: Request) {
 
     if (!userId) {
       return NextResponse.json(
-        { error: PROFILE_ERROR_MESSAGE.UNKNOWN_USER },
+        { error: COMMON_MESSAGE.UNKNOWN_USER },
         { status: 400 }
       );
     }
@@ -34,15 +35,13 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const { profileData } = await req.json();
-
-    if (!profileData.userId) {
+    console.log(profileData);
+    if (!profileData.userId || profileData.userId === EMPTY_PROFILE.id) {
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
       );
     }
-
-    console.log(profileData);
 
     const newProfile = await prisma.profile.create({
       data: {
@@ -59,7 +58,7 @@ export async function POST(req: Request) {
 
     await prisma.user.update({
       data: { username: profileData.username },
-      where: { id: profileData.userId, username: null },
+      where: { id: profileData.userId },
     });
 
     return NextResponse.json(

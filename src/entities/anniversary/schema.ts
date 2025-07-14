@@ -17,20 +17,11 @@ export const dateSchema = z.coerce.date({
   invalid_type_error: "유효한 날짜를 입력해주세요.",
 });
 
-// 기념일 D-day 여부 스키마
-export const isDdaySchema = z
-  .boolean()
-  .refine((val) => val === true || val === false, {
-    message: "D-day 값은 true 또는 false 중 하나여야 합니다.",
-  })
-  .describe("true: D-day 카운트다운, false: 지난 날짜 카운트업");
-
 // 기념일 생성 폼 스키마
 export const anniversaryFormSchema = z.object({
   content: contentSchema,
   icon: anniversaryIconSchema,
   date: dateSchema,
-  isDday: isDdaySchema.optional(),
 });
 
 export type AnniversaryFormData = z.infer<typeof anniversaryFormSchema>;
