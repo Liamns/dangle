@@ -49,7 +49,6 @@ const AnnivListModal: React.FC<AnnivListModalProps> = ({
     if (selectedId !== null && data) {
       const anniv = data.find((a) => a.id === selectedId);
       if (anniv) setCurrentAnniv(anniv);
-      console.log("등록된 기념일:", anniv);
     }
     onClose();
   };

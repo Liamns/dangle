@@ -10,12 +10,13 @@ import Setting from "@/shared/svgs/setting.svg";
 import styles from "./ScheduleContentBox.module.scss";
 import Favorite from "@/shared/svgs/favorites.svg";
 import { useProfileStore } from "@/entities/profile/store";
-import ScheduleContents from "./ScheduleContents";
+import ScheduleItemList from "./ScheduleItemList";
 import { useRouter } from "next/navigation";
-import { useScheduleByDate } from "../hooks/useScheduleByDate";
 import { encrypt } from "@/shared/lib/crypto";
 import RegisterFavoriteScheduleModal from "./RegisterFavoriteScheduleModal";
 import { FavoriteScheduleFormData } from "@/entities/schedule/schema";
+import { useSchedules } from "../hooks/useSchedules";
+import { useScheduleStore } from "@/entities/schedule/store";
 
 interface ScheduleContentProps {
   isEditMode: boolean;
@@ -48,12 +49,8 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
 
   // fetch schedule by date (single)
   const currentProfile = useProfileStore((s) => s.currentProfile);
-  const profileId = currentProfile?.id ?? "";
-  const {
-    data: schedule,
-    error,
-    isLoading,
-  } = useScheduleByDate(profileId, selectedDate);
+  const { currentSchedule: schedule } = useScheduleStore();
+  const { isProcessing: isLoading, fetchError: error } = useSchedules();
 
   // 일정 공유 버튼 클릭 핸들러
   const handleShareClick = useCallback(async () => {
@@ -91,10 +88,8 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
 
   // empty 상태 체크
   const isEmpty =
-    !isLoading &&
-    !error &&
-    schedule !== undefined &&
-    schedule?.scheduleItems.length === 0;
+    (!isLoading && !error && schedule.items && schedule.items.length === 0) ||
+    !schedule.items;
 
   const [isFavorite, setIsFavorite] = useState<boolean>(
     schedule?.isFavorite ?? false
@@ -202,7 +197,7 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
       )}
 
       <div className={cn(styles.scrollable, isEmpty && styles.empty)}>
-        <ScheduleContents
+        <ScheduleItemList
           schedule={schedule}
           isLoading={isLoading}
           error={error}
@@ -211,7 +206,7 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
           onEmptyAddClick={handleEmptyClick}
         />
 
-        {schedule && schedule.scheduleItems.length > 0 && (
+        {schedule.items && schedule.items.length > 0 && (
           <div className={styles.shareBtn} onClick={handleShareClick}>
             <Text text="일정 공유하기" fontWeight="bold" color={Colors.white} />
           </div>

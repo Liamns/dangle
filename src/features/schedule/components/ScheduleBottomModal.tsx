@@ -1,41 +1,19 @@
 "use client";
 import { BottomModal } from "@/shared/components/modals";
-import Modal from "@/shared/components/modals";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import { formatDateToKorean, getShortKoreanDayOfWeek } from "@/shared/lib/date";
 import styles from "@/app/home/page.module.scss";
-import imgStyles from "@/shared/styles/images.module.scss";
 import modalStyles from "./ScheduleBottomModal.module.scss";
 import Share from "@/shared/svgs/share.svg";
-import Image from "next/image";
-import { Button } from "@/shared/components/buttons";
-import Plus from "@/shared/svgs/plus.svg";
-import React, { useEffect, useState, useCallback, memo, useRef } from "react";
+import React, { useEffect, useState, useCallback, memo } from "react";
 import cn from "classnames";
-import useSWR from "swr";
-import Edit from "@/shared/svgs/edit.svg";
-import Delete from "@/shared/svgs/delete.svg";
-import { getTodaySchedules } from "../apis";
-import {
-  ScheduleWithItemsModel,
-  ScheduleItemWithContentModel,
-} from "@/entities/schedule/model";
-import {
-  ScheduleContentFormData,
-  ScheduleItemFormData,
-} from "@/entities/schedule/schema";
-import LoadingOverlay from "@/shared/components/LoadingOverlay";
-import {
-  getSubCategoryImagePath,
-  SubCategory,
-} from "@/entities/schedule/types";
-import AddScheduleModal from "./AddScheduleModal";
 import DatePickerModal from "@/shared/components/DatePickerModal";
-import ScheduleContents from "./ScheduleContents";
-import { useUserStore } from "@/entities/user/store";
 import { useRouter } from "next/navigation";
+import { useSchedules } from "../hooks/useSchedules";
+import { useScheduleStore } from "@/entities/schedule/store";
+import ScheduleItemList from "./ScheduleItemList";
 
 /**
  * ScheduleBottomModal Props 인터페이스
@@ -92,16 +70,12 @@ export default function ScheduleBottomModal({
     [datePickerCallback, closeDatePicker]
   );
 
-  // useSWR을 사용하여 오늘의 일정 데이터 페칭 (단일 스케줄)
-  const {
-    data: schedule,
-    error,
-    isLoading,
-  } = useSWR("todaySchedule", () => getTodaySchedules());
+  const { currentSchedule: schedule } = useScheduleStore();
+  const { fetchError: error, isProcessing: isLoading } = useSchedules();
 
   // empty 상태 체크: scheduleItems가 없으면 빈 상태
   const isEmpty =
-    !isLoading && !error && (!schedule || schedule.scheduleItems.length === 0);
+    !isLoading && !error && (!schedule?.items || schedule.items.length === 0);
 
   /**
    * 공유 버튼 클릭 핸들러
@@ -132,7 +106,7 @@ export default function ScheduleBottomModal({
         onShareClick={handleShareClick}
       />
       <div className={cn(modalStyles.scrollable, isEmpty && modalStyles.empty)}>
-        <ScheduleContents
+        <ScheduleItemList
           schedule={schedule}
           isLoading={isLoading}
           error={error}

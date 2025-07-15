@@ -2,8 +2,8 @@
 import { memo, useState, useEffect } from "react";
 import styles from "./ScheduleTimeEditModal.module.scss";
 import {
-  ScheduleItemWithContentModel,
   NewScheduleItem,
+  ScheduleItemWithSubCategoryModel,
 } from "@/entities/schedule/model";
 import Modal from "@/shared/components/modals";
 import CloseSvg from "@/shared/svgs/close.svg";
@@ -20,13 +20,13 @@ import { InnerBox, Spacer } from "@/shared/components/layout";
 import chkbox from "@/shared/styles/buttons.module.scss";
 
 interface ScheduleTimeEditModalProps {
-  schedule?: ScheduleItemWithContentModel | NewScheduleItem;
+  schedule?: ScheduleItemWithSubCategoryModel | NewScheduleItem;
   isOpen: boolean;
   onClose: () => void;
   // 전달된 schedule 객체에 isFavorite 플래그를 추가해 전달합니다.
   onChangeStartAt: (
     next: Date,
-    updatedSchedule: (ScheduleItemWithContentModel | NewScheduleItem) & {
+    updatedSchedule: (ScheduleItemWithSubCategoryModel | NewScheduleItem) & {
       isFavorite?: boolean;
     }
   ) => void;
@@ -57,8 +57,7 @@ const ScheduleTimeEditModal = memo(
     }, [schedule]);
     if (!schedule) return null;
 
-    console.log("ScheduleTimeEditModal", schedule);
-    const sub: SubCategory = schedule.content.sub.name as SubCategory;
+    const sub: SubCategory = schedule.subCategory.name as SubCategory;
     if (!sub) {
       alert("잘못된 일정입니다.");
       onClose();

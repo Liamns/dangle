@@ -7,13 +7,11 @@ import {
   getAllSubCategoriesByMain,
 } from "@/entities/schedule/types";
 import {
-  ScheduleContentModel,
   ScheduleWithItemsModel,
-  ScheduleItemWithContentModel,
+  ScheduleItemWithSubCategoryModel,
   ScheduleItemModel,
   CategoryMainModel,
   CategorySubModel,
-  ExtendedScheduleContentModel,
   CategoryWithSubsModel,
 } from "./model";
 import { favoriteIcon } from "@/shared/types/icon";
@@ -25,12 +23,12 @@ import { favoriteIcon } from "@/shared/types/icon";
  */
 export function sortScheduleItemsByTime(
   schedule: ScheduleWithItemsModel
-): ScheduleItemWithContentModel[] {
-  if (!schedule.scheduleItems || schedule.scheduleItems.length === 0) {
+): ScheduleItemWithSubCategoryModel[] {
+  if (!schedule.items || schedule.items.length === 0) {
     return [];
   }
 
-  return [...schedule.scheduleItems].sort((a, b) => {
+  return [...schedule.items].sort((a, b) => {
     return new Date(a.startAt).getTime() - new Date(b.startAt).getTime();
   });
 }
@@ -47,31 +45,6 @@ export function isToday(date: Date): boolean {
     date.getMonth() === today.getMonth() &&
     date.getFullYear() === today.getFullYear()
   );
-}
-
-/**
- * 특정 카테고리에 속한 일정 컨텐츠만 필터링하는 함수
- * @param contents 일정 컨텐츠 배열
- * @param mainId 대분류 카테고리 ID
- * @param subId 소분류 카테고리 ID (선택적)
- * @returns 필터링된 일정 컨텐츠 배열
- */
-export function filterContentsByCategory(
-  contents: ScheduleContentModel[],
-  mainId: number,
-  subId?: number
-): ScheduleContentModel[] {
-  if (!contents || contents.length === 0) {
-    return [];
-  }
-
-  if (subId) {
-    return contents.filter(
-      (content) => content.mainId === mainId && content.subId === subId
-    );
-  }
-
-  return contents.filter((content) => content.mainId === mainId);
 }
 
 /**
@@ -131,34 +104,6 @@ export function getSubCategoriesForUI(
   mainCategory: MainCategory
 ): { id: number; name: string }[] {
   return getAllSubCategoriesByMain(mainCategory);
-}
-
-/**
- * 일정 컨텐츠에 카테고리 정보를 추가하여 확장된 모델로 변환하는 함수
- * @param content 일정 컨텐츠 모델
- * @param mainCategories 메인 카테고리 모델 배열
- * @param subCategories 서브 카테고리 모델 배열
- * @returns 확장된 일정 컨텐츠 모델 또는 null (카테고리를 찾지 못한 경우)
- */
-export function enrichContentWithCategories(
-  content: ScheduleContentModel,
-  mainCategories: CategoryMainModel[],
-  subCategories: CategorySubModel[]
-): ExtendedScheduleContentModel | null {
-  const main = mainCategories.find((m) => m.id === content.mainId);
-  const sub = subCategories.find(
-    (s) => s.id === content.subId && s.mainId === content.mainId
-  );
-
-  if (!main || !sub) {
-    return null;
-  }
-
-  return {
-    ...content,
-    main,
-    sub,
-  };
 }
 
 /**

@@ -3,7 +3,6 @@ import { ArrowButton } from "@/shared/components/buttons";
 import BottomNavBar from "../../shared/components/bottom-nav-bar";
 import {
   Card,
-  Center,
   InnerBox,
   InnerWrapper,
   Spacer,
@@ -16,8 +15,9 @@ import { Colors } from "@/shared/consts/colors";
 import { useState, useCallback } from "react";
 import DatePickerModal from "@/shared/components/DatePickerModal";
 import WeekCalendar from "@/features/schedule/components/WeekCalendar";
-import ScheduleContentBox from "@/features/schedule/components/ScheduleContentBox";
 import ScheduleAddBox from "@/features/schedule/components/ScheduleAddBox";
+import ScheduleContentBox from "@/features/schedule/components/ScheduleContentBox";
+import { useSchedules } from "@/features/schedule/hooks/useSchedules";
 
 export default function Schedule() {
   const router = useRouter();
@@ -32,6 +32,8 @@ export default function Schedule() {
   const [datePickerCallback, setDatePickerCallback] = useState<
     ((date: Date) => void) | null
   >(null);
+
+  useSchedules();
 
   // edit mode 변경 시 URL 업데이트
   const handleEditModeChange = useCallback(

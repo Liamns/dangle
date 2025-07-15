@@ -7,19 +7,15 @@ import {
   getSubCategoryId,
 } from "@/entities/schedule/types";
 import {
-  ScheduleItemWithContentModel,
   NewScheduleItem,
   ScheduleWithItemsModel,
+  ScheduleItemWithSubCategoryModel,
   // 생성 전용 타입
 } from "@/entities/schedule/model";
 
 import styles from "./ScheduleSubCategoryCol.module.scss";
 import { memo, useState } from "react";
-import { useScheduleByDate } from "../hooks/useScheduleByDate";
-import { useProfileStore } from "@/entities/profile/store";
-import LoadingOverlay from "@/shared/components/LoadingOverlay";
 import ScheduleItemInEdit from "./ScheduleItemInEdit";
-import { set } from "date-fns";
 import ScheduleTimeEditModal from "./ScheduleTimeEditModal";
 
 interface ScheduleSubCategoryColProps {
@@ -27,14 +23,14 @@ interface ScheduleSubCategoryColProps {
   modifications: Partial<
     Record<
       SubCategory,
-      (ScheduleItemWithContentModel | NewScheduleItem) & {
+      (ScheduleItemWithSubCategoryModel | NewScheduleItem) & {
         isFavorite?: boolean;
       }
     >
   >;
   onModify: (
     sub: SubCategory,
-    updated: (ScheduleItemWithContentModel | NewScheduleItem) & {
+    updated: (ScheduleItemWithSubCategoryModel | NewScheduleItem) & {
       isFavorite?: boolean;
     }
   ) => void;
@@ -48,11 +44,11 @@ const ScheduleSubCategoryCol = memo(
     onModify,
     schedule,
   }: ScheduleSubCategoryColProps) => {
-    const items = schedule?.scheduleItems ?? [];
+    const items = schedule?.items ?? [];
     // 선택된 서브 카테고리 및 편집 중인 스케줄(일정 아이템)
     const [modalState, setModalState] = useState<{
       sub: SubCategory;
-      schedule: ScheduleItemWithContentModel | NewScheduleItem;
+      schedule: ScheduleItemWithSubCategoryModel | NewScheduleItem;
     } | null>(null);
 
     const subs = getSubCategoriesByMain(mainCategory);
@@ -60,16 +56,19 @@ const ScheduleSubCategoryCol = memo(
 
     // 1) sub ↔ scheduleItem 매핑
     const matchedMap = items.reduce<
-      Record<SubCategory, ScheduleItemWithContentModel>
-    >((map, item) => {
-      map[item.content.sub.name as SubCategory] = item;
-      return map;
-    }, {} as Record<SubCategory, ScheduleItemWithContentModel>);
+      Record<SubCategory, ScheduleItemWithSubCategoryModel>
+    >(
+      (map, item) => {
+        map[item.subCategory.name as SubCategory] = item;
+        return map;
+      },
+      {} as Record<SubCategory, ScheduleItemWithSubCategoryModel>
+    );
 
     // 1-1) dynamic map: 수정된 시간 overlay
     const dynamicMatchedMap: Record<
       SubCategory,
-      ScheduleItemWithContentModel | NewScheduleItem
+      ScheduleItemWithSubCategoryModel | NewScheduleItem
     > = { ...matchedMap };
     // modification overlay: replace with full updated schedule object from props
     Object.entries(modifications).forEach(([sub, updated]) => {
@@ -115,12 +114,14 @@ const ScheduleSubCategoryCol = memo(
                   const subId = getSubCategoryId(mainCategory, sub);
                   const newItem: NewScheduleItem = {
                     startAt: undefined,
-                    content: {
-                      mainId,
-                      subId,
-                      description: null,
-                      main: { id: mainId, name: mainCategory },
-                      sub: { id: subId, name: sub, mainId },
+                    subCategory: {
+                      id: subId,
+                      mainId: mainId,
+                      name: sub,
+                      main: {
+                        id: mainId,
+                        name: mainCategory,
+                      },
                     },
                   };
                   setModalState({ sub, schedule: newItem });

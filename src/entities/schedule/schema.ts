@@ -61,33 +61,6 @@ export type CategorySelectionFormData = z.infer<typeof categorySelectionSchema>;
 
 // ===== API 요청 DTO 스키마 =====
 
-// 일정 컨텐츠 생성/수정 스키마 (API 요청용)
-export const scheduleContentSchema = z
-  .object({
-    mainId: z.number().int().positive("유효한 메인 카테고리를 선택해주세요."),
-    subId: z.number().int().positive("유효한 서브 카테고리를 선택해주세요."),
-  })
-  .refine(
-    (data) => {
-      // 메인 카테고리가 없으면 검증 실패
-      if (!data.mainId) return false;
-
-      // 메인 카테고리가 유효한지 확인
-      const mainCategory = mainCategories[data.mainId];
-      if (!mainCategory) return false;
-
-      // 서브 카테고리가 메인 카테고리에 속하는지 확인
-      const subCategories = getAllSubCategoriesByMain(mainCategory);
-      return subCategories.some((sub) => sub.id === data.subId);
-    },
-    {
-      message: "선택한 메인 카테고리에 유효한 서브 카테고리를 선택해주세요.",
-      path: ["subId"], // 오류 표시할 필드
-    }
-  );
-
-export type ScheduleContentFormData = z.infer<typeof scheduleContentSchema>;
-
 // 일정 인스턴스 생성 스키마 (API 요청용)
 export const scheduleSchema = z.object({
   profileId: z.string().uuid("유효한 프로필을 선택해주세요."),
@@ -98,7 +71,7 @@ export type ScheduleFormData = z.infer<typeof scheduleSchema>;
 // 일정 아이템 생성/수정 스키마 (API 요청용)
 export const scheduleItemSchema = z.object({
   scheduleId: z.number().int().positive("유효한 일정을 선택해주세요."),
-  contentId: z.number().int().positive("유효한 컨텐츠를 선택해주세요."),
+  subCategoryId: z.number().int().positive("유효한 서브 카테고리를 선택해주세요."),
   startAt: z
     .string()
     .or(z.date())
@@ -147,7 +120,7 @@ export const createScheduleSchema = scheduleSchema.extend({
   items: z
     .array(
       z.object({
-        contentId: z.number().int().positive("유효한 컨텐츠를 선택해주세요."),
+        subCategoryId: z.number().int().positive("유효한 서브 카테고리를 선택해주세요."),
         startAt: z
           .string()
           .or(z.date())

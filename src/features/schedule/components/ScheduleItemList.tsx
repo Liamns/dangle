@@ -12,19 +12,16 @@ import AddScheduleModal from "./AddScheduleModal";
 import { useUserStore } from "@/entities/user/store";
 import useSWR from "swr";
 import {
+  ScheduleItemWithSubCategoryModel,
   ScheduleWithItemsModel,
-  ScheduleItemWithContentModel,
 } from "@/entities/schedule/model";
-import {
-  ScheduleContentFormData,
-  ScheduleItemFormData,
-} from "@/entities/schedule/schema";
+import { ScheduleItemFormData } from "@/entities/schedule/schema";
 import modalStyles from "./ScheduleBottomModal.module.scss";
 import imgStyles from "@/shared/styles/images.module.scss";
 import ScheduleItem from "./ScheduleItem";
 
-interface ScheduleContentsProps {
-  schedule?: ScheduleWithItemsModel;
+interface ScheduleItemListProps {
+  schedule: ScheduleWithItemsModel;
   isLoading: boolean;
   error: any;
   openDatePicker?: (initialDate: Date, callback: (date: Date) => void) => void;
@@ -32,7 +29,7 @@ interface ScheduleContentsProps {
   onEmptyAddClick?: () => void;
 }
 
-const ScheduleContents = memo(
+const ScheduleItemList = memo(
   ({
     schedule,
     isLoading,
@@ -40,12 +37,12 @@ const ScheduleContents = memo(
     openDatePicker,
     hasAddBtn = true,
     onEmptyAddClick,
-  }: ScheduleContentsProps) => {
+  }: ScheduleItemListProps) => {
     const [activeItemId, setActiveItemId] = useState<number | null>(null);
     const [isAddMode, setIsAddMode] = useState<boolean>(false);
     const [isEditMode, setIsEditMode] = useState<boolean>(false);
     const [editingItem, setEditingItem] = useState<
-      | (ScheduleItemWithContentModel & {
+      | (ScheduleItemWithSubCategoryModel & {
           scheduleId: number;
           profileId: string;
         })
@@ -69,10 +66,7 @@ const ScheduleContents = memo(
           <Text text="오류가 발생했습니다." color={Colors.error} />
         </InnerBox>
       );
-    if (
-      !schedule ||
-      (schedule.scheduleItems && schedule.scheduleItems.length === 0)
-    )
+    if (!schedule.items || (schedule.items && schedule.items.length === 0))
       return (
         <InnerBox className={modalStyles.emptyContainer}>
           <InnerBox
@@ -120,7 +114,7 @@ const ScheduleContents = memo(
         </InnerBox>
       );
 
-    const allScheduleItems = schedule.scheduleItems
+    const allScheduleItems = schedule.items
       .map((item) => ({
         ...item,
         scheduleId: schedule.id,
@@ -132,7 +126,7 @@ const ScheduleContents = memo(
 
     return (
       <InnerBox
-        className={modalStyles.scheduleContentContainer}
+        className={modalStyles.scheduleItemListContainer}
         justify="start"
       >
         {allScheduleItems.map((item) => (
@@ -169,14 +163,12 @@ const ScheduleContents = memo(
             onClose={() => setIsAddMode(false)}
             scheduleId={schedule.id}
             userId={currentUser.id}
-            onAddScheduleContent={async (
-              scheduleContent: ScheduleContentFormData,
+            onAddScheduleItem={async (
               scheduleItem: Partial<ScheduleItemFormData>,
               isFavorite: boolean,
               userId: string
             ) => {
               console.log("일정 추가:", {
-                scheduleContent,
                 scheduleItem,
                 isFavorite,
                 userId,
@@ -197,17 +189,15 @@ const ScheduleContents = memo(
             userId={currentUser.id}
             isEditMode
             editingItem={editingItem}
-            onEditScheduleContent={async (
+            onEditScheduleItem={async (
               itemId: number,
-              scheduleContent: ScheduleContentFormData,
-              startAt: Date,
+              scheduleItem: Partial<ScheduleItemFormData>,
               isFavorite: boolean
             ) => {
               alert("수정사항 서버 적용 후 mutate 호출");
               console.log("일정 수정:", {
                 itemId,
-                scheduleContent,
-                startAt,
+                scheduleItem,
                 isFavorite,
               });
             }}
@@ -223,6 +213,6 @@ const ScheduleContents = memo(
   }
 );
 
-ScheduleContents.displayName = "ScheduleContents";
+ScheduleItemList.displayName = "ScheduleItemList";
 
-export default ScheduleContents;
+export default ScheduleItemList;

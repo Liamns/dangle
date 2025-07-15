@@ -1,118 +1,89 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 import {
-  CategoryMainModel,
-  CategorySubModel,
-  ScheduleContentModel,
-  ScheduleModel,
   ScheduleWithItemsModel,
-  FavoriteContentModel,
-} from "./model";
+  CategorySubModel,
+} from "@/entities/schedule/model";
 
-// 일정 관련 전체 스토어 상태 타입
-interface ScheduleStoreState {
-  // 카테고리
-  mainCategories: CategoryMainModel[];
-  subCategories: CategorySubModel[];
-  // 일정 컨텐츠
-  scheduleContents: ScheduleContentModel[];
-  favoriteContents: FavoriteContentModel[];
-  // 일정 인스턴스
-  userSchedules: ScheduleWithItemsModel[];
-  // 현재 선택된 일정
-  currentSchedule: ScheduleWithItemsModel | null;
-  // 로딩 상태
-  isLoading: boolean;
-  error: string | null;
+// ===== 스토어 상태 타입 정의 =====
 
-  // 스토어 액션
-  setMainCategories: (categories: CategoryMainModel[]) => void;
-  setSubCategories: (categories: CategorySubModel[]) => void;
-  setScheduleContents: (contents: ScheduleContentModel[]) => void;
-  setFavoriteContents: (favorites: FavoriteContentModel[]) => void;
-  setUserSchedules: (schedules: ScheduleWithItemsModel[]) => void;
-  setCurrentSchedule: (schedule: ScheduleWithItemsModel | null) => void;
-  addFavoriteContent: (favorite: FavoriteContentModel) => void;
-  removeFavoriteContent: (contentId: number) => void;
-  setLoading: (isLoading: boolean) => void;
-  setError: (error: string | null) => void;
+export interface ScheduleStoreState {
+  // 선택된 날짜
+  selectedDate: Date;
+  // 현재 월에 해당하는 일정 목록
+  schedules: ScheduleWithItemsModel[];
+  // 즐겨찾기한 서브 카테고리 목록
+  favoriteSubCategories: CategorySubModel[];
+  // 현재 보고 있는 일정 (상세)
+  currentSchedule: ScheduleWithItemsModel;
+
+  // 액션 함수들
+  setSelectedDate: (date: Date) => void;
+  setSchedules: (schedules: ScheduleWithItemsModel[]) => void;
+  addSchedule: (schedule: ScheduleWithItemsModel) => void;
+  updateSchedule: (schedule: ScheduleWithItemsModel) => void;
+  removeSchedule: (scheduleId: number) => void;
+  setFavoriteSubCategories: (favorites: CategorySubModel[]) => void;
+  addFavoriteSubCategory: (favorite: CategorySubModel) => void;
+  removeFavoriteSubCategory: (subCategoryId: number) => void;
+  setCurrentSchedule: (schedule: ScheduleWithItemsModel) => void;
 }
 
-// 일정 관련 스토어 생성
-export const useScheduleStore = create<ScheduleStoreState>((set) => ({
-  // 초기 상태
-  mainCategories: [],
-  subCategories: [],
-  scheduleContents: [],
-  favoriteContents: [],
-  userSchedules: [],
-  currentSchedule: null,
-  isLoading: false,
-  error: null,
+// ===== 스토어 구현 =====
 
-  // 액션 정의
-  setMainCategories: (categories) => set({ mainCategories: categories }),
-  setSubCategories: (categories) => set({ subCategories: categories }),
-  setScheduleContents: (contents) => set({ scheduleContents: contents }),
-  setFavoriteContents: (favorites) => set({ favoriteContents: favorites }),
-  setUserSchedules: (schedules) => set({ userSchedules: schedules }),
-  setCurrentSchedule: (schedule) => set({ currentSchedule: schedule }),
+export const useScheduleStore = create<ScheduleStoreState>()(
+  devtools(
+    (set) => ({
+      // 초기 상태
+      selectedDate: new Date(),
+      schedules: [],
+      favoriteSubCategories: [],
+      currentSchedule: {},
 
-  // 즐겨찾기 추가
-  addFavoriteContent: (favorite) =>
-    set((state) => ({
-      favoriteContents: [...state.favoriteContents, favorite],
-    })),
+      // 액션 구현
+      setSelectedDate: (date) => set({ selectedDate: date }),
+      setSchedules: (schedules) => set({ schedules }),
+      addSchedule: (schedule) =>
+        set((state) => ({ schedules: [...state.schedules, schedule] })),
+      updateSchedule: (updatedSchedule) =>
+        set((state) => ({
+          schedules: state.schedules.map((s) =>
+            s.id === updatedSchedule.id ? updatedSchedule : s
+          ),
+        })),
+      removeSchedule: (scheduleId) =>
+        set((state) => ({
+          schedules: state.schedules.filter((s) => s.id !== scheduleId),
+        })),
+      setFavoriteSubCategories: (favorites) =>
+        set({ favoriteSubCategories: favorites }),
+      addFavoriteSubCategory: (favorite) =>
+        set((state) => ({
+          favoriteSubCategories: [...state.favoriteSubCategories, favorite],
+        })),
+      removeFavoriteSubCategory: (subCategoryId) =>
+        set((state) => ({
+          favoriteSubCategories: state.favoriteSubCategories.filter(
+            (fav) => fav.id !== subCategoryId
+          ),
+        })),
+      setCurrentSchedule: (schedule) => set({ currentSchedule: schedule }),
+    }),
+    { name: "ScheduleStore" } // Redux DevTools에 표시될 스토어 이름
+  )
+);
 
-  // 즐겨찾기 제거
-  removeFavoriteContent: (contentId) =>
-    set((state) => ({
-      favoriteContents: state.favoriteContents.filter(
-        (favorite) => favorite.contentId !== contentId
-      ),
-    })),
+// ===== 스토어 셀렉터 =====
 
-  // 로딩 상태 설정
-  setLoading: (isLoading) => set({ isLoading }),
+export const selectSelectedDate = (state: ScheduleStoreState) =>
+  state.selectedDate;
 
-  // 에러 설정
-  setError: (error) => set({ error }),
-}));
+export const selectFavoriteSubCategories = (state: ScheduleStoreState) =>
+  state.favoriteSubCategories;
 
-// 카테고리 관련 선택자 함수들
-export const selectMainCategories = (state: ScheduleStoreState) =>
-  state.mainCategories;
-export const selectSubCategories = (state: ScheduleStoreState) =>
-  state.subCategories;
-export const selectSubCategoriesByMain =
-  (mainId: number) => (state: ScheduleStoreState) =>
-    state.subCategories.filter((sub) => sub.mainId === mainId);
+export const selectIsFavoriteSubCategory =
+  (subCategoryId: number) => (state: ScheduleStoreState) =>
+    state.favoriteSubCategories.some((fav) => fav.id === subCategoryId);
 
-// 컨텐츠 관련 선택자 함수들
-export const selectScheduleContents = (state: ScheduleStoreState) =>
-  state.scheduleContents;
-export const selectFavoriteContents = (state: ScheduleStoreState) =>
-  state.favoriteContents;
-export const selectContentsByCategory =
-  (mainId: number, subId?: number) => (state: ScheduleStoreState) => {
-    if (subId) {
-      return state.scheduleContents.filter(
-        (content) => content.mainId === mainId && content.subId === subId
-      );
-    }
-    return state.scheduleContents.filter(
-      (content) => content.mainId === mainId
-    );
-  };
-
-// 일정 관련 선택자 함수들
-export const selectUserSchedules = (state: ScheduleStoreState) =>
-  state.userSchedules;
 export const selectCurrentSchedule = (state: ScheduleStoreState) =>
   state.currentSchedule;
-export const selectIsContentFavorited =
-  (contentId: number) => (state: ScheduleStoreState) =>
-    state.favoriteContents.some((fav) => fav.contentId === contentId);
-
-// 로딩 및 에러 상태 선택자
-export const selectIsLoading = (state: ScheduleStoreState) => state.isLoading;
-export const selectError = (state: ScheduleStoreState) => state.error;

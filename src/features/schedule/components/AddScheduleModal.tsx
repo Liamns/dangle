@@ -8,11 +8,7 @@ import styles from "./AddScheduleModal.module.scss";
 import Close from "@/shared/svgs/close.svg";
 import EmptySchedule from "@/shared/svgs/empty-schedule.svg";
 import CategorySelector from "./CategorySelector";
-import {
-  ScheduleContentFormData,
-  ScheduleItemFormData,
-} from "@/entities/schedule/schema";
-import { ScheduleItemWithContentModel } from "@/entities/schedule/model";
+import { ScheduleItemFormData } from "@/entities/schedule/schema";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Text } from "@/shared/components/texts";
@@ -25,6 +21,7 @@ import {
   mainCategoryIds,
   SubCategory,
 } from "@/entities/schedule/types";
+import { ScheduleItemWithSubCategoryModel } from "@/entities/schedule/model";
 
 /**
  * 일정 추가 모달 컴포넌트 Props
@@ -34,8 +31,7 @@ interface AddScheduleModalProps {
   onClose: () => void;
   scheduleId: number; // 모달을 열 때 필요한 schedule ID
   userId: string; // 현재 로그인한 사용자 ID
-  onAddScheduleContent?: (
-    scheduleContent: ScheduleContentFormData,
+  onAddScheduleItem?: (
     scheduleItem: Partial<ScheduleItemFormData>,
     isFavorite: boolean,
     userId: string
@@ -45,15 +41,14 @@ interface AddScheduleModalProps {
   // 수정 모드 프로퍼티
   isEditMode?: boolean;
   editingItem?:
-    | (ScheduleItemWithContentModel & {
+    | (ScheduleItemWithSubCategoryModel & {
         scheduleId: number;
         profileId: string;
       })
     | null;
-  onEditScheduleContent?: (
+  onEditScheduleItem?: (
     itemId: number,
-    scheduleContent: ScheduleContentFormData,
-    startAt: Date,
+    scheduleItem: Partial<ScheduleItemFormData>,
     isFavorite: boolean
   ) => Promise<void>;
 
@@ -63,7 +58,7 @@ interface AddScheduleModalProps {
 
 /**
  * 일정 추가/수정 모달 컴포넌트
- * 특정 schedule에 새로운 scheduleContent를 추가하거나 기존 일정을 수정하기 위한 모달입니다.
+ * 특정 schedule에 새로운 scheduleItem을 추가하거나 기존 일정을 수정하기 위한 모달입니다.
  */
 
 const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
@@ -71,60 +66,46 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
   onClose,
   scheduleId,
   userId,
-  onAddScheduleContent,
+  onAddScheduleItem,
   onSuccess,
   isEditMode = false,
   editingItem = null,
-  onEditScheduleContent,
+  onEditScheduleItem,
   onDatePickerOpen,
 }) => {
   // 선택된 카테고리 상태 관리
   const [mainCategory, setMainCategory] = useState<MainCategory>(
     isEditMode &&
       editingItem &&
-      editingItem.content &&
-      editingItem.content.mainId !== undefined
-      ? (mainCategories[editingItem.content.mainId] as MainCategory) || "일상"
+      editingItem.subCategory &&
+      editingItem.subCategory.mainId !== undefined
+      ? (mainCategories[editingItem.subCategory.mainId] as MainCategory) ||
+          "일상"
       : "일상"
   );
   const [subCategory, setSubCategory] = useState<SubCategory>(
     isEditMode &&
       editingItem &&
-      editingItem.content &&
-      editingItem.content.mainId !== undefined &&
-      editingItem.content.subId !== undefined
+      editingItem.subCategory &&
+      editingItem.subCategory.mainId !== undefined &&
+      editingItem.subCategory.id !== undefined
       ? (getSubCategoryNameById(
-          editingItem.content.mainId,
-          editingItem.content.subId
+          editingItem.subCategory.mainId,
+          editingItem.subCategory.id
         ) as SubCategory) || "산책"
       : "산책"
   );
 
   // 일정 내용 상태 관리
-  const [scheduleContent, setScheduleContent] =
-    useState<ScheduleContentFormData>({
-      mainId:
-        isEditMode &&
-        editingItem &&
-        editingItem.content &&
-        editingItem.content.mainId !== undefined
-          ? editingItem.content.mainId
-          : mainCategoryIds[mainCategory],
-      subId:
-        isEditMode &&
-        editingItem &&
-        editingItem.content &&
-        editingItem.content.subId !== undefined
-          ? editingItem.content.subId
-          : getSubCategoryId(mainCategory, subCategory),
-      description:
-        isEditMode &&
-        editingItem &&
-        editingItem.content &&
-        editingItem.content.description
-          ? editingItem.content.description
-          : "",
-    });
+  const [scheduleItemData, setScheduleItemData] = useState<Partial<ScheduleItemFormData>>({
+    subCategoryId:
+      isEditMode &&
+      editingItem &&
+      editingItem.subCategory &&
+      editingItem.subCategory.id !== undefined
+        ? editingItem.subCategory.id
+        : getSubCategoryId(mainCategory, subCategory),
+  });
 
   // 일정 시작 날짜/시간 관리
   const [startDate, setStartDate] = useState<Date>(
@@ -153,30 +134,13 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
     setMainCategory(main);
     setSubCategory(sub);
 
-    // 카테고리 변경 시 scheduleContent 상태 업데이트
-    const mainId = mainCategoryIds[main];
+    // 카테고리 변경 시 scheduleItemData 상태 업데이트
     const subId = getSubCategoryId(main, sub);
 
-    setScheduleContent((prev) => ({
+    setScheduleItemData((prev) => ({
       ...prev,
-      mainId,
-      subId,
+      subCategoryId: subId,
     }));
-  };
-
-  // 설명 변경 핸들러
-  const handleDescriptionChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setScheduleContent((prev) => ({
-      ...prev,
-      description: e.target.value,
-    }));
-  };
-
-  // 날짜 변경 핸들러
-  const handleDateChange = (date: Date) => {
-    setStartDate(date);
   };
 
   // 날짜 선택 모달 열기 핸들러
@@ -204,27 +168,20 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
 
       if (
         isEditMode &&
-        onEditScheduleContent &&
+        onEditScheduleItem &&
         editingItem &&
         editingItem.id
       ) {
         // 수정 모드: 기존 일정 아이템 수정
-        await onEditScheduleContent(
+        await onEditScheduleItem(
           editingItem.id,
-          scheduleContent,
-          startDate,
+          { ...scheduleItemData, startAt: startDate },
           isFavorite
         );
-      } else if (onAddScheduleContent) {
+      } else if (onAddScheduleItem) {
         // 추가 모드: 새 일정 추가
-        const scheduleItem: Partial<ScheduleItemFormData> = {
-          scheduleId,
-          startAt: startDate,
-        };
-
-        await onAddScheduleContent(
-          scheduleContent,
-          scheduleItem,
+        await onAddScheduleItem(
+          { ...scheduleItemData, scheduleId, startAt: startDate },
           isFavorite,
           userId
         );
@@ -341,8 +298,8 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
               ? "수정 중..."
               : "등록 중..."
             : isEditMode
-            ? "일정 수정"
-            : "일정 추가"}
+              ? "일정 수정"
+              : "일정 추가"}
         </Button>
       </div>
     </Modal>

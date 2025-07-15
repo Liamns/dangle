@@ -4,7 +4,6 @@ import React, { memo, useState, useEffect } from "react";
 import { InnerBox } from "@/shared/components/layout";
 import { Colors } from "@/shared/consts/colors";
 import Image from "next/image";
-import { ScheduleItemWithContentModel } from "@/entities/schedule/model";
 import {
   getSubCategoryImagePath,
   SubCategory,
@@ -14,16 +13,17 @@ import { Text } from "@/shared/components/texts";
 import EditSvg from "@/shared/svgs/edit.svg";
 import DeleteSvg from "@/shared/svgs/delete.svg";
 import { formatTime } from "@/shared/lib/date";
+import { ScheduleItemWithSubCategoryModel } from "@/entities/schedule/model";
 
 export interface ScheduleItemProps {
-  item: ScheduleItemWithContentModel & {
+  item: ScheduleItemWithSubCategoryModel & {
     scheduleId: number;
     profileId: string;
   };
   isActive: boolean;
   onActivate: () => void;
   onEdit?: (
-    item: ScheduleItemWithContentModel & {
+    item: ScheduleItemWithSubCategoryModel & {
       scheduleId: number;
       profileId: string;
     }
@@ -63,16 +63,16 @@ const ScheduleItem = memo(
               <div className={modalStyles.iconContainer}>
                 <Image
                   src={getSubCategoryImagePath(
-                    item.content.sub.name as SubCategory
+                    item.subCategory.name as SubCategory
                   )}
                   fill
                   sizes="100%"
-                  alt={item.content.sub.name}
+                  alt={item.subCategory.name}
                 />
               </div>
               <div className={modalStyles.itemDivider}></div>
               <Text
-                text={item.content.sub.name}
+                text={item.subCategory.name}
                 fontWeight="bold"
                 color={Colors.black}
               />

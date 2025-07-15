@@ -35,7 +35,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const { profileData } = await req.json();
-    console.log(profileData);
+
     if (!profileData.userId || profileData.userId === EMPTY_PROFILE.id) {
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },

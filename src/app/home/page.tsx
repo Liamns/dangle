@@ -9,6 +9,7 @@ import { useUserStore } from "@/entities/user/store";
 import Onboarding from "@/features/onboarding/Onboarding";
 import { useProfile } from "@/features/profile/hooks/useProfiles";
 import { useAnniversaries } from "@/features/anniversary/hooks/useAnniversaries";
+import { useSchedules } from "@/features/schedule/hooks/useSchedules";
 
 /**
  * 홈 페이지 컴포넌트
@@ -22,6 +23,7 @@ export default function Home() {
   // 반환된 profiles, isProcessing 등은 여기서 직접 사용하지 않습니다.
   useProfile();
   useAnniversaries();
+  useSchedules();
 
   /**
    * InnerBox 아래 공간의 높이를 계산하는 함수

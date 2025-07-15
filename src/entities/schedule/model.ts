@@ -5,8 +5,7 @@
 
 import { z } from "zod";
 import { uuidSchema } from "@/entities/user/model";
-import { MainCategory, mainCategories } from "@/entities/schedule/types";
-import { favoriteScheduleSchema } from "./schema";
+import { mainCategories } from "@/entities/schedule/types";
 
 // ===== 데이터베이스 모델 스키마 =====
 
@@ -34,16 +33,6 @@ export const categoryWithSubsModelSchema = categoryMainModelSchema.extend({
 
 export type CategoryWithSubsModel = z.infer<typeof categoryWithSubsModelSchema>;
 
-// 템플릿(일정 컨텐츠) 모델 (서버에서 불러온 데이터)
-export const scheduleContentModelSchema = z.object({
-  id: z.number().int().positive(),
-  mainId: z.number().int().positive(),
-  subId: z.number().int().positive(),
-  description: z.string().nullable().optional(),
-});
-
-export type ScheduleContentModel = z.infer<typeof scheduleContentModelSchema>;
-
 // 유저가 만든 일정 인스턴스 모델 (서버에서 불러온 데이터)
 export const scheduleModelSchema = z.object({
   id: z.number().int().positive(),
@@ -57,11 +46,11 @@ export const scheduleModelSchema = z.object({
 
 export type ScheduleModel = z.infer<typeof scheduleModelSchema>;
 
-// 일정 ↔ 템플릿 연결 모델 (각 항목별 시작 시간 포함)
+// 일정 ↔ 서브 카테고리 연결 모델 (각 항목별 시작 시간 포함)
 export const scheduleItemModelSchema = z.object({
   id: z.number().int().positive(),
   scheduleId: z.number().int().positive(),
-  contentId: z.number().int().positive(),
+  subCategoryId: z.number().int().positive(),
   startAt: z.date(),
 });
 
@@ -87,30 +76,28 @@ export type FavoriteSubCategoryModel = z.infer<
 
 // ===== 확장 모델 스키마 =====
 
-// 카테고리와 함께 확장된 일정 컨텐츠 모델
-export const extendedScheduleContentModelSchema =
-  scheduleContentModelSchema.extend({
-    main: categoryMainModelSchema,
-    sub: categorySubModelSchema,
-  });
+// 메인 카테고리가 포함된 확장 서브 카테고리 모델
+export const extendedCategorySubModelSchema = categorySubModelSchema.extend({
+  main: categoryMainModelSchema,
+});
 
-export type ExtendedScheduleContentModel = z.infer<
-  typeof extendedScheduleContentModelSchema
+export type ExtendedCategorySubModel = z.infer<
+  typeof extendedCategorySubModelSchema
 >;
 
-// 컨텐츠가 포함된 일정 아이템 모델
-export const scheduleItemWithContentModelSchema =
+// 서브 카테고리가 포함된 일정 아이템 모델
+export const scheduleItemWithSubCategoryModelSchema =
   scheduleItemModelSchema.extend({
-    content: extendedScheduleContentModelSchema,
+    subCategory: extendedCategorySubModelSchema,
   });
 
-export type ScheduleItemWithContentModel = z.infer<
-  typeof scheduleItemWithContentModelSchema
+export type ScheduleItemWithSubCategoryModel = z.infer<
+  typeof scheduleItemWithSubCategoryModelSchema
 >;
 
 // 아이템이 포함된 일정 모델
 export const scheduleWithItemsModelSchema = scheduleModelSchema.extend({
-  scheduleItems: z.array(scheduleItemWithContentModelSchema),
+  items: z.array(scheduleItemWithSubCategoryModelSchema),
   // isFavorite은 이미 scheduleModelSchema에 포함됨
 });
 
@@ -124,5 +111,5 @@ export type ScheduleWithItemsModel = z.infer<
 export type NewScheduleItem = {
   // 사용자가 설정 전까지 startAt은 optional 또는 null일 수 있음
   startAt?: Date | null;
-  content: Omit<ScheduleItemWithContentModel["content"], "id">;
+  subCategory: ExtendedCategorySubModel;
 };
