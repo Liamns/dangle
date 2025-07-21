@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useSchedules } from "../hooks/useSchedules";
 import { useScheduleStore } from "@/entities/schedule/store";
 import ScheduleItemList from "./ScheduleItemList";
+import { ScheduleWithItemsModel } from "@/entities/schedule/model";
 
 /**
  * ScheduleBottomModal Props 인터페이스
@@ -70,12 +71,21 @@ export default function ScheduleBottomModal({
     [datePickerCallback, closeDatePicker]
   );
 
-  const { currentSchedule: schedule } = useScheduleStore();
-  const { fetchError: error, isProcessing: isLoading } = useSchedules();
+  const {
+    fetchError: error,
+    isProcessing: isLoading,
+    schedule,
+  }: {
+    fetchError: any;
+    isProcessing: boolean;
+    schedule: ScheduleWithItemsModel | undefined;
+  } = useSchedules();
 
   // empty 상태 체크: scheduleItems가 없으면 빈 상태
   const isEmpty =
-    !isLoading && !error && (!schedule?.items || schedule.items.length === 0);
+    !isLoading &&
+    !error &&
+    (schedule === undefined || !schedule?.items || schedule.items.length === 0);
 
   /**
    * 공유 버튼 클릭 핸들러
@@ -107,13 +117,14 @@ export default function ScheduleBottomModal({
       />
       <div className={cn(modalStyles.scrollable, isEmpty && modalStyles.empty)}>
         <ScheduleItemList
-          schedule={schedule}
+          schedule={schedule!}
           isLoading={isLoading}
           error={error}
           openDatePicker={openDatePicker}
           onEmptyAddClick={() => {
             router.push("/schedule?edit=true");
           }}
+          selectedDate={selectedDate}
         />
       </div>
 

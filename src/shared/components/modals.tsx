@@ -2,7 +2,6 @@
 import { ReactNode, useEffect, useState, useRef, useCallback } from "react";
 import styles from "../styles/modal.module.scss";
 import { createPortal } from "react-dom";
-import Footer from "@/app/login/footer";
 import { alignType, directionType, justifyType } from "../types/layout";
 
 /**
@@ -435,6 +434,7 @@ export interface ModalProps {
   variant?: "center" | "bottom";
   children: React.ReactNode;
   style?: React.CSSProperties;
+  footer?: React.ReactNode;
 }
 
 export default function Modal({
@@ -443,11 +443,19 @@ export default function Modal({
   variant = "center",
   children,
   style = {},
+  footer,
 }: ModalProps) {
   // 내부 상태로 isOpen 값을 복사하여 관리
   const [internalIsOpen, setInternalIsOpen] = useState(isOpen);
   const [isClosing, setIsClosing] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [mounted, setMounted] = useState(false); // mounted 상태 추가
+
+  useEffect(() => {
+    setMounted(true); // 컴포넌트가 클라이언트에 마운트되면 true로 설정
+    return () => setMounted(false);
+  }, []);
 
   // 외부에서 전달된 isOpen 값이 변경될 때 내부 상태 동기화
   useEffect(() => {
@@ -504,6 +512,9 @@ export default function Modal({
   // 모달이 실제로 닫혀있고 애니메이션도 진행 중이 아닐 경우 null 반환
   if (!internalIsOpen && !isClosing) return null;
 
+  // mounted가 false이면 (SSR 중이거나 클라이언트 마운트 전) null 반환
+  if (!mounted) return null;
+
   // Determine animation classes
   const backdropClass = `${styles.backdrop} ${
     isClosing ? styles.backdropClosing : ""
@@ -527,7 +538,7 @@ export default function Modal({
         style={style}
       >
         {children}
-        {variant === "bottom" && <Footer />}
+        {variant === "bottom" && footer}
       </div>
     </div>,
     document.body

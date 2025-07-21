@@ -15,14 +15,15 @@ import { useRouter } from "next/navigation";
 import { encrypt } from "@/shared/lib/crypto";
 import RegisterFavoriteScheduleModal from "./RegisterFavoriteScheduleModal";
 import { FavoriteScheduleFormData } from "@/entities/schedule/schema";
-import { useSchedules } from "../hooks/useSchedules";
-import { useScheduleStore } from "@/entities/schedule/store";
+import { ScheduleWithItemsModel } from "@/entities/schedule/model";
 
 interface ScheduleContentProps {
   isEditMode: boolean;
   setIsEditMode: (isEditMode: boolean) => void;
   selectedDate: Date;
   openDatePicker: (initialDate: Date, callback: (date: Date) => void) => void;
+  schedule?: ScheduleWithItemsModel;
+  isLoading: boolean;
 }
 
 /**
@@ -34,6 +35,8 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   setIsEditMode,
   selectedDate,
   openDatePicker,
+  schedule,
+  isLoading,
 }) => {
   const router = useRouter();
 
@@ -49,8 +52,7 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
 
   // fetch schedule by date (single)
   const currentProfile = useProfileStore((s) => s.currentProfile);
-  const { currentSchedule: schedule } = useScheduleStore();
-  const { isProcessing: isLoading, fetchError: error } = useSchedules();
+  const error = null; // You might want to handle errors passed from props as well
 
   // 일정 공유 버튼 클릭 핸들러
   const handleShareClick = useCallback(async () => {
@@ -88,12 +90,11 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
 
   // empty 상태 체크
   const isEmpty =
-    (!isLoading && !error && schedule.items && schedule.items.length === 0) ||
-    !schedule.items;
+    !isLoading &&
+    !error &&
+    (!schedule || !schedule.items || schedule.items.length === 0);
 
-  const [isFavorite, setIsFavorite] = useState<boolean>(
-    schedule?.isFavorite ?? false
-  );
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
   useEffect(() => {
     // schedule이 변경될 때마다 즐겨찾기 상태 업데이트
     setIsFavorite(schedule?.isFavorite ?? false);
@@ -198,15 +199,16 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
 
       <div className={cn(styles.scrollable, isEmpty && styles.empty)}>
         <ScheduleItemList
-          schedule={schedule}
+          schedule={schedule!}
           isLoading={isLoading}
           error={error}
           openDatePicker={openDatePicker}
           hasAddBtn={false}
           onEmptyAddClick={handleEmptyClick}
+          selectedDate={selectedDate}
         />
 
-        {schedule.items && schedule.items.length > 0 && (
+        {schedule && schedule.items && schedule.items.length > 0 && (
           <div className={styles.shareBtn} onClick={handleShareClick}>
             <Text text="일정 공유하기" fontWeight="bold" color={Colors.white} />
           </div>

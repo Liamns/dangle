@@ -27,8 +27,6 @@ interface ScheduleAddBoxProps {
 
 const ScheduleAddBox = memo(({ selectedDate }: ScheduleAddBoxProps) => {
   const { currentProfile, _hasHydrated } = useProfileStore();
-  const { currentSchedule: schedule } = useScheduleStore();
-  const { isProcessing: isLoading, fetchError: error } = useSchedules();
   const router = useRouter();
   const [selectedMain, setSelectedMain] = useState<MainCategory>(
     mainCategories[0]
@@ -51,7 +49,18 @@ const ScheduleAddBox = memo(({ selectedDate }: ScheduleAddBoxProps) => {
     }
   }, [currentProfile, _hasHydrated]);
 
-  const { addSchedule, addError } = useSchedules();
+  const {
+    addSchedule,
+    addError,
+    schedule,
+    revalidateSchedule,
+    isProcessing: isLoading,
+    fetchError: error,
+  } = useSchedules(selectedDate.toLocaleDateString("en-CA"));
+
+  useEffect(() => {
+    revalidateSchedule();
+  }, [selectedDate]);
 
   const handleMainSelect = useCallback((category: MainCategory) => {
     setSelectedMain(category);
@@ -74,12 +83,12 @@ const ScheduleAddBox = memo(({ selectedDate }: ScheduleAddBoxProps) => {
 
   const handleConfirm = useCallback(async () => {
     // TODO: integrate persistence API
-    console.log("Confirm modifications:", modifications);
     await addSchedule({
       inputData: modifications,
       date: selectedDate,
       profileId: currentProfile!.id,
     });
+    revalidateSchedule();
     router.replace("/schedule");
   }, [modifications]);
 
@@ -124,6 +133,7 @@ const ScheduleAddBox = memo(({ selectedDate }: ScheduleAddBoxProps) => {
         modifications={modifications}
         onModify={handleModify}
         schedule={schedule}
+        selectedDate={selectedDate}
       />
 
       <ScheduleEditConfirmBtns

@@ -30,7 +30,7 @@ interface ProfileState {
   setProfiles: (profiles: ProfileModel[]) => void;
   setCurrentProfile: (profile: ProfileModel | null) => void;
   addProfile: (profile: ProfileModel) => void;
-  updateProfile: (profile: ProfileModel) => void;
+  updateProfile: (profile: Partial<ProfileModel>) => void;
   removeProfile: (profileId: string) => void;
   clearProfiles: () => void;
   updateRegisteringProfile: (
@@ -40,6 +40,8 @@ interface ProfileState {
     }
   ) => void;
   setHasHydrated: (hydrated: boolean) => void;
+  isFirst: boolean;
+  setIsFirst: (isFirst: boolean) => void;
 }
 
 export const useProfileStore = create(
@@ -49,8 +51,10 @@ export const useProfileStore = create(
       currentProfile: null,
       registeringProfile: { ...EMPTY_PROFILE, tags: [], username: "" },
       _hasHydrated: false,
+      isFirst: true,
 
       setHasHydrated: (hydrated) => set({ _hasHydrated: hydrated }),
+      setIsFirst: (isFirst) => set({ isFirst }),
 
       setProfiles: (profiles) => {
         const currentProfile = get().currentProfile;
@@ -76,15 +80,21 @@ export const useProfileStore = create(
       },
 
       updateProfile: (profile) =>
-        set((state) => ({
-          profiles: state.profiles.map((p) =>
+        set((state) => {
+          const updatedProfiles = state.profiles.map((p) =>
             p.id === profile.id ? { ...p, ...profile } : p
-          ),
-          currentProfile:
-            state.currentProfile?.id === profile.id
-              ? { ...state.currentProfile, ...profile }
-              : state.currentProfile,
-        })),
+          );
+
+          let updatedCurrentProfile = state.currentProfile;
+          if (state.currentProfile && state.currentProfile.id === profile.id) {
+            updatedCurrentProfile = { ...state.currentProfile, ...profile } as ProfileModel;
+          }
+
+          return {
+            profiles: updatedProfiles,
+            currentProfile: updatedCurrentProfile,
+          };
+        }),
 
       removeProfile: (profileId) =>
         set((state) => {

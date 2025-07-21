@@ -5,7 +5,6 @@ import { useProfileStore } from "@/entities/profile/store";
 export const mockDogProfile: ProfileModel = {
   id: "22222222-2222-2222-2222-222222222222",
   userId: "11111111-1111-1111-1111-111111111111",
-  username: "테스트유저",
   petname: "댕댕이",
   petAge: "2023-05-15", // yyyy-mm-dd 형식
   petWeight: 5.5,
@@ -40,7 +39,6 @@ export const mockDogProfile: ProfileModel = {
 export const mockCatProfile: ProfileModel = {
   id: "44444444-4444-4444-4444-444444444444",
   userId: "11111111-1111-1111-1111-111111111111",
-  username: "테스트유저",
   petname: "냥냥이",
   petAge: "2022-03-10", // yyyy-mm-dd 형식
   petWeight: 3.2,

@@ -9,7 +9,7 @@ import { Colors } from "@/shared/consts/colors";
 import Image from "next/image";
 import {
   ScheduleWithItemsModel,
-  ScheduleItemWithContentModel,
+  ScheduleItemWithSubCategoryModel,
 } from "@/entities/schedule/model";
 import MaleSvg from "@/shared/svgs/male.svg";
 import FemaleSvg from "@/shared/svgs/female.svg";
@@ -53,8 +53,8 @@ function ScheduleViewer() {
         const parsed = JSON.parse(decryptedText) as SharedScheduleData;
         setScheduleData(parsed);
         // scheduleItems date consistency check (Asia/Seoul 기준)
-        const ymds = parsed.schedule.scheduleItems.map(
-          (item: ScheduleItemWithContentModel) =>
+        const ymds = parsed.schedule.items.map(
+          (item: ScheduleItemWithSubCategoryModel) =>
             new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(
               new Date(item.startAt)
             )
@@ -163,10 +163,10 @@ function ScheduleViewer() {
           />
           <Spacer height="12" />
           <div className={styles.scheduleContainer}>
-            {scheduleData.schedule.scheduleItems.length > 0 ? (
-              scheduleData.schedule.scheduleItems.map((item) => {
+            {scheduleData.schedule.items.length > 0 ? (
+              scheduleData.schedule.items.map((item) => {
                 const url = getSubCategoryImagePath(
-                  item.content.sub.name as SubCategory
+                  item.subCategory.name as SubCategory
                 );
 
                 const time = formatTime(new Date(item.startAt));
@@ -182,7 +182,7 @@ function ScheduleViewer() {
                       />
                       <div className={styles.divider}></div>
                       <Text
-                        text={item.content.sub.name}
+                        text={item.subCategory.name}
                         fontWeight="bold"
                         color={Colors.black}
                       />

@@ -13,6 +13,7 @@ import { AuthNumberFormData, authNumberFormSchema } from "@/entities/user/schema
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import LoadingOverlay from "@/shared/components/LoadingOverlay";
+import Footer from "@/app/login/footer";
 
 interface AuthCodeModalProps {
   isOpen: boolean;
@@ -59,7 +60,12 @@ export default function AuthCodeModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} variant="bottom">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      variant="bottom"
+      footer={<Footer />}
+    >
       {(isVerifying || isResending) && (
         <LoadingOverlay isLoading={isVerifying || isResending} />
       )}

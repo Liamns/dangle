@@ -69,12 +69,12 @@ export function getCategoryInfo(
   mainName: MainCategory | null;
   subName: string | null;
 } {
-  const mainName = (mainCategories[mainCategoryId] as MainCategory) || null;
+  const mainName = (mainCategories[mainCategoryId - 1] as MainCategory) || null;
   if (!mainName) {
     return { mainName: null, subName: null };
   }
 
-  const subName = getSubCategoryNameById(mainCategoryId, subCategoryId);
+  const subName = getSubCategoryNameById(subCategoryId);
   return { mainName, subName };
 }
 
@@ -114,14 +114,17 @@ export function getSubCategoriesForUI(
 export function groupItemsBySchedule(
   items: ScheduleItemModel[]
 ): Record<number, ScheduleItemModel[]> {
-  return items.reduce((acc, item) => {
-    const { scheduleId } = item;
-    if (!acc[scheduleId]) {
-      acc[scheduleId] = [];
-    }
-    acc[scheduleId].push(item);
-    return acc;
-  }, {} as Record<number, ScheduleItemModel[]>);
+  return items.reduce(
+    (acc, item) => {
+      const { scheduleId } = item;
+      if (!acc[scheduleId]) {
+        acc[scheduleId] = [];
+      }
+      acc[scheduleId].push(item);
+      return acc;
+    },
+    {} as Record<number, ScheduleItemModel[]>
+  );
 }
 
 // icon 값에 따른 이미지 파일명 반환 함수

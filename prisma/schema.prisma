@@ -87,6 +87,7 @@ model Schedule {
   icon        Int?
   addedAt     DateTime?
   items       ScheduleItem[]
+  @@unique([profileId, date])
 }
 
 model ScheduleItem {
@@ -95,7 +96,8 @@ model ScheduleItem {
   scheduleId    Int
   subCategory   CategorySub @relation(fields: [subCategoryId], references: [id])
   subCategoryId Int
-  startAt       DateTime    @db.Date
+  startAt       DateTime    
+  @@unique([scheduleId, subCategoryId])
 }
 
 model FavoriteSubCategory {

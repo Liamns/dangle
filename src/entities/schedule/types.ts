@@ -17,12 +17,12 @@ export type MainCategory = (typeof mainCategories)[number];
 
 // 메인 카테고리 ID 맵핑 (숫자 인덱스용)
 export const mainCategoryIds: Record<MainCategory, number> = {
-  건강: 0,
-  기념일: 1,
-  교육: 2,
-  모임: 3,
-  외출: 4,
-  일상: 5,
+  건강: 1,
+  기념일: 2,
+  교육: 3,
+  모임: 4,
+  외출: 5,
+  일상: 6,
 };
 
 // 서브 카테고리 정의 - 건강관리
@@ -88,49 +88,49 @@ export type OutingSubCategory = (typeof outingSubCategories)[number];
 
 // 서브 카테고리 ID 맵핑
 export const healthSubCategoryIds: Record<HealthSubCategory, number> = {
-  건강체크: 0,
-  "영양제 섭취": 1,
-  예방접종: 2,
-  체중체크: 3,
+  건강체크: 1,
+  "영양제 섭취": 2,
+  예방접종: 3,
+  체중체크: 4,
 };
 
 export const educationSubCategoryIds: Record<EducationSubCategory, number> = {
-  "교육 기타": 0,
-  "배변 훈련": 1,
-  "사회화 훈련": 2,
-  "유치원 등원": 3,
+  "교육 기타": 6,
+  "배변 훈련": 7,
+  "사회화 훈련": 8,
+  "유치원 등원": 9,
 };
 
 export const dailySubCategoryIds: Record<DailySubCategory, number> = {
-  간식: 0,
-  놀이: 1,
-  목욕: 2,
-  미용실: 3,
-  복용약: 4,
-  산책: 5,
-  식사: 6,
-  실외배변: 7,
-  "일상 기타": 8,
+  간식: 19,
+  놀이: 20,
+  목욕: 21,
+  미용실: 22,
+  복용약: 23,
+  산책: 24,
+  식사: 25,
+  실외배변: 26,
+  "일상 기타": 27,
 };
 
 export const anniversarySubCategoryIds: Record<AnniversarySubCategory, number> =
   {
-    생일: 0,
+    생일: 5,
   };
 
 export const meetingSubCategoryIds: Record<MeetingSubCategory, number> = {
-  동네모임: 0,
-  산책모임: 1,
-  친구모임: 2,
+  동네모임: 10,
+  산책모임: 11,
+  친구모임: 12,
 };
 
 export const outingSubCategoryIds: Record<OutingSubCategory, number> = {
-  동물병원: 0,
-  애견카페: 1,
-  애견호텔: 2,
-  여행: 3,
-  "외출 기타": 4,
-  운동장: 5,
+  동물병원: 13,
+  애견카페: 14,
+  애견호텔: 15,
+  여행: 16,
+  "외출 기타": 17,
+  운동장: 18,
 };
 
 // 모든 서브 카테고리 타입
@@ -183,18 +183,6 @@ export function getSubCategoryId(
     default:
       return -1;
   }
-}
-
-// 메인 카테고리 ID와 서브 카테고리 ID로 서브 카테고리 이름을 찾는 함수
-export function getSubCategoryNameById(
-  mainCategoryId: number,
-  subCategoryId: number
-): string | null {
-  const mainCategory = mainCategories[mainCategoryId];
-  if (!mainCategory) return null;
-
-  const subCategories = subCategoriesByMain[mainCategory];
-  return subCategories[subCategoryId] || null;
 }
 
 // 메인 카테고리별 모든 서브 카테고리를 ID와 이름 쌍 배열로 반환하는 함수
@@ -250,20 +238,98 @@ export const subCategoryToImageName: Record<SubCategory, string> = {
   운동장: "dog-park",
 };
 
-// 서브 카테고리에 해당하는 이미지 경로를 반환하는 함수
+// 모든 서브 카테고리 ID와 이름을 매핑하는 객체 (ID -> 이름)
+export const allSubCategoryNamesById: Record<number, SubCategory> = {
+  ...Object.fromEntries(
+    Object.entries(healthSubCategoryIds).map(([name, id]) => [
+      id,
+      name as HealthSubCategory,
+    ])
+  ),
+  ...Object.fromEntries(
+    Object.entries(educationSubCategoryIds).map(([name, id]) => [
+      id,
+      name as EducationSubCategory,
+    ])
+  ),
+  ...Object.fromEntries(
+    Object.entries(dailySubCategoryIds).map(([name, id]) => [
+      id,
+      name as DailySubCategory,
+    ])
+  ),
+  ...Object.fromEntries(
+    Object.entries(anniversarySubCategoryIds).map(([name, id]) => [
+      id,
+      name as AnniversarySubCategory,
+    ])
+  ),
+  ...Object.fromEntries(
+    Object.entries(meetingSubCategoryIds).map(([name, id]) => [
+      id,
+      name as MeetingSubCategory,
+    ])
+  ),
+  ...Object.fromEntries(
+    Object.entries(outingSubCategoryIds).map(([name, id]) => [
+      id,
+      name as OutingSubCategory,
+    ])
+  ),
+};
+
+/**
+ * 서브 카테고리 ID만으로 서브 카테고리 이름을 찾는 함수
+ * @param subCategoryId - 찾고자 하는 서브 카테고리의 ID
+ * @returns 해당하는 서브 카테고리 이름 또는 찾지 못한 경우 null
+ */
+export function getSubCategoryNameById(
+  subCategoryId: number
+): SubCategory | null {
+  return allSubCategoryNamesById[subCategoryId] ?? null;
+}
+
+/**
+ *
+ * @param subCategory - 서브카테고리의 name
+ * @returns 서브 카테고리에 해당하는 이미지 경로를 반환하는 함수
+ */
 export function getSubCategoryImagePath(subCategory: SubCategory): string {
   const imageName = subCategoryToImageName[subCategory];
   return `/images/schedule/${imageName}.png`;
 }
 
-// 메인 카테고리와 서브 카테고리 ID로 이미지 경로를 반환하는 함수
+/**
+ *
+ * @param subCategoryId
+ * @returns 메인 카테고리와 서브 카테고리 ID로 이미지 경로를 반환하는 함수
+ */
 export function getSubCategoryImagePathById(
   mainCategoryId: number,
   subCategoryId: number
 ): string | null {
-  const subCategoryName = getSubCategoryNameById(mainCategoryId, subCategoryId);
+  const subCategoryName = getSubCategoryNameById(subCategoryId);
   if (!subCategoryName) return null;
 
   const imageName = subCategoryToImageName[subCategoryName as SubCategory];
   return imageName ? `/images/schedule/${imageName}.png` : null;
+}
+
+// 모든 서브 카테고리 이름을 ID에 매핑하는 객체 (이름 -> ID)
+export const allSubCategoryIdsByName: Record<SubCategory, number> = {
+  ...healthSubCategoryIds,
+  ...educationSubCategoryIds,
+  ...dailySubCategoryIds,
+  ...anniversarySubCategoryIds,
+  ...meetingSubCategoryIds,
+  ...outingSubCategoryIds,
+};
+
+/**
+ * 서브 카테고리 이름으로 ID를 찾는 함수
+ * @param subCategoryName - 찾고자 하는 서브 카테고리의 이름
+ * @returns 해당하는 서브 카테고리 ID 또는 찾지 못한 경우 null
+ */
+export function getSubIdByName(subCategoryName: SubCategory): number | null {
+  return allSubCategoryIdsByName[subCategoryName] ?? null;
 }

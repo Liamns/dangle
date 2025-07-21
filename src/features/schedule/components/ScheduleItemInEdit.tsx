@@ -41,7 +41,7 @@ const ScheduleItemInEdit = memo(
           {isActive && startAt && (
             <>
               <Text text="시작시간" color={Colors.black} />
-              <Text text={formatTime(startAt)} color={Colors.black} />
+              <Text text={formatTime(new Date(startAt))} color={Colors.black} />
             </>
           )}
           {!isActive && <Text text="설정하기" color={Colors.invalid} />}

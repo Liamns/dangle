@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
@@ -12,6 +12,7 @@ import AddScheduleModal from "./AddScheduleModal";
 import { useUserStore } from "@/entities/user/store";
 import useSWR from "swr";
 import {
+  NewScheduleItem,
   ScheduleItemWithSubCategoryModel,
   ScheduleWithItemsModel,
 } from "@/entities/schedule/model";
@@ -19,6 +20,10 @@ import { ScheduleItemFormData } from "@/entities/schedule/schema";
 import modalStyles from "./ScheduleBottomModal.module.scss";
 import imgStyles from "@/shared/styles/images.module.scss";
 import ScheduleItem from "./ScheduleItem";
+import { useSchedules } from "../hooks/useSchedules";
+import { useProfileStore } from "@/entities/profile/store";
+import { getSubCategoryNameById } from "@/entities/schedule/types";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 interface ScheduleItemListProps {
   schedule: ScheduleWithItemsModel;
@@ -27,6 +32,7 @@ interface ScheduleItemListProps {
   openDatePicker?: (initialDate: Date, callback: (date: Date) => void) => void;
   hasAddBtn?: boolean;
   onEmptyAddClick?: () => void;
+  selectedDate: Date;
 }
 
 const ScheduleItemList = memo(
@@ -37,6 +43,7 @@ const ScheduleItemList = memo(
     openDatePicker,
     hasAddBtn = true,
     onEmptyAddClick,
+    selectedDate,
   }: ScheduleItemListProps) => {
     const [activeItemId, setActiveItemId] = useState<number | null>(null);
     const [isAddMode, setIsAddMode] = useState<boolean>(false);
@@ -48,8 +55,69 @@ const ScheduleItemList = memo(
         })
       | null
     >(null);
-    const currentUser = useUserStore((state) => state.currentUser);
-    const { mutate } = useSWR("todaySchedules");
+    const { currentProfile } = useProfileStore();
+    const {
+      revalidateSchedule,
+      updateSchedule,
+      updateError,
+      addSchedule,
+      addError,
+      deleteError,
+      deleteScheduleItem,
+    } = useSchedules(selectedDate.toLocaleDateString("en-CA"));
+
+    const handleAdd = useCallback(
+      async (
+        scheduleItem: NewScheduleItem,
+        isFavorite: boolean,
+        profileId: string,
+        date: Date | string
+      ) => {
+        const typed = scheduleItem as NewScheduleItem;
+        const subName = getSubCategoryNameById(typed.subCategory.id);
+        if (!subName) {
+          alert(COMMON_MESSAGE.WRONG_ACCESS);
+          return;
+        }
+        const inputData = {
+          [subName]: { ...typed, isFavorite: isFavorite },
+        };
+        await addSchedule({
+          inputData: inputData,
+          profileId: profileId,
+          date: date,
+        });
+      },
+      [currentProfile]
+    );
+
+    const handleEdit = useCallback(
+      async (
+        itemId: number,
+        scheduleItem: Partial<ScheduleItemFormData>,
+        isFavorite: boolean
+      ) => {
+        await updateSchedule({
+          itemId: itemId,
+          item: scheduleItem as Omit<ScheduleItemFormData, "scheduleId">,
+          isFavorite: isFavorite,
+        });
+      },
+      [schedule]
+    );
+
+    const handleDelete = useCallback(
+      async (item: { scheduleId: number; subId: number }) => {
+        if (window.confirm("정말로 이 일정을 삭제하시겠습니까?")) {
+          await deleteScheduleItem({
+            scheduleId: item.scheduleId,
+            subId: item.subId,
+          });
+          revalidateSchedule();
+        }
+      },
+      [schedule]
+    );
 
     if (isLoading) return <LoadingOverlay isLoading={isLoading} />;
     if (error)
@@ -66,7 +134,11 @@ const ScheduleItemList = memo(
           <Text text="오류가 발생했습니다." color={Colors.error} />
         </InnerBox>
       );
-    if (!schedule.items || (schedule.items && schedule.items.length === 0))
+    if (
+      !schedule ||
+      !schedule.items ||
+      (schedule.items && schedule.items.length === 0)
+    )
       return (
         <InnerBox className={modalStyles.emptyContainer}>
           <InnerBox
@@ -140,6 +212,7 @@ const ScheduleItemList = memo(
               setIsEditMode(true);
               setActiveItemId(null);
             }}
+            onDelete={handleDelete}
           />
         ))}
         {hasAddBtn && (
@@ -157,52 +230,31 @@ const ScheduleItemList = memo(
             </InnerBox>
           </div>
         )}
-        {currentUser && (
+        {currentProfile && (
           <AddScheduleModal
             isOpen={isAddMode}
             onClose={() => setIsAddMode(false)}
             scheduleId={schedule.id}
-            userId={currentUser.id}
-            onAddScheduleItem={async (
-              scheduleItem: Partial<ScheduleItemFormData>,
-              isFavorite: boolean,
-              userId: string
-            ) => {
-              console.log("일정 추가:", {
-                scheduleItem,
-                isFavorite,
-                userId,
-              });
-            }}
+            profileId={currentProfile.id}
+            onAddScheduleItem={handleAdd}
             onSuccess={() => {
-              mutate();
+              revalidateSchedule();
               setIsAddMode(false);
             }}
             onDatePickerOpen={openDatePicker!}
           />
         )}
-        {isEditMode && editingItem && schedule && currentUser && (
+        {isEditMode && editingItem && schedule && currentProfile && (
           <AddScheduleModal
             isOpen={isEditMode}
             onClose={() => setIsEditMode(false)}
             scheduleId={editingItem.scheduleId}
-            userId={currentUser.id}
+            profileId={currentProfile.id}
             isEditMode
             editingItem={editingItem}
-            onEditScheduleItem={async (
-              itemId: number,
-              scheduleItem: Partial<ScheduleItemFormData>,
-              isFavorite: boolean
-            ) => {
-              alert("수정사항 서버 적용 후 mutate 호출");
-              console.log("일정 수정:", {
-                itemId,
-                scheduleItem,
-                isFavorite,
-              });
-            }}
+            onEditScheduleItem={handleEdit}
             onSuccess={() => {
-              mutate();
+              revalidateSchedule();
               setIsEditMode(false);
             }}
             onDatePickerOpen={openDatePicker!}

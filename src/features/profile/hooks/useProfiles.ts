@@ -40,9 +40,27 @@ async function registerProfileFetcher(
   return response.json();
 }
 
+async function updateProfileFetcher(
+  url: string,
+  { arg }: { arg: { inputData: ProfileModel } }
+) {
+  const response = await fetch(url, {
+    headers: commonHeader,
+    method: "PATCH",
+    body: JSON.stringify(arg),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || PROFILE_ERROR_MESSAGE.FAIL_UPDATE);
+  }
+
+  return response.json();
+}
+
 export function useProfile() {
   const userId = useUserStore((state) => state.currentUser?.id);
-  const { setProfiles } = useProfileStore();
+  const { setProfiles, currentProfile, setCurrentProfile } = useProfileStore();
 
   const {
     data: profiles,
@@ -61,13 +79,32 @@ export function useProfile() {
     }
   }, [profiles, setProfiles]);
 
+  useEffect(() => {
+    if (profiles) {
+      if (currentProfile) {
+        const found = profiles.find((it) => it.id === currentProfile.id);
+        if (found) {
+          setCurrentProfile(found);
+        }
+      } else {
+        setCurrentProfile(profiles[0]);
+      }
+    }
+  }, [profiles, setCurrentProfile]);
+
   const {
     trigger: registerProfile,
     isMutating: isRegistering,
     error: registerError,
   } = useSWRMutation("/api/profile", registerProfileFetcher);
 
-  const isProcessing = isProfileLoading || isRegistering;
+  const {
+    trigger: updateProfile,
+    isMutating: isUpdating,
+    error: updateError,
+  } = useSWRMutation("/api/profile", updateProfileFetcher);
+
+  const isProcessing = isProfileLoading || isRegistering || isUpdating;
 
   return {
     profiles,
@@ -76,5 +113,7 @@ export function useProfile() {
     revalidateProfile,
     registerProfile,
     registerError,
+    updateProfile,
+    updateError,
   };
 }

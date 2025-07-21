@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "@/shared/components/modals";
 import { Button } from "@/shared/components/buttons";
 import { InnerBox, Spacer } from "@/shared/components/layout";
@@ -21,7 +21,12 @@ import {
   mainCategoryIds,
   SubCategory,
 } from "@/entities/schedule/types";
-import { ScheduleItemWithSubCategoryModel } from "@/entities/schedule/model";
+import {
+  NewScheduleItem,
+  ScheduleItemWithSubCategoryModel,
+} from "@/entities/schedule/model";
+import { getMainCategoryId } from "@/entities/schedule/utils";
+import { useSchedules } from "../hooks/useSchedules";
 
 /**
  * 일정 추가 모달 컴포넌트 Props
@@ -30,11 +35,12 @@ interface AddScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
   scheduleId: number; // 모달을 열 때 필요한 schedule ID
-  userId: string; // 현재 로그인한 사용자 ID
+  profileId: string; // 현재 로그인한 사용자 ID
   onAddScheduleItem?: (
-    scheduleItem: Partial<ScheduleItemFormData>,
+    scheduleItem: NewScheduleItem,
     isFavorite: boolean,
-    userId: string
+    profileId: string,
+    date: Date | string
   ) => Promise<void>;
   onSuccess?: () => void; // 성공 시 호출할 콜백 (예: mutate)
 
@@ -48,7 +54,7 @@ interface AddScheduleModalProps {
     | null;
   onEditScheduleItem?: (
     itemId: number,
-    scheduleItem: Partial<ScheduleItemFormData>,
+    scheduleItem: Omit<ScheduleItemFormData, "scheduleId">,
     isFavorite: boolean
   ) => Promise<void>;
 
@@ -65,7 +71,7 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
   isOpen,
   onClose,
   scheduleId,
-  userId,
+  profileId,
   onAddScheduleItem,
   onSuccess,
   isEditMode = false,
@@ -79,33 +85,31 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
       editingItem &&
       editingItem.subCategory &&
       editingItem.subCategory.mainId !== undefined
-      ? (mainCategories[editingItem.subCategory.mainId] as MainCategory) ||
+      ? (mainCategories[editingItem.subCategory.mainId - 1] as MainCategory) ||
           "일상"
       : "일상"
   );
+
   const [subCategory, setSubCategory] = useState<SubCategory>(
     isEditMode &&
       editingItem &&
       editingItem.subCategory &&
       editingItem.subCategory.mainId !== undefined &&
       editingItem.subCategory.id !== undefined
-      ? (getSubCategoryNameById(
-          editingItem.subCategory.mainId,
-          editingItem.subCategory.id
-        ) as SubCategory) || "산책"
+      ? (getSubCategoryNameById(editingItem.subCategory.id) as SubCategory) ||
+          "산책"
       : "산책"
   );
 
   // 일정 내용 상태 관리
-  const [scheduleItemData, setScheduleItemData] = useState<Partial<ScheduleItemFormData>>({
-    subCategoryId:
-      isEditMode &&
+  const [subId, setSubId] = useState<number>(
+    isEditMode &&
       editingItem &&
       editingItem.subCategory &&
       editingItem.subCategory.id !== undefined
-        ? editingItem.subCategory.id
-        : getSubCategoryId(mainCategory, subCategory),
-  });
+      ? editingItem.subCategory.id
+      : getSubCategoryId(mainCategory, subCategory)
+  );
 
   // 일정 시작 날짜/시간 관리
   const [startDate, setStartDate] = useState<Date>(
@@ -114,17 +118,28 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
       : new Date()
   );
 
+  const { checkFavoriteSub, favoriteSub, isProcessing } = useSchedules();
+
   // 날짜 형식 지정
   const formattedDate = format(startDate, "yyyy년 MM월 dd일", {
     locale: ko,
   });
 
-  // 즐겨찾기 여부 상태 (수정 모드에서는 현재 상태를 유지하기 위한 로직)
-  const [isFavorite, setIsFavorite] = useState<boolean>(
-    isEditMode && editingItem && "isFavorite" in editingItem
-      ? !!editingItem.isFavorite
-      : false
-  );
+  const [isFavorite, setIsFavorite] = useState<boolean>(false); // 기본값은 false로 시작
+
+  // [핵심] 모달이 열리거나, subId가 바뀔 때마다 즐겨찾기 여부를 서버에 요청합니다.
+  useEffect(() => {
+    if (isOpen) {
+      checkFavoriteSub({ profileId: profileId, subIds: [subId] });
+    }
+  }, [isOpen, subId, profileId, checkFavoriteSub]);
+
+  // [핵심] API 요청의 결과(favoriteSub)가 바뀌면, isFavorite 상태를 업데이트합니다.
+  useEffect(() => {
+    if (Array.isArray(favoriteSub)) {
+      setIsFavorite(favoriteSub.includes(subId));
+    }
+  }, [favoriteSub]);
 
   // 로딩 상태
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -137,10 +152,7 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
     // 카테고리 변경 시 scheduleItemData 상태 업데이트
     const subId = getSubCategoryId(main, sub);
 
-    setScheduleItemData((prev) => ({
-      ...prev,
-      subCategoryId: subId,
-    }));
+    setSubId(subId);
   };
 
   // 날짜 선택 모달 열기 핸들러
@@ -166,24 +178,28 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
     try {
       setIsSubmitting(true);
 
-      if (
-        isEditMode &&
-        onEditScheduleItem &&
-        editingItem &&
-        editingItem.id
-      ) {
+      if (isEditMode && onEditScheduleItem && editingItem && editingItem.id) {
         // 수정 모드: 기존 일정 아이템 수정
         await onEditScheduleItem(
           editingItem.id,
-          { ...scheduleItemData, startAt: startDate },
+          { ...{ subCategoryId: subId }, startAt: startDate },
           isFavorite
         );
       } else if (onAddScheduleItem) {
         // 추가 모드: 새 일정 추가
         await onAddScheduleItem(
-          { ...scheduleItemData, scheduleId, startAt: startDate },
+          {
+            startAt: startDate,
+            subCategory: {
+              id: subId,
+              name: subCategory,
+              mainId: getMainCategoryId(mainCategory),
+              main: { name: mainCategory, id: getMainCategoryId(mainCategory) },
+            },
+          },
           isFavorite,
-          userId
+          profileId,
+          startDate
         );
       } else {
         // 콜백이 없는 경우
@@ -254,7 +270,7 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
         <Spacer height="16" />
 
         {/* 날짜 선택 UI */}
-        <InnerBox
+        {/* <InnerBox
           direction="row"
           align="center"
           justify="space-between"
@@ -275,7 +291,7 @@ const AddScheduleModal: React.FC<AddScheduleModalProps> = ({
         </InnerBox>
 
         <Spacer height="16" />
-        <div className={styles.divider}></div>
+        <div className={styles.divider}></div> */}
 
         {/* 시간 선택 UI */}
         <TimePicker value={startDate} onChange={setStartDate} />

@@ -1,4 +1,7 @@
-import { ProfileModel } from "@/entities/profile/model";
+import {
+  ProfileModel,
+  profileModelSchema,
+} from "./../../../entities/profile/model";
 import { EMPTY_PROFILE } from "@/entities/profile/store";
 import { PROFILE_ERROR_MESSAGE } from "@/features/profile/consts";
 import { COMMON_MESSAGE } from "@/shared/consts/messages";
@@ -67,6 +70,53 @@ export async function POST(req: Request) {
     );
   } catch (e: any) {
     console.error(`register profile error : ${e}`);
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const { inputData } = await req.json();
+
+    if (!inputData) {
+      return NextResponse.json(
+        { error: COMMON_MESSAGE.WRONG_ACCESS },
+        { status: 400 }
+      );
+    }
+
+    const validation = profileModelSchema.safeParse(inputData);
+
+    if (!validation) {
+      return NextResponse.json(
+        { error: COMMON_MESSAGE.WRONG_ACCESS },
+        { status: 400 }
+      );
+    }
+
+    const typed = inputData as ProfileModel;
+
+    await prisma.profile.update({
+      where: {
+        id: typed.id,
+      },
+      data: {
+        petAge: new Date(typed.petAge),
+        petWeight: typed.petWeight,
+        vaccinations: typed.vaccinations,
+        petGender: typed.petGender,
+        etc1: typed.etc1,
+        etc2: typed.etc2,
+        etc3: typed.etc3,
+      },
+    });
+
+    return NextResponse.json(
+      { message: COMMON_MESSAGE.SUCCESS },
+      { status: 200 }
+    );
+  } catch (e: any) {
+    console.error("update profile error", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

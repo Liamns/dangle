@@ -12,7 +12,7 @@ import Image from "next/image";
 import styles from "./page.module.scss";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import DatePickerModal from "@/shared/components/DatePickerModal";
 import WeekCalendar from "@/features/schedule/components/WeekCalendar";
 import ScheduleAddBox from "@/features/schedule/components/ScheduleAddBox";
@@ -33,7 +33,14 @@ export default function Schedule() {
     ((date: Date) => void) | null
   >(null);
 
-  useSchedules();
+  const {
+    schedule,
+    revalidateSchedule,
+    isProcessing: isLoading,
+  } = useSchedules(selectedDate.toLocaleDateString("en-CA"));
+  useEffect(() => {
+    revalidateSchedule();
+  }, [router, selectedDate]);
 
   // edit mode 변경 시 URL 업데이트
   const handleEditModeChange = useCallback(
@@ -133,6 +140,8 @@ export default function Schedule() {
             setIsEditMode={handleEditModeChange}
             selectedDate={selectedDate}
             openDatePicker={openDatePicker}
+            schedule={schedule}
+            isLoading={isLoading}
           />
         )}
       </Card>

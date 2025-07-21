@@ -7,6 +7,7 @@ import styles from "./ProfileCard.module.scss";
 import { useProfileStore } from "@/entities/profile/store";
 import {
   determinePersonalityType,
+  ProfileModel,
   transformPersonalityToRadarData,
 } from "@/entities/profile/model";
 import { getPublicImageUrl } from "@/shared/lib/supabase";
@@ -39,6 +40,8 @@ import {
 } from "@/entities/profile/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import RadarChartComponent from "@/app/profile/complete/components/RadarChartComponent";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
+import { useProfile } from "../hooks/useProfiles";
 
 interface ProfileCardProps {
   isFlipped: boolean;
@@ -47,12 +50,9 @@ interface ProfileCardProps {
 
 export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
   const router = useRouter();
-  const currentProfile = useProfileStore((state) => state.getCurrentProfile());
-  const isProfileValid = useProfileStore((state) => state.isProfileValid);
-  const isLoaded = useProfileStore((state) => state.isLoaded);
-  const updateCurrentProfile = useProfileStore(
-    (state) => state.updateCurrentProfile
-  );
+  const currentProfile = useProfileStore((state) => state.currentProfile);
+  const isProfileValid = currentProfile !== null;
+  const isLoaded = useProfileStore((state) => state._hasHydrated);
   const [loading, setLoading] = useState(true);
   const [isVaccineSelectOpen, setIsVaccineSelectOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -61,6 +61,8 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
   const [filteredVaccinations, setFilteredVaccinations] = useState<string[]>(
     []
   );
+  const { revalidateProfile, updateProfile, updateError, isProcessing } =
+    useProfile();
 
   const {
     register,
@@ -68,6 +70,7 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
     setValue,
     watch,
     setFocus,
+    reset,
     formState: { errors },
   } = useForm<EditProfileFormData>({
     resolver: zodResolver(editProfileFormSchema),
@@ -86,6 +89,7 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
     watch: watchEtc,
     setFocus: setFocusEtc,
     formState: { errors: errorsEtc },
+    reset: resetEtc,
   } = useForm<EtcFormData>({
     resolver: zodResolver(etcFormSchema),
     defaultValues: {
@@ -95,22 +99,43 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
     },
   });
 
-  const onSubmit = (data: EditProfileFormData) => {
-    alert("서버에 반영 로직 추가 필요");
-    updateCurrentProfile({
-      ...data,
+  const onSubmit = async (data: EditProfileFormData) => {
+    if (!currentProfile || currentProfile.petGender.gender === undefined) {
+      alert(COMMON_MESSAGE.WRONG_ACCESS);
+      return;
+    }
+    const inputData: ProfileModel = {
+      ...currentProfile,
+      petAge: data.petAge,
       petGender: {
-        ...data.petGender,
-        gender: currentProfile?.petGender?.gender || null,
+        gender: currentProfile.petGender.gender,
+        isNeutered: data.petGender.isNeutered,
       },
-    });
+      petWeight: parseFloat(data.petWeight.toString()),
+      vaccinations: data.vaccinations,
+    };
+
+    await updateProfile({ inputData: inputData });
+
     setIsEditMode(false);
+    revalidateProfile();
   };
 
-  const onSubmitEtc = (data: EtcFormData) => {
-    alert("서버에 반영 로직 추가 필요");
-    updateCurrentProfile(data);
+  const onSubmitEtc = async (data: EtcFormData) => {
+    if (!currentProfile) {
+      alert(COMMON_MESSAGE.WRONG_ACCESS);
+      return;
+    }
+    const inputData: ProfileModel = {
+      ...currentProfile,
+      etc1: data.etc1 === "" ? null : data.etc1,
+      etc2: data.etc2 === "" ? null : data.etc2,
+      etc3: data.etc3 === "" ? null : data.etc3,
+    };
+
+    await updateProfile({ inputData: inputData });
     setIsBackEditMode(false);
+    revalidateProfile();
   };
 
   useEffect(() => {
@@ -137,7 +162,7 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
   useEffect(() => {
     if (isLoaded) {
       setLoading(false);
-      if (!isProfileValid(currentProfile)) {
+      if (!isProfileValid) {
         if (typeof window !== "undefined") {
           alert("프로필 정보가 부족합니다. 모든 정보를 입력해주세요.");
         }
@@ -177,6 +202,26 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
       setFocusEtc("etc1");
     }
   }, [isBackEditMode, setFocusEtc]);
+
+  useEffect(() => {
+    if (currentProfile) {
+      // vaccinations 필드 업데이트
+      setValue("vaccinations", currentProfile.vaccinations || {});
+      // 다른 필드들도 필요하다면 여기서 업데이트
+      setValue(
+        "petAge",
+        new Date(currentProfile.petAge).toLocaleDateString("en-CA") || ""
+      );
+      setValue("petWeight", currentProfile.petWeight || 0);
+      setValue(
+        "petGender.isNeutered",
+        currentProfile.petGender?.isNeutered || false
+      );
+      setValueEtc("etc1", currentProfile.etc1 || null);
+      setValueEtc("etc2", currentProfile.etc2 || null);
+      setValueEtc("etc3", currentProfile.etc3 || null);
+    }
+  }, [currentProfile, setValue, setValueEtc]); // 의존성 배열에 currentProfile, setValue, setValueEtc 추가
 
   if (loading) {
     return (
@@ -530,16 +575,6 @@ export default function ProfileCard({ isFlipped, onFlip }: ProfileCardProps) {
                       style={
                         { "--box-color": Colors.primary } as React.CSSProperties
                       }
-                      checked={
-                        isEditMode
-                          ? watch("petGender.isNeutered")
-                          : petGender?.isNeutered
-                      }
-                      onChange={(e) => {
-                        if (isEditMode) {
-                          setValue("petGender.isNeutered", e.target.checked);
-                        }
-                      }}
                       disabled={!isEditMode}
                     />
                     <Spacer width="5" />

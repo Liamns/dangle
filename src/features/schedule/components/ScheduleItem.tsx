@@ -22,16 +22,17 @@ export interface ScheduleItemProps {
   };
   isActive: boolean;
   onActivate: () => void;
-  onEdit?: (
+  onEdit: (
     item: ScheduleItemWithSubCategoryModel & {
       scheduleId: number;
       profileId: string;
     }
   ) => void;
+  onDelete: (item: { scheduleId: number; subId: number }) => void;
 }
 
 const ScheduleItem = memo(
-  ({ item, isActive, onActivate, onEdit }: ScheduleItemProps) => {
+  ({ item, isActive, onActivate, onEdit, onDelete }: ScheduleItemProps) => {
     const wasActive = React.useRef(isActive);
     const isMounted = React.useRef(false);
     const [animationClass, setAnimationClass] = useState("");
@@ -106,15 +107,17 @@ const ScheduleItem = memo(
           }}
         >
           <div
-            onClick={() => alert("삭제 클릭")}
+            onClick={() =>
+              onDelete({
+                subId: item.subCategory.id,
+                scheduleId: item.scheduleId,
+              })
+            }
             className={modalStyles.deleteButton}
           >
             <DeleteSvg width={14} height={14} color={Colors.brown} />
           </div>
-          <div
-            className={modalStyles.editButton}
-            onClick={() => (onEdit ? onEdit(item) : alert("수정 준비 중"))}
-          >
+          <div className={modalStyles.editButton} onClick={() => onEdit(item)}>
             <EditSvg width={14} height={14} color={Colors.white} />
           </div>
         </div>

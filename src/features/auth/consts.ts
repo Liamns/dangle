@@ -11,4 +11,5 @@ export const AUTH_ERROR_MESSAGE = {
   WAIT: "잠시 뒤에 재시도해주세요.",
   UNKNOWN_EMAIL: "가입되지 않은 이메일입니다.",
   FAIL_RESET_PASSWORD: "비밀번호 재설정에 실패했습니다.",
+  FAIL_AUTH: "인증되지 않은 사용자입니다.",
 };

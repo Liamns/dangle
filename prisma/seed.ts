@@ -9,7 +9,7 @@ async function main() {
   console.log("Start seeding ...");
 
   // 기존 데이터 삭제 (선택적)
-  await prisma.scheduleContent.deleteMany({});
+  
   await prisma.categorySub.deleteMany({});
   await prisma.categoryMain.deleteMany({});
   console.log("Deleted existing data.");
@@ -36,15 +36,7 @@ async function main() {
           `  Created sub category: ${createdSubCategory.name} for ${createdMainCategory.name}`
         );
 
-        await prisma.scheduleContent.create({
-          data: {
-            mainId: createdMainCategory.id,
-            subId: createdSubCategory.id,
-          },
-        });
-        console.log(
-          `    Created schedule content for ${createdSubCategory.name}`
-        );
+        
       }
     }
   }

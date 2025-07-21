@@ -8,7 +8,10 @@ import {
 import Modal from "@/shared/components/modals";
 import CloseSvg from "@/shared/svgs/close.svg";
 import {
+  getSubCategoryId,
   getSubCategoryImagePath,
+  getSubIdByName,
+  MainCategory,
   SubCategory,
 } from "@/entities/schedule/types";
 import Image from "next/image";
@@ -18,6 +21,8 @@ import TimePicker from "@/shared/components/TimePicker";
 import { Button } from "@/shared/components/buttons";
 import { InnerBox, Spacer } from "@/shared/components/layout";
 import chkbox from "@/shared/styles/buttons.module.scss";
+import { useSchedules } from "../hooks/useSchedules";
+import { useProfileStore } from "@/entities/profile/store";
 
 interface ScheduleTimeEditModalProps {
   schedule?: ScheduleItemWithSubCategoryModel | NewScheduleItem;
@@ -39,30 +44,44 @@ const ScheduleTimeEditModal = memo(
     onClose,
     onChangeStartAt,
   }: ScheduleTimeEditModalProps) => {
+    const sub: SubCategory | undefined =
+      (schedule?.subCategory?.name as SubCategory) || undefined;
+
     // hooks must be called unconditionally
     const [tempStartAt, setTempStartAt] = useState<Date>(
       schedule?.startAt ?? new Date()
     );
-    const [isFavChecked, setIsFavChecked] = useState<boolean>(
-      Boolean((schedule as any)?.isFavorite)
-    );
+    const [isFavChecked, setIsFavChecked] = useState<boolean>(false);
     useEffect(() => {
       if (schedule) {
         setTempStartAt(schedule.startAt ?? new Date());
       }
     }, [schedule]);
+    const { currentProfile } = useProfileStore();
+    const { checkFavoriteSub, favoriteSub } = useSchedules();
     useEffect(() => {
-      // schedule 변경 시 isFavorite 동기화
-      setIsFavChecked(Boolean((schedule as any)?.isFavorite));
-    }, [schedule]);
-    if (!schedule) return null;
-
-    const sub: SubCategory = schedule.subCategory.name as SubCategory;
-    if (!sub) {
-      alert("잘못된 일정입니다.");
-      onClose();
+      if (currentProfile && sub) {
+        const subId = getSubIdByName(sub);
+        if (subId) {
+          checkFavoriteSub({
+            profileId: currentProfile.id,
+            subIds: [subId],
+          });
+        }
+      }
+    }, [checkFavoriteSub, currentProfile, sub]);
+    useEffect(() => {
+      if (Array.isArray(favoriteSub) && sub) {
+        const subId = getSubIdByName(sub);
+        if (subId) {
+          setIsFavChecked(favoriteSub.includes(subId));
+        }
+      }
+    }, [schedule, favoriteSub, sub]);
+    if (!schedule || !sub) {
       return null;
     }
+
     const url = getSubCategoryImagePath(sub);
 
     return (

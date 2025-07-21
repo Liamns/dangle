@@ -28,21 +28,21 @@ export default function Profile() {
     (state) => state.currentProfile
   );
 
-  const isFirstVisit = useProfileStore((state) => state.isFirstVisit); // 기본값 보장
-  const setFirstVisit = useProfileStore((state) => state.setFirstVisit); // 기본값 보장
+  const isFirst = useProfileStore((state) => state.isFirst);
+  const setIsFirst = useProfileStore((state) => state.setIsFirst);
 
   // 상태 관리 로직 추가
   const [isFlipped, setIsFlipped] = useState(false);
 
   // 모달 닫기 핸들러
   const handleCloseModal = () => {
-    setFirstVisit(false);
+    setIsFirst(false);
   };
 
   return (
     <InnerWrapper>
-      {isFirstVisit && isFlipped && (
-        <Modal isOpen={isFirstVisit} onClose={handleCloseModal}>
+      {isFirst && (
+        <Modal isOpen={isFirst} onClose={handleCloseModal}>
           <div className={styles.modalContainer}>
             <div className={styles.shareModal}>
               <Image

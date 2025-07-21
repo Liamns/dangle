@@ -4,7 +4,7 @@ import styles from "./page.module.scss";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { decrypt } from "@/shared/lib/crypto";
-import { ScheduleWithItemsModel } from "@/entities/schedule/model";
+import { ScheduleWithItemsModel, ScheduleItemWithSubCategoryModel } from "@/entities/schedule/model";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import LoadingOverlay from "@/shared/components/LoadingOverlay";
@@ -185,10 +185,10 @@ function FavoriteScheduleViewer() {
                   {schedules.map((schedule, index) => {
                     return (
                       <div className={styles.slide} key={index}>
-                        {schedule.scheduleItems &&
-                          schedule.scheduleItems.length > 0 && (
+                        {schedule.items &&
+                          schedule.items.length > 0 && (
                             <div className={styles.cardContentBox}>
-                              {schedule.scheduleItems.map((item, itemIndex) => {
+                              {schedule.items.map((item: ScheduleItemWithSubCategoryModel, itemIndex: number) => {
                                 return (
                                   <div
                                     className={styles.cardContent}
@@ -200,9 +200,9 @@ function FavoriteScheduleViewer() {
                                       >
                                         <Image
                                           src={getSubCategoryImagePath(
-                                            item.content.sub.name as SubCategory
+                                            item.subCategory.name as SubCategory
                                           )}
-                                          alt={item.content.sub.name}
+                                          alt={item.subCategory.name}
                                           fill
                                         />
                                       </div>
@@ -212,7 +212,7 @@ function FavoriteScheduleViewer() {
                                         }
                                       ></div>
                                       <Text
-                                        text={item.content.sub.name}
+                                        text={item.subCategory.name}
                                         color={Colors.black}
                                         fontWeight="bold"
                                       />

@@ -70,7 +70,7 @@ export const transformToDateFormat = (
 export const calculateAgeFromDateString = (
   dateString: string | undefined
 ): number => {
-  if (!dateString || !dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+  if (!dateString) {
     return 0;
   }
 
