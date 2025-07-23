@@ -69,7 +69,12 @@ export function useProfile() {
     mutate: revalidateProfile,
   } = useSWR<ProfileModel[]>(
     userId ? `/api/profile?userId=${userId}` : null,
-    getProfileFetcher
+    getProfileFetcher,
+    {
+      revalidateOnFocus: false,
+      keepPreviousData: true,
+      dedupingInterval: 10000, // 10초 동안 중복 요청 방지
+    }
   );
 
   useEffect(() => {

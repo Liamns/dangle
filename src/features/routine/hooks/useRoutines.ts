@@ -1,78 +1,147 @@
 import useSWR from "swr";
 import { getRoutinesByProfile } from "@/features/routine/apis";
-import { RoutineWithContentsModel } from "@/entities/routine/schema";
+import {
+  NewRoutineWithContents,
+  RoutineWithContentsModel,
+} from "@/entities/routine/schema";
 import { useCallback, useState } from "react";
+import { useProfile } from "@/features/profile/hooks/useProfiles";
+import { useProfileStore } from "@/entities/profile/store";
+import { commonHeader } from "@/shared/consts/apis";
+import { ROUTINE_MESSAGE } from "../consts";
+import { FAVORITE_MESSAGE } from "@/features/favorites/consts";
+import useSWRMutation from "swr/mutation";
+import { blobUrlToBase64 } from "@/shared/lib/string";
 
-/**
- * profileId 기반 루틴 목록 가져오기
- * @param profileId - 현재 프로필 ID (필수)
- */
-export function useRoutines(profileId: string) {
+async function getRoutinesFetcher(
+  url: string
+): Promise<RoutineWithContentsModel[]> {
+  const response = await fetch(url, {
+    headers: commonHeader,
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || ROUTINE_MESSAGE.FAIL_FETCH);
+  }
+
+  return response.json();
+}
+
+async function toggleRoutineFavoriteFetcher(
+  url: string,
+  { arg }: { arg: { routineId: number; profileId: string } }
+): Promise<{ message: string; isFavorite: boolean }> {
+  const response = await fetch(url, {
+    headers: commonHeader,
+    method: "POST",
+    body: JSON.stringify(arg),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || FAVORITE_MESSAGE.TOGGLE_ROUTINE);
+  }
+
+  return response.json();
+}
+
+async function addRoutineFetcher(
+  url: string,
+  { arg }: { arg: NewRoutineWithContents }
+) {
+  // arg.contents 배열을 순회하며 blob URL을 Base64로 변환
+  const processedContents = await Promise.all(
+    arg.contents.map(async (content) => {
+      if (content.image && content.image.startsWith("blob:http")) {
+        const base64Image = await blobUrlToBase64(content.image);
+        return { ...content, image: base64Image };
+      }
+      return content;
+    })
+  );
+
+  const response = await fetch(url, {
+    headers: commonHeader,
+    method: "POST",
+    body: JSON.stringify({ ...arg, contents: processedContents }), // 변환된 contents로 교체
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || ROUTINE_MESSAGE.FAIL_ADD);
+  }
+
+  return response.json();
+}
+
+export function useRoutines() {
+  const profileId = useProfileStore((state) => state.currentProfile?.id);
+  const shouldFetch = Boolean(profileId);
+  const endPoint = shouldFetch ? `/api/routine?profileId=${profileId}` : null;
   // 진행 중인 즐겨찾기 토글 요청 추적
   const [pendingFavorites, setPendingFavorites] = useState<Set<number>>(
     new Set()
   );
 
   // SWR을 사용한 데이터 페칭
-  const { data, error, isLoading, mutate } = useSWR<RoutineWithContentsModel[]>(
-    profileId ? ["routines", profileId] : null,
-    () => getRoutinesByProfile(profileId),
-    {
-      revalidateOnFocus: false,
-      keepPreviousData: true,
-      dedupingInterval: 10000, // 10초 동안 중복 요청 방지
-    }
+  const {
+    data: routines,
+    error: fetchError,
+    isLoading: isFetching,
+    mutate: revalidateRoutines,
+  } = useSWR<RoutineWithContentsModel[]>(endPoint, getRoutinesFetcher, {
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+    dedupingInterval: 10000, // 10초 동안 중복 요청 방지
+  });
+
+  const {
+    trigger: addRoutine,
+    error: addError,
+    isMutating: isAdding,
+  } = useSWRMutation("api/routine", addRoutineFetcher);
+
+  const { trigger: triggerToggleFavorite } = useSWRMutation(
+    "/api/routine/favorite",
+    toggleRoutineFavoriteFetcher
   );
 
   /**
-   * 즐겨찾기 토글 함수 - isFavorite 플래그 토글 방식
-   * 즐겨찾기 시: 해당 루틴의 isFavorite=true로 설정
-   * 해제 시: 해당 루틴의 isFavorite=false로 설정
+   * 즐겨찾기 토글 함수
+   * SWR의 mutate를 활용한 낙관적 업데이트(Optimistic Update)를 적용하여
+   * 즉각적인 UI 반응성과 성능을 개선합니다.
    */
   const toggleFavorite = useCallback(
     async (id: number) => {
-      if (!profileId || !data) return;
-
-      // 이미 진행 중인 요청이면 무시
+      if (!profileId || !routines) return;
       if (pendingFavorites.has(id)) return;
 
-      // 현재 상태 저장
-      const routine = data.find((r) => r.id === id);
-      if (!routine) return;
+      // 롤백을 위해 현재 데이터 복사
+      const originalRoutines = [...routines];
 
-      const currentIsFavorite = routine.isFavorite ?? false;
+      // 즉각적인 UI 업데이트를 위해 낙관적 데이터 생성
+      const optimisticRoutines = routines.map((r) =>
+        r.id === id ? { ...r, isFavorite: !r.isFavorite } : r
+      );
+
+      // revalidate: false 옵션으로 캐시만 업데이트하고 서버 재요청은 방지
+      revalidateRoutines(optimisticRoutines, { revalidate: false });
 
       try {
-        // 진행 중 표시
+        // 중복 실행 방지를 위해 pending 상태 추가
         setPendingFavorites((prev) => new Set(prev).add(id));
 
-        // 낙관적 UI 업데이트 - isFavorite 플래그만 토글
-        mutate(
-          (prevRoutines) =>
-            prevRoutines?.map((r) =>
-              r.id === id ? { ...r, isFavorite: !currentIsFavorite } : r
-            ),
-          false
-        );
-
-        // API 호출 (모의 구현)
-        setTimeout(() => {
-          console.log(
-            `루틴 즐겨찾기 토글: ${id}, 변경된 상태: ${!currentIsFavorite}`
-          );
-        }, 500);
-
-        // 성공 시 캐시 갱신 (선택사항)
-        // mutate();
+        // 서버에 즐겨찾기 토글 요청
+        await triggerToggleFavorite({ routineId: id, profileId });
       } catch (error) {
         console.error("즐겨찾기 토글 실패:", error);
-
-        // 실패 시 상태 복원
-        mutate();
-
-        throw error; // 호출자가 오류 처리할 수 있도록
+        // 에러 발생 시 원래 데이터로 롤백
+        revalidateRoutines(originalRoutines, { revalidate: false });
+        throw error;
       } finally {
-        // 진행 중 표시 제거
+        // pending 상태 제거
         setPendingFavorites((prev) => {
           const next = new Set(prev);
           next.delete(id);
@@ -80,7 +149,13 @@ export function useRoutines(profileId: string) {
         });
       }
     },
-    [profileId, data, pendingFavorites, mutate]
+    [
+      profileId,
+      routines,
+      revalidateRoutines,
+      triggerToggleFavorite,
+      pendingFavorites,
+    ]
   );
 
   /**
@@ -96,20 +171,23 @@ export function useRoutines(profileId: string) {
    */
   const getUpdatedRoutine = useCallback(
     (routineId: number | undefined) => {
-      if (!routineId || !data) return undefined;
-      return data.find((r) => r.id === routineId);
+      if (!routineId || !routines) return undefined;
+      return routines.find((r) => r.id === routineId);
     },
-    [data]
+    [routines]
   );
 
   return {
-    routines: data ?? [],
-    isLoading,
-    error,
-    mutate,
+    routines,
+    isFetching,
+    fetchError,
+    revalidateRoutines,
     toggleFavorite, // 즐겨찾기 토글 함수
     isToggling, // 특정 ID의 로딩 상태 확인
     getUpdatedRoutine, // 최신 루틴 데이터 가져오기
     pendingFavorites, // 진행 중인 요청 ID 세트
+    addRoutine, // 루틴 추가 함수
+    addError, // 루틴 추가 에러
+    isAdding, // 루틴 추가 중 여부
   };
 }

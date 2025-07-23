@@ -15,3 +15,26 @@ export const hasJongseong = (text: string): boolean => {
   // 종성이 있는지 확인 (종성 없는 글자는 28로 나눈 나머지가 0)
   return charCode % 28 !== 0;
 };
+
+export async function blobUrlToBase64(blobUrl: string): Promise<string> {
+  try {
+    const response = await fetch(blobUrl);
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          resolve(reader.result);
+        } else {
+          reject(new Error("Failed to convert blob to base64 string."));
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error("Blob URL을 Base64로 변환 중 오류 발생:", error);
+    throw error;
+  }
+}

@@ -21,6 +21,8 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import WriteRoutine from "./WriteRoutine";
 import WriteRoutineContent from "./WriteRoutineContent";
+import { ROUTINE_MESSAGE } from "../consts";
+import { useProfileStore } from "@/entities/profile/store";
 
 interface WriteRoutineModalProps {
   isOpen: boolean;
@@ -28,10 +30,18 @@ interface WriteRoutineModalProps {
   routine?: RoutineWithContentsModel;
   onSave: (data: NewRoutineWithContents) => Promise<void>;
   onEdit: (data: UpdateRoutineWithContents) => Promise<void>;
+  profileId: string; // profileId prop 추가
 }
 
 const WriteRoutineModal = memo(
-  ({ isOpen, onClose, routine, onSave, onEdit }: WriteRoutineModalProps) => {
+  ({
+    isOpen,
+    onClose,
+    routine,
+    onSave,
+    onEdit,
+    profileId,
+  }: WriteRoutineModalProps) => {
     const isNew = !routine;
     const [selectedCategory, setSelectedCategory] = useState<RoutineCategory>(
       RoutineCategory.EXERCISE
@@ -48,7 +58,7 @@ const WriteRoutineModal = memo(
     const newMethods = useForm<NewRoutineWithContents>({
       resolver: zodResolver(NewRoutineWithContentsSchema),
       defaultValues: {
-        profileId: "",
+        profileId: profileId, // prop으로 받은 profileId 사용
         category: RoutineCategory.EXERCISE,
         type: RoutineType.TIP,
         name: "",
@@ -95,7 +105,7 @@ const WriteRoutineModal = memo(
         if (isNew) {
           // 새 루틴인 경우 모든 폼 초기화
           methods.reset({
-            profileId: "",
+            profileId: profileId, // prop으로 받은 profileId 사용
             category: RoutineCategory.EXERCISE,
             type: RoutineType.TIP,
             name: "", // 이름 초기화
@@ -178,18 +188,24 @@ const WriteRoutineModal = memo(
     );
 
     // submit handlers
-    const onSubmitNew = newMethods.handleSubmit(async (data) => {
-      await onSave(data);
-      onClose();
-    });
+    const onSubmitNew = newMethods.handleSubmit(
+      async (data) => {
+        await onSave(data);
+        onClose();
+      },
+      (errors) => {
+        console.error("onSubmitNew validation errors:", errors);
+        alert(ROUTINE_MESSAGE.FAIL_ADD);
+      }
+    );
     const onSubmitUpdate = updateMethods.handleSubmit(
       async (data) => {
         await onEdit(data);
         onClose();
       },
       (errors) => {
-        // 여기에 에러 처리 로직 추가
-        console.error("검증 오류:", errors);
+        console.error("onSubmitUpdate validation errors:", errors);
+        alert("루틴 수정에 실패했습니다. 입력값을 확인해주세요.");
       }
     );
 

@@ -17,6 +17,7 @@ import {
   UpdateRoutineDto,
   RoutineModel,
   RoutineWithContentsModel,
+  NewRoutineWithContents,
 } from "@/entities/routine/schema";
 import RoutineViewModal from "@/features/routine/components/RoutineViewerModal";
 
@@ -33,13 +34,16 @@ export default function Routine() {
   // 현재 프로필 ID로 루틴 불러오기
   const {
     routines,
-    isLoading,
-    error,
-    mutate,
+    isFetching,
+    fetchError,
+    revalidateRoutines,
     isToggling,
     getUpdatedRoutine,
     toggleFavorite,
-  } = useRoutines(profileId);
+    addError,
+    addRoutine,
+    isAdding,
+  } = useRoutines();
   // 선택된 루틴을 상태로 관리
   const selectedRoutine = useMemo(
     () => getUpdatedRoutine(selectedRoutineId),
@@ -86,16 +90,21 @@ export default function Routine() {
     [isEditMode]
   );
 
-  const handleAddRoutine = useCallback(async (data: NewRoutineDto) => {
-    console.log("새 루틴 추가:", data);
-  }, []);
+  const handleAddRoutine = useCallback(
+    async (data: NewRoutineWithContents) => {
+      await addRoutine(data);
+      revalidateRoutines();
+      setIsWriteModalOpen(false);
+    },
+    [addRoutine]
+  );
   const handleEditRoutine = useCallback(async (data: UpdateRoutineDto) => {
     console.log("루틴 수정:", data);
   }, []);
 
   return (
     <InnerWrapper>
-      {isLoading && <LoadingOverlay isLoading={isLoading} />}
+      {isFetching && <LoadingOverlay isLoading />}
       <div className={styles.container}>
         <UpperBtn
           isEditMode={isEditMode}
@@ -106,9 +115,7 @@ export default function Routine() {
       </div>
 
       <div className={styles.content}>
-        {/* 기존 루틴 렌더링 (추후 RoutineCard로 교체 가능) */}
-        {routines.map((routine) => (
-          // TODO: RoutineCard 컴포넌트로 교체
+        {(routines ?? []).map((routine) => (
           <RoutineCard
             key={routine.id}
             routine={routine}
@@ -117,9 +124,9 @@ export default function Routine() {
             onFavoriteToggle={() => handleFavoriteToggle(routine.id)}
           />
         ))}
-        {/* 전체 6개 슬롯 또는 6개 이상일 때는 끝에 하나 더 빈 카드 추가 */}
+
         {Array.from({
-          length: routines.length < 6 ? 6 - routines.length : 1,
+          length: (routines ?? []).length < 6 ? 6 - (routines ?? []).length : 1,
         }).map((_, idx) => (
           <EmptyRoutineCard key={`empty-${idx}`} onAddClick={handleAddClick} />
         ))}
@@ -135,6 +142,7 @@ export default function Routine() {
         routine={selectedRoutine} // 여기서 선택된 루틴 전달
         onSave={handleAddRoutine}
         onEdit={handleEditRoutine}
+        profileId={profileId} // profileId prop 전달
       />
 
       <RoutineViewModal

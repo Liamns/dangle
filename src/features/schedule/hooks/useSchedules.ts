@@ -165,7 +165,11 @@ export function useSchedules(date?: string) {
     error: fetchError,
     isLoading: isScheduleLoading,
     mutate: revalidateSchedule,
-  } = useSWR<ScheduleWithItemsModel>(endPoint, getSchedulesFetcher);
+  } = useSWR<ScheduleWithItemsModel>(endPoint, getSchedulesFetcher, {
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+    dedupingInterval: 10000, // 10초 동안 중복 요청 방지
+  });
 
   const { currentSchedule, setCurrentSchedule } = useScheduleStore();
 
