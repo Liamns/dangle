@@ -4,7 +4,10 @@ import {
   ScheduleItemWithSubCategoryModel,
   ScheduleWithItemsModel,
 } from "@/entities/schedule/model";
-import { ScheduleItemFormData } from "@/entities/schedule/schema";
+import {
+  FavoriteScheduleFormData,
+  ScheduleItemFormData,
+} from "@/entities/schedule/schema";
 import { useScheduleStore } from "@/entities/schedule/store";
 import { SubCategory } from "@/entities/schedule/types";
 import { PROFILE_ERROR_MESSAGE } from "@/features/profile/consts";
@@ -58,10 +61,7 @@ async function addScheduleFetcher(
 
   if (!response.ok) {
     const errorData = await response.json();
-    return NextResponse.json(
-      { error: errorData.error || COMMON_MESSAGE.WRONG_ACCESS },
-      { status: 400 }
-    );
+    throw new Error(errorData.error || COMMON_MESSAGE.WRONG_ACCESS);
   }
 
   return response.json();
@@ -87,10 +87,7 @@ async function updateScheduleFetcher(
 
   if (!response.ok) {
     const errorData = await response.json();
-    return NextResponse.json(
-      { error: errorData.error || COMMON_MESSAGE.WRONG_ACCESS },
-      { status: 400 }
-    );
+    throw new Error(errorData.error || COMMON_MESSAGE.WRONG_ACCESS);
   }
 
   return response.json();
@@ -115,10 +112,7 @@ async function getIsFavoriteSubCategoryFetcher(
 
   if (!response.ok) {
     const errorData = await response.json();
-    return NextResponse.json(
-      { error: errorData.error || COMMON_MESSAGE.WRONG_ACCESS },
-      { status: 400 }
-    );
+    throw new Error(errorData.error || COMMON_MESSAGE.WRONG_ACCESS);
   }
 
   return response.json();
@@ -135,10 +129,25 @@ async function deleteScheduleItemFetcher(
 
   if (!response.ok) {
     const errorData = await response.json();
-    return NextResponse.json(
-      { error: errorData.error || COMMON_MESSAGE.WRONG_ACCESS },
-      { status: 400 }
-    );
+    throw new Error(errorData.error || COMMON_MESSAGE.WRONG_ACCESS);
+  }
+
+  return response.json();
+}
+
+async function toggleScheduleFavoriteFetcher(
+  url: string,
+  { arg }: { arg: FavoriteScheduleFormData }
+) {
+  const response = await fetch(url, {
+    headers: commonHeader,
+    method: "POST",
+    body: JSON.stringify(arg),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || COMMON_MESSAGE.WRONG_ACCESS);
   }
 
   return response.json();
@@ -213,6 +222,13 @@ export function useSchedules(date?: string) {
     isUpdateLoading ||
     isCheckingFavoriteSub;
 
+  const {
+    trigger: toggleScheduleFavorite,
+    isMutating: isScheduleToggling,
+    error: toggleScheduleError,
+    data: updatedSchedule,
+  } = useSWRMutation("/api/schedule/favorite", toggleScheduleFavoriteFetcher);
+
   return {
     schedule,
     fetchError,
@@ -228,5 +244,9 @@ export function useSchedules(date?: string) {
     deleteError,
     isDeleteLoading,
     isProcessing,
+    toggleScheduleError,
+    toggleScheduleFavorite,
+    isScheduleToggling,
+    updatedSchedule,
   };
 }

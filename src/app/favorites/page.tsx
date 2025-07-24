@@ -33,10 +33,13 @@ export default function Favorites() {
   const profileId = currentProfile?.id ?? "";
 
   // 즐겨찾기 훅 호출
-  const { favorites, isLoading, toggleFavorite, isToggling } = useFavorites(
-    profileId,
-    activeTab
-  );
+  const {
+    favorites,
+    isFetching: isLoading,
+    toggleFavorite,
+    isToggling,
+    fetchError,
+  } = useFavorites(activeTab);
 
   const isRoutineActive = useMemo(() => activeTab === "routine", [activeTab]);
   const isScheduleActive = useMemo(() => activeTab === "schedule", [activeTab]);

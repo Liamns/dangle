@@ -74,7 +74,6 @@ const RegisterFavoriteScheduleModal = memo(
 
       if (isEditMode && favorite && onEdit) {
         // 수정 모드일 경우
-        console.log("Editing favorite:", favorite.id, data);
         onEdit(favorite.id, data.alias, data.icon);
       } else {
         // 생성 모드일 경우

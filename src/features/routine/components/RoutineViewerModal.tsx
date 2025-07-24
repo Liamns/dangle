@@ -190,7 +190,7 @@ const RoutineViewModal = memo(
           {/* 공유 버튼 */}
           <div className={styles.button}>
             <Text
-              text="일정 공유하기"
+              text="루틴 공유하기"
               color={Colors.white}
               fontSize="lg"
               fontWeight="bold"

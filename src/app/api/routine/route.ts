@@ -1,10 +1,14 @@
 import { COMMON_MESSAGE } from "@/shared/consts/messages";
 import { NextResponse } from "next/server";
 import prisma from "@/shared/lib/prisma";
-import { NewRoutineWithContents } from "@/entities/routine/schema";
+import {
+  NewRoutineWithContents,
+  UpdateRoutineWithContents,
+} from "@/entities/routine/schema";
 
 import { v4 as uuidv4 } from "uuid"; // 고유 ID 생성을 위한 uuid 임포트
 import { createClient } from "@/shared/lib/supabase/server";
+import { uploadRoutineImage } from "@/shared/lib/supabase";
 
 export async function GET(req: Request) {
   try {
@@ -116,6 +120,153 @@ export async function POST(req: Request) {
     );
   } catch (e: any) {
     console.error("add routine error :", e);
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  const supabase = await createClient();
+
+  try {
+    const inputData: UpdateRoutineWithContents = await req.json();
+    const {
+      id: routineId,
+      contents: updatedContents,
+      ...routineData
+    } = inputData;
+
+    if (!routineId) {
+      return NextResponse.json(
+        { error: COMMON_MESSAGE.WRONG_ACCESS },
+        { status: 400 }
+      );
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. 기존 루틴과 콘텐츠 ID 목록 가져오기
+      const existingRoutine = await tx.routine.findUnique({
+        where: { id: routineId },
+        include: { contents: { select: { id: true, image: true } } },
+      });
+
+      if (!existingRoutine) {
+        throw new Error("Routine not found");
+      }
+
+      const existingContentIds = existingRoutine.contents.map((c) => c.id);
+      const updatedContentIds = updatedContents
+        .map((c) => c.id)
+        .filter(Boolean) as number[];
+
+      // 2. 삭제할 콘텐츠, 수정할 콘텐츠, 생성할 콘텐츠 분류
+      const contentsToDeleteIds = existingContentIds.filter(
+        (id) => !updatedContentIds.includes(id)
+      );
+      const contentsToUpdate = updatedContents.filter(
+        (c) => c.id && existingContentIds.includes(c.id)
+      );
+      const contentsToCreate = updatedContents.filter((c) => !c.id);
+
+      // 3. 이미지 처리 및 데이터 준비
+      const processedContentsToUpdate = await Promise.all(
+        contentsToUpdate.map(async (content) => {
+          if (content.image && content.image.startsWith("data:image")) {
+            // 기존 이미지 삭제
+            const oldImage = existingRoutine.contents.find(
+              (c) => c.id === content.id
+            )?.image;
+            if (oldImage) {
+              const oldImagePath = oldImage.split("/").slice(-3).join("/"); // 'routine/profileId/filename.ext'
+              await supabase.storage
+                .from("dangle-assets")
+                .remove([oldImagePath]);
+            }
+
+            // 새 이미지 업로드
+            const { publicUrl } = await uploadRoutineImage(
+              supabase,
+              content.image,
+              existingRoutine.profileId
+            );
+            return { ...content, image: publicUrl };
+          }
+          return content;
+        })
+      );
+
+      const processedContentsToCreate = await Promise.all(
+        contentsToCreate.map(async (content) => {
+          if (content.image && content.image.startsWith("data:image")) {
+            const { publicUrl } = await uploadRoutineImage(
+              supabase,
+              content.image,
+              existingRoutine.profileId
+            );
+            return { ...content, image: publicUrl };
+          }
+          return content;
+        })
+      );
+
+      // 4. 삭제될 콘텐츠의 이미지들을 스토리지에서 제거
+      const imagesToDelete = existingRoutine.contents
+        .filter((c) => contentsToDeleteIds.includes(c.id) && c.image)
+        .map((c) => c.image!.split("/").slice(-3).join("/"));
+
+      if (imagesToDelete.length > 0) {
+        await supabase.storage.from("dangle-assets").remove(imagesToDelete);
+      }
+
+      // 5. 데이터베이스 작업 실행
+      // 5-1. 기본 루틴 정보 업데이트
+      await tx.routine.update({
+        where: { id: routineId },
+        data: {
+          ...routineData,
+        },
+      });
+
+      // 5-2. 콘텐츠 삭제
+      if (contentsToDeleteIds.length > 0) {
+        await tx.routineContent.deleteMany({
+          where: { id: { in: contentsToDeleteIds } },
+        });
+      }
+
+      // 5-3. 콘텐츠 수정
+      if (processedContentsToUpdate.length > 0) {
+        await Promise.all(
+          processedContentsToUpdate.map((content) =>
+            tx.routineContent.update({
+              where: { id: content.id },
+              data: {
+                title: content.title,
+                memo: content.memo,
+                image: content.image ?? "",
+              },
+            })
+          )
+        );
+      }
+
+      // 5-4. 콘텐츠 생성
+      if (processedContentsToCreate.length > 0) {
+        await tx.routineContent.createMany({
+          data: processedContentsToCreate.map((content) => ({
+            routineId: routineId,
+            title: content.title,
+            memo: content.memo,
+            image: content.image ?? "",
+          })),
+        });
+      }
+
+      return { message: COMMON_MESSAGE.SUCCESS };
+    });
+
+    return NextResponse.json(result, { status: 200 });
+  } catch (e: any) {
+    console.error("patch routine error :", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

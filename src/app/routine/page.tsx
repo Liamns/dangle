@@ -18,8 +18,10 @@ import {
   RoutineModel,
   RoutineWithContentsModel,
   NewRoutineWithContents,
+  UpdateRoutineWithContents,
 } from "@/entities/routine/schema";
 import RoutineViewModal from "@/features/routine/components/RoutineViewerModal";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 export default function Routine() {
   const router = useRouter();
@@ -43,6 +45,9 @@ export default function Routine() {
     addError,
     addRoutine,
     isAdding,
+    updateError,
+    updateRoutine,
+    isUpdating,
   } = useRoutines();
   // 선택된 루틴을 상태로 관리
   const selectedRoutine = useMemo(
@@ -94,17 +99,24 @@ export default function Routine() {
     async (data: NewRoutineWithContents) => {
       await addRoutine(data);
       revalidateRoutines();
+      alert(COMMON_MESSAGE.SUCCESS);
       setIsWriteModalOpen(false);
     },
     [addRoutine]
   );
-  const handleEditRoutine = useCallback(async (data: UpdateRoutineDto) => {
-    console.log("루틴 수정:", data);
-  }, []);
+  const handleEditRoutine = useCallback(
+    async (data: UpdateRoutineWithContents) => {
+      await updateRoutine(data);
+      revalidateRoutines();
+      alert(COMMON_MESSAGE.SUCCESS);
+      setIsWriteModalOpen(false);
+    },
+    [updateRoutine]
+  );
 
   return (
     <InnerWrapper>
-      {isFetching && <LoadingOverlay isLoading />}
+      {(isFetching || isAdding || isUpdating) && <LoadingOverlay isLoading />}
       <div className={styles.container}>
         <UpperBtn
           isEditMode={isEditMode}

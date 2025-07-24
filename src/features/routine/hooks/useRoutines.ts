@@ -3,6 +3,7 @@ import { getRoutinesByProfile } from "@/features/routine/apis";
 import {
   NewRoutineWithContents,
   RoutineWithContentsModel,
+  UpdateRoutineWithContents,
 } from "@/entities/routine/schema";
 import { useCallback, useState } from "react";
 import { useProfile } from "@/features/profile/hooks/useProfiles";
@@ -76,6 +77,34 @@ async function addRoutineFetcher(
   return response.json();
 }
 
+async function updateRoutineFetcher(
+  url: string,
+  { arg }: { arg: UpdateRoutineWithContents }
+) {
+  const processedContents = await Promise.all(
+    arg.contents.map(async (content) => {
+      if (content.image && content.image.startsWith("blob:http")) {
+        const base64Image = await blobUrlToBase64(content.image);
+        return { ...content, image: base64Image };
+      }
+      return content;
+    })
+  );
+
+  const response = await fetch(url, {
+    headers: commonHeader,
+    method: "PATCH",
+    body: JSON.stringify({ ...arg, contents: processedContents }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || ROUTINE_MESSAGE.FAIL_UPDATE);
+  }
+
+  return response.json();
+}
+
 export function useRoutines() {
   const profileId = useProfileStore((state) => state.currentProfile?.id);
   const shouldFetch = Boolean(profileId);
@@ -102,6 +131,12 @@ export function useRoutines() {
     error: addError,
     isMutating: isAdding,
   } = useSWRMutation("api/routine", addRoutineFetcher);
+
+  const {
+    trigger: updateRoutine,
+    error: updateError,
+    isMutating: isUpdating,
+  } = useSWRMutation("/api/routine", updateRoutineFetcher);
 
   const { trigger: triggerToggleFavorite } = useSWRMutation(
     "/api/routine/favorite",
@@ -189,5 +224,8 @@ export function useRoutines() {
     addRoutine, // 루틴 추가 함수
     addError, // 루틴 추가 에러
     isAdding, // 루틴 추가 중 여부
+    updateError,
+    updateRoutine,
+    isUpdating,
   };
 }

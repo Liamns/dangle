@@ -224,7 +224,7 @@ const FavoriteRoutineCard = memo(
                     onClick={handleShareClick}
                   >
                     <Text
-                      text="일정 공유하기"
+                      text="루틴 공유하기"
                       color={Colors.white}
                       fontWeight="bold"
                     />

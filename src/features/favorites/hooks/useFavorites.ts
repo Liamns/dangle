@@ -8,48 +8,69 @@ import {
   ScheduleWithItemsModel,
 } from "@/entities/schedule/model";
 import { RoutineWithContentsModel } from "@/entities/routine/schema";
+import { useProfileStore } from "@/entities/profile/store";
+import { commonHeader } from "@/shared/consts/apis";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
+import useSWRMutation from "swr/mutation";
 
 export type FavoriteType = "routine" | "schedule";
 export type FavoriteItem = RoutineWithContentsModel | ScheduleWithItemsModel;
 
-/**
- * 즐겨찾기 관리 훅 - 루틴 및 스케줄 즐겨찾기를 단일 인터페이스로 관리
- * @param profileId 프로필 ID
- * @param type 'routine' 또는 'schedule' (즐겨찾기 유형)
- * @returns 즐겨찾기 데이터와 관련 함수들
- */
-export function useFavorites(profileId: string, type: FavoriteType) {
+async function getFavoritesFetcher(url: string) {
+  const response = await fetch(url, {
+    headers: commonHeader,
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || COMMON_MESSAGE.WRONG_ACCESS);
+  }
+
+  return response.json();
+}
+
+async function updateScheduleFavoriteFetcher(
+  url: string,
+  { arg }: { arg: { id: number; alias: string; icon: number } }
+) {
+  const response = await fetch(url, {
+    headers: commonHeader,
+    method: "PATCH",
+    body: JSON.stringify(arg),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || COMMON_MESSAGE.WRONG_ACCESS);
+  }
+
+  return response.json();
+}
+
+export function useFavorites(type: FavoriteType) {
+  const profileId = useProfileStore((s) => s.currentProfile?.id);
+  const shouldFetch = Boolean(profileId);
+  const endPoint = shouldFetch
+    ? `/api/${type === "routine" ? "routine" : "schedule"}/favorite?profileId=${profileId}`
+    : null;
   // 진행 중인 즐겨찾기 토글 요청 추적
   const [pendingFavorites, setPendingFavorites] = useState<Set<number>>(
     new Set()
   );
 
-  // 기존 API에서 FavoriteItem[] 타입으로 변환하는 함수
-  async function fetchFavorites(): Promise<FavoriteItem[]> {
-    // API 호출
-    const apiData = await getFavoritesByType(profileId, type);
+  const {
+    data,
+    isLoading: isFetching,
+    mutate: revalidateFavorites,
+    error: fetchError,
+  } = useSWR<FavoriteItem[]>(endPoint, getFavoritesFetcher);
 
-    // 즐겨찾기 항목 반환 (각 타입별 실제 모델 사용)
-    if (type === "routine") {
-      // RoutineWithContentsModel[]을 그대로 사용
-      return apiData as RoutineWithContentsModel[];
-    } else {
-      // ScheduleWithItemsModel[]을 그대로 사용 (이제 동일한 방식으로 처리)
-      return apiData as ScheduleWithItemsModel[];
-    }
-  }
-
-  // SWR을 사용한 데이터 페칭 - FavoriteItem[] 타입으로 직접 가져옴
-  const { data, error, isLoading, mutate } = useSWR<FavoriteItem[]>(
-    profileId ? [`favorites-${type}`, profileId] : null,
-    fetchFavorites,
-    {
-      revalidateOnFocus: false,
-      keepPreviousData: true,
-      dedupingInterval: 1000, // 1초 동안 중복 요청 방지
-    }
-  );
-
+  const {
+    trigger: updateScheduleFavorite,
+    isMutating: isScheduleFavoriteUpdating,
+    error: updateError,
+  } = useSWRMutation("/api/schedule/favorite", updateScheduleFavoriteFetcher);
   /**
    * 즐겨찾기 토글 함수 - API 호출
    * 루틴: isFavorite 플래그만 토글
@@ -77,7 +98,7 @@ export function useFavorites(profileId: string, type: FavoriteType) {
           // 루틴의 경우 isFavorite 플래그만 토글
           if (isFavorited) {
             // 즐겨찾기 해제 - 목록에서 제거
-            mutate(
+            revalidateFavorites(
               (prevItems) =>
                 prevItems?.filter(
                   (item) => (item as RoutineWithContentsModel).id !== id
@@ -90,7 +111,10 @@ export function useFavorites(profileId: string, type: FavoriteType) {
             targetRoutine.isFavorite = true;
 
             // 목록에 추가
-            mutate((prevItems) => [...(prevItems || []), targetRoutine], false);
+            revalidateFavorites(
+              (prevItems) => [...(prevItems || []), targetRoutine],
+              false
+            );
           } else {
             console.error("즐겨찾기 추가에 필요한 루틴 데이터가 없습니다");
             return;
@@ -99,7 +123,7 @@ export function useFavorites(profileId: string, type: FavoriteType) {
           // 일정의 경우도 루틴과 동일한 방식으로 처리
           if (isFavorited) {
             // 즐겨찾기 해제 - 목록에서 제거
-            mutate(
+            revalidateFavorites(
               (prevItems) =>
                 prevItems?.filter(
                   (item) => (item as ScheduleWithItemsModel).id !== id
@@ -128,7 +152,7 @@ export function useFavorites(profileId: string, type: FavoriteType) {
             targetSchedule.addedAt = new Date();
 
             // 목록에 추가
-            mutate(
+            revalidateFavorites(
               (prevItems) => [...(prevItems || []), targetSchedule],
               false
             );
@@ -142,12 +166,12 @@ export function useFavorites(profileId: string, type: FavoriteType) {
         await toggleFavoriteByType(profileId, id, type);
 
         // 성공 시 캐시 갱신 (선택사항)
-        mutate();
+        revalidateFavorites();
       } catch (error) {
         console.error("즐겨찾기 토글 실패:", error);
 
         // 실패 시 롤백
-        mutate();
+        revalidateFavorites();
 
         throw error;
       } finally {
@@ -159,7 +183,7 @@ export function useFavorites(profileId: string, type: FavoriteType) {
         });
       }
     },
-    [profileId, data, type, pendingFavorites, mutate]
+    [profileId, data, type, pendingFavorites, revalidateFavorites]
   );
 
   /**
@@ -203,14 +227,17 @@ export function useFavorites(profileId: string, type: FavoriteType) {
   );
 
   return {
-    favorites: data ?? [],
-    isLoading,
-    error,
-    mutate,
+    favorites: data || [],
+    isFetching,
+    fetchError,
+    revalidateFavorites,
     toggleFavorite,
     isFavorited,
     getFavoriteItem,
     isToggling,
     pendingFavorites,
+    updateScheduleFavorite,
+    isScheduleFavoriteUpdating,
+    updateError,
   };
 }

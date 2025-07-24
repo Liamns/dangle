@@ -3,7 +3,7 @@
 import styles from "./FavoriteScheduleCard.module.scss";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/shared/components/layout";
-import { FavoriteItem } from "../hooks/useFavorites";
+import { FavoriteItem, useFavorites } from "../hooks/useFavorites";
 import {
   ScheduleModel,
   ScheduleWithItemsModel,
@@ -21,6 +21,8 @@ import RegisterFavoriteScheduleModal from "@/features/schedule/components/Regist
 import chkbox from "@/shared/styles/buttons.module.scss";
 import cn from "classnames";
 import { getFavoriteScheduleIconByType } from "@/entities/schedule/utils";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
+import { useSchedules } from "@/features/schedule/hooks/useSchedules";
 
 interface FavoriteScheduleCardProps {
   favorites: ScheduleWithItemsModel[];
@@ -48,6 +50,9 @@ const FavoriteScheduleCard = memo(
     }>({});
     const isMountedRef = useRef<{ [key: number]: boolean }>({});
     const wasActiveRef = useRef<{ [key: number]: boolean }>({});
+
+    const { updateScheduleFavorite } = useFavorites("schedule");
+    const { toggleScheduleFavorite, revalidateSchedule } = useSchedules();
 
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
@@ -178,11 +183,10 @@ const FavoriteScheduleCard = memo(
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const handleEditModalSave = useCallback(
-      (id: number, alias: string, icon: number) => {
+      async (id: number, alias: string, icon: number) => {
         if (editingIndex !== null) {
-          const itemToUpdate = sorted[editingIndex];
-          // API 호출 등 업데이트 로직
-          console.log(`Updating item: ${itemToUpdate}`, alias, icon, id);
+          await updateScheduleFavorite({ id: id, alias: alias, icon: icon });
+          alert(COMMON_MESSAGE.SUCCESS);
           setIsEditModalOpen(false);
           setEditingIndex(null);
         }
@@ -325,8 +329,14 @@ const FavoriteScheduleCard = memo(
                       >
                         <div
                           className={styles.deleteButton}
-                          onClick={() => {
-                            alert(`${item.alias} 삭제`);
+                          onClick={async () => {
+                            await toggleScheduleFavorite({
+                              id: item.id,
+                              alias: "",
+                              icon: 0,
+                            });
+                            revalidateSchedule();
+                            alert(COMMON_MESSAGE.SUCCESS);
                             setActiveIndex(null);
                           }}
                         >

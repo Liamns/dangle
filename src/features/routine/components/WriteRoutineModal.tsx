@@ -205,7 +205,7 @@ const WriteRoutineModal = memo(
       },
       (errors) => {
         console.error("onSubmitUpdate validation errors:", errors);
-        alert("루틴 수정에 실패했습니다. 입력값을 확인해주세요.");
+        alert(ROUTINE_MESSAGE.FAIL_UPDATE);
       }
     );
 

@@ -71,7 +71,10 @@ export type ScheduleFormData = z.infer<typeof scheduleSchema>;
 // 일정 아이템 생성/수정 스키마 (API 요청용)
 export const scheduleItemSchema = z.object({
   scheduleId: z.number().int().positive("유효한 일정을 선택해주세요."),
-  subCategoryId: z.number().int().positive("유효한 서브 카테고리를 선택해주세요."),
+  subCategoryId: z
+    .number()
+    .int()
+    .positive("유효한 서브 카테고리를 선택해주세요."),
   startAt: z
     .string()
     .or(z.date())
@@ -90,7 +93,7 @@ export type ScheduleItemFormData = z.infer<typeof scheduleItemSchema>;
 
 // 즐겨찾기 일정 정보 스키마 (API 요청용)
 export const favoriteScheduleSchema = z.object({
-  // 즐겨찾기 정보만 포함 (스케줄 ID는 이제 필요 없음)
+  id: z.number().int().positive("유효한 일정을 선택해주세요."),
   alias: z
     .string()
     .min(2, "별칭은 최소 2자 이상이어야 합니다.")
@@ -120,7 +123,10 @@ export const createScheduleSchema = scheduleSchema.extend({
   items: z
     .array(
       z.object({
-        subCategoryId: z.number().int().positive("유효한 서브 카테고리를 선택해주세요."),
+        subCategoryId: z
+          .number()
+          .int()
+          .positive("유효한 서브 카테고리를 선택해주세요."),
         startAt: z
           .string()
           .or(z.date())

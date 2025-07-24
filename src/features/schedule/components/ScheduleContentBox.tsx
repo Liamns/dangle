@@ -15,7 +15,13 @@ import { useRouter } from "next/navigation";
 import { encrypt } from "@/shared/lib/crypto";
 import RegisterFavoriteScheduleModal from "./RegisterFavoriteScheduleModal";
 import { FavoriteScheduleFormData } from "@/entities/schedule/schema";
-import { ScheduleWithItemsModel } from "@/entities/schedule/model";
+import {
+  ScheduleModel,
+  ScheduleWithItemsModel,
+} from "@/entities/schedule/model";
+import { toggleScheduleFavorite } from "@/features/favorites/apis";
+import { useSchedules } from "../hooks/useSchedules";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 interface ScheduleContentProps {
   isEditMode: boolean;
@@ -39,6 +45,8 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   isLoading,
 }) => {
   const router = useRouter();
+  const { toggleScheduleFavorite, isScheduleToggling, revalidateSchedule } =
+    useSchedules();
 
   const handleEmptyClick = useCallback(() => {
     // 빈 상태에서 일정 추가 버튼 클릭 시
@@ -103,15 +111,19 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false);
 
   const handleRegisterFavorite = useCallback(
-    (alias: string, icon: number) => {
+    async (alias: string, icon: number) => {
       if (!schedule || !currentProfile) return;
+      if (isScheduleToggling) return;
 
       const favoriteData: FavoriteScheduleFormData = {
+        id: schedule.id,
         alias: alias,
         icon: icon,
       };
-      console.log("즐겨찾기 등록 데이터:", favoriteData);
-      alert("즐겨찾기 여부에 따른 기능 구현 필요");
+
+      const result: ScheduleModel = await toggleScheduleFavorite(favoriteData);
+      revalidateSchedule();
+      alert(COMMON_MESSAGE.SUCCESS);
     },
     [isFavorite, currentProfile]
   );
@@ -134,7 +146,9 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
                   isFavorite ? styles.active : ""
                 }`}
                 onClick={() => {
-                  setIsFavoriteModalOpen(true);
+                  isFavorite
+                    ? handleRegisterFavorite("", 0)
+                    : setIsFavoriteModalOpen(true);
                 }}
               >
                 <Favorite
