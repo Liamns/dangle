@@ -52,12 +52,18 @@ export default function CompleteInputProfile() {
   const petSpec = registeringProfile?.petSpec ?? 0;
 
   const personality = determinePersonalityType(registeringProfile);
-  if (personality === null) {
-    if (typeof window !== "undefined") {
-      window.alert("성격 유형을 찾을 수 없습니다.");
+
+  useEffect(() => {
+    if (personality === null) {
+      if (typeof window !== "undefined") {
+        window.alert("성격 유형을 찾을 수 없습니다.");
+      }
+      router.push("/profile/input/pet-personality");
     }
-    router.push("/profile/input/pet-personality");
-    return null;
+  }, [personality, router]);
+
+  if (personality === null) {
+    return <LoadingOverlay isLoading />;
   }
 
   const tag = personalityTypeMap[personality].tag;
