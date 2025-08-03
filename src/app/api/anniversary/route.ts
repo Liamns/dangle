@@ -85,6 +85,6 @@ export async function PATCH(req: Request) {
     );
   } catch (e: any) {
     console.error(`update anniv error: ${e}`);
-    return NextResponse.json({ error: e.message }, { status: 400 });
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

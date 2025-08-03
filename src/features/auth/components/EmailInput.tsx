@@ -144,7 +144,6 @@ export const EmailInput: React.FC<EmailInputProps> = ({
                 {domain}
               </option>
             ))}
-            <option value="etc">직접 입력</option>
           </select>
         )}
       </div>

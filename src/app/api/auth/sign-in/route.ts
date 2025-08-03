@@ -29,7 +29,11 @@ export async function POST(req: Request) {
       });
 
     if (signInError) {
-      return NextResponse.json({ error: signInError.message }, { status: 500 });
+      console.error("sign in error :", signInError);
+      return NextResponse.json(
+        { error: signInError.message },
+        { status: signInError.status || 400 }
+      );
     }
 
     const user = await prisma.user.findFirst({
