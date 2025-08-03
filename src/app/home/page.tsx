@@ -10,6 +10,10 @@ import Onboarding from "@/features/onboarding/Onboarding";
 import { useProfile } from "@/features/profile/hooks/useProfiles";
 import { useAnniversaries } from "@/features/anniversary/hooks/useAnniversaries";
 import { useSchedules } from "@/features/schedule/hooks/useSchedules";
+import { useProfileStore } from "@/entities/profile/store";
+import { useAnniversaryStore } from "@/entities/anniversary/store";
+import { useScheduleStore } from "@/entities/schedule/store";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
 
 /**
  * 홈 페이지 컴포넌트
@@ -19,11 +23,21 @@ export default function Home() {
   const innerBoxRef = useRef<HTMLDivElement>(null);
   const [innerBoxHeight, setInnerBoxHeight] = useState(0);
   const isFirst = useUserStore((state) => state.isFirst);
-  // 데이터 로딩을 시작시키기 위해 훅을 호출합니다.
-  // 반환된 profiles, isProcessing 등은 여기서 직접 사용하지 않습니다.
-  useProfile();
-  useAnniversaries();
-  useSchedules();
+
+  const { isProcessing: isProfileProcessing } = useProfile();
+  const { _hasHydrated: profileHydrated } = useProfileStore();
+  const { isProcessing: isAnnivProcessing } = useAnniversaries();
+  const { _hasHydrated: annivHydrated } = useAnniversaryStore();
+  const { isProcessing: isScheduleProcessing } = useSchedules();
+  const { _hasHydrated: scheduleHydrated } = useScheduleStore();
+
+  const isReady =
+    !isProfileProcessing &&
+    !isAnnivProcessing &&
+    !isScheduleProcessing &&
+    profileHydrated &&
+    annivHydrated &&
+    scheduleHydrated;
 
   /**
    * InnerBox 아래 공간의 높이를 계산하는 함수
@@ -57,13 +71,13 @@ export default function Home() {
       window.removeEventListener("resize", calculateInnerBoxHeight);
       clearTimeout(timer);
     };
-  }, [calculateInnerBoxHeight, isFirst]);
+  }, [calculateInnerBoxHeight, isFirst, isReady]);
 
   return (
     <InnerWrapper>
       {isFirst ? (
         <Onboarding />
-      ) : (
+      ) : isReady ? (
         <>
           <InnerBox ref={innerBoxRef}>
             <Spacer height="32" />
@@ -78,6 +92,8 @@ export default function Home() {
 
           <BottomNavBar />
         </>
+      ) : (
+        <LoadingOverlay isLoading={true} />
       )}
     </InnerWrapper>
   );
