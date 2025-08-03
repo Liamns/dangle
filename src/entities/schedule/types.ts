@@ -3,6 +3,8 @@
  * 메인 카테고리, 서브 카테고리 및 관련 유틸리티 함수를 정의합니다.
  */
 
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
+
 // 메인 카테고리 정의
 export const mainCategories = [
   "건강",
@@ -305,7 +307,6 @@ export function getSubCategoryImagePath(subCategory: SubCategory): string {
  * @returns 메인 카테고리와 서브 카테고리 ID로 이미지 경로를 반환하는 함수
  */
 export function getSubCategoryImagePathById(
-  mainCategoryId: number,
   subCategoryId: number
 ): string | null {
   const subCategoryName = getSubCategoryNameById(subCategoryId);

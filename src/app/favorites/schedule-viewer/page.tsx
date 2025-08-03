@@ -16,6 +16,8 @@ import cn from "classnames";
 import ChevronSvg from "@/shared/svgs/chevron.svg";
 import {
   getSubCategoryImagePath,
+  getSubCategoryImagePathById,
+  getSubCategoryNameById,
   SubCategory,
 } from "@/entities/schedule/types";
 import { formatTime } from "@/shared/lib/date";
@@ -192,7 +194,10 @@ function FavoriteScheduleViewer() {
                           <div className={styles.cardContentBox}>
                             {schedule.items.map(
                               (
-                                item: ScheduleItemWithSubCategoryModel,
+                                item: Omit<
+                                  ScheduleItemWithSubCategoryModel,
+                                  "subCategory"
+                                >,
                                 itemIndex: number
                               ) => {
                                 return (
@@ -205,10 +210,16 @@ function FavoriteScheduleViewer() {
                                         className={styles.cardContentPrefixIcon}
                                       >
                                         <Image
-                                          src={getSubCategoryImagePath(
-                                            item.subCategory.name as SubCategory
-                                          )}
-                                          alt={item.subCategory.name}
+                                          src={
+                                            getSubCategoryImagePathById(
+                                              item.subCategoryId
+                                            )!
+                                          }
+                                          alt={
+                                            getSubCategoryNameById(
+                                              item.subCategoryId
+                                            )!
+                                          }
                                           fill
                                         />
                                       </div>
@@ -218,7 +229,11 @@ function FavoriteScheduleViewer() {
                                         }
                                       ></div>
                                       <Text
-                                        text={item.subCategory.name}
+                                        text={
+                                          getSubCategoryNameById(
+                                            item.subCategoryId
+                                          )!
+                                        }
                                         color={Colors.black}
                                         fontWeight="bold"
                                       />
