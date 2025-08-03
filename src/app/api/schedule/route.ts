@@ -15,6 +15,7 @@ export async function GET(req: Request) {
     const date = searchParams.get("date");
 
     if (!profileId || !date) {
+      console.error("/api/schedule GET", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -59,6 +60,7 @@ export async function POST(req: Request) {
       !inputData ||
       Object.keys(inputData).length === 0
     ) {
+      console.error("/api/schedule POST", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -88,6 +90,7 @@ export async function POST(req: Request) {
           console.log(key, "제거");
           const subId = getSubIdByName(key as SubCategory);
           if (!subId) {
+            console.error("/api/schedule POST", COMMON_MESSAGE.WRONG_ACCESS);
             return NextResponse.json(
               { error: COMMON_MESSAGE.WRONG_ACCESS },
               { status: 400 }
@@ -159,6 +162,7 @@ export async function PATCH(req: Request) {
     const { itemId, isFavorite, item } = await req.json();
 
     if (!itemId || isFavorite === undefined || !item) {
+      console.error("/api/schedule PATCH", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -181,6 +185,10 @@ export async function PATCH(req: Request) {
     });
 
     if (!findItem || !findItem.schedule) {
+      console.error(
+        "/api/schedule PATCH",
+        SCHEDULE_MESSAGE.UNKNOWN_SCHEDULE_ITEM
+      );
       return NextResponse.json(
         { error: SCHEDULE_MESSAGE.UNKNOWN_SCHEDULE_ITEM },
         { status: 400 }
@@ -240,6 +248,7 @@ export async function DELETE(req: Request) {
     } = await supabase.auth.getSession();
 
     if (!session) {
+      console.error("/api/schedule DELETE", AUTH_ERROR_MESSAGE.FAIL_AUTH);
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.FAIL_AUTH },
         { status: 401 }
@@ -251,6 +260,7 @@ export async function DELETE(req: Request) {
     const subId = searchParams.get("subId");
 
     if (!scheduleId || !subId) {
+      console.error("/api/schedule DELETE", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }

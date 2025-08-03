@@ -14,6 +14,10 @@ export async function POST(req: Request) {
     const { id, alias, icon } = data;
 
     if (!data) {
+      console.error(
+        "/api/schedule/favorite POST",
+        COMMON_MESSAGE.WRONG_ACCESS
+      );
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -30,6 +34,10 @@ export async function POST(req: Request) {
     });
 
     if (!existingSchedule) {
+      console.error(
+        "/api/schedule/favorite POST",
+        ROUTINE_MESSAGE.EMPTY_ROUTINE
+      );
       return NextResponse.json(
         { error: ROUTINE_MESSAGE.EMPTY_ROUTINE },
         { status: 404 }
@@ -47,6 +55,10 @@ export async function POST(req: Request) {
       };
     } else {
       if (!alias || !icon) {
+        console.error(
+          "/api/schedule/favorite POST",
+          FAVORITE_MESSAGE.EMPTY_SCHEDULE_DATA
+        );
         return NextResponse.json(
           { error: FAVORITE_MESSAGE.EMPTY_SCHEDULE_DATA },
           { status: 400 }
@@ -78,6 +90,10 @@ export async function GET(req: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
+      console.error(
+        "/api/schedule/favorite GET",
+        AUTH_ERROR_MESSAGE.FAIL_AUTH
+      );
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.FAIL_AUTH },
         { status: 401 }
@@ -94,6 +110,10 @@ export async function GET(req: Request) {
     });
 
     if (!profiles) {
+      console.error(
+        "/api/schedule/favorite GET",
+        FAVORITE_MESSAGE.EMPTY_PROFILEID
+      );
       return NextResponse.json({ error: FAVORITE_MESSAGE.EMPTY_PROFILEID });
     }
 
@@ -103,6 +123,10 @@ export async function GET(req: Request) {
     const profileId = profiles.find((p) => p.id === getId)?.id;
 
     if (!profileId) {
+      console.error(
+        "/api/schedule/favorite GET",
+        FAVORITE_MESSAGE.EMPTY_PROFILEID
+      );
       return NextResponse.json({ error: FAVORITE_MESSAGE.EMPTY_PROFILEID });
     }
 
@@ -129,6 +153,10 @@ export async function PATCH(req: Request) {
       await req.json();
 
     if (isNaN(id) || !alias || isNaN(icon)) {
+      console.error(
+        "/api/schedule/favorite PATCH",
+        FAVORITE_MESSAGE.EMPTY_SCHEDULE_DATA
+      );
       return NextResponse.json(
         { error: FAVORITE_MESSAGE.EMPTY_SCHEDULE_DATA },
         { status: 400 }

@@ -12,6 +12,10 @@ export async function POST(req: Request) {
     const { email, forgot } = await req.json();
 
     if (!email) {
+      console.error(
+        "/api/auth/send-verification POST",
+        AUTH_ERROR_MESSAGE.EMPTY_EMAIL
+      );
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.EMPTY_EMAIL },
         { status: 400 }
@@ -25,6 +29,10 @@ export async function POST(req: Request) {
     });
     if (forgot) {
       if (!user) {
+        console.error(
+          "/api/auth/send-verification POST",
+          AUTH_ERROR_MESSAGE.UNKNOWN_EMAIL
+        );
         return NextResponse.json(
           { error: AUTH_ERROR_MESSAGE.UNKNOWN_EMAIL },
           { status: 400 }
@@ -32,6 +40,10 @@ export async function POST(req: Request) {
       }
     } else {
       if (user) {
+        console.error(
+          "/api/auth/send-verification POST",
+          AUTH_ERROR_MESSAGE.DUPLICATED
+        );
         return NextResponse.json(
           { error: AUTH_ERROR_MESSAGE.DUPLICATED },
           { status: 400 }

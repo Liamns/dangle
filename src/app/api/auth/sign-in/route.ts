@@ -9,12 +9,14 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
     if (!email) {
+      console.error("/api/auth/sign-in POST", AUTH_ERROR_MESSAGE.EMPTY_EMAIL);
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.EMPTY_EMAIL },
         { status: 400 }
       );
     }
     if (!password) {
+      console.error("/api/auth/sign-in POST", AUTH_ERROR_MESSAGE.EMPTY_PW);
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.EMPTY_PW },
         { status: 400 }
@@ -43,6 +45,7 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
+      console.error("/api/auth/sign-in POST", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }

@@ -14,6 +14,7 @@ export async function GET(req: Request) {
     const userId = searchParams.get("userId");
 
     if (!userId) {
+      console.error("/api/profile GET", COMMON_MESSAGE.UNKNOWN_USER);
       return NextResponse.json(
         { error: COMMON_MESSAGE.UNKNOWN_USER },
         { status: 400 }
@@ -40,6 +41,7 @@ export async function POST(req: Request) {
     const { profileData } = await req.json();
 
     if (!profileData.userId || profileData.userId === EMPTY_PROFILE.id) {
+      console.error("/api/profile POST", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -79,6 +81,7 @@ export async function PATCH(req: Request) {
     const { inputData } = await req.json();
 
     if (!inputData) {
+      console.error("/api/profile PATCH", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -88,6 +91,7 @@ export async function PATCH(req: Request) {
     const validation = profileModelSchema.safeParse(inputData);
 
     if (!validation) {
+      console.error("/api/profile PATCH", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }

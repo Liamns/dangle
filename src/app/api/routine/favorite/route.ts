@@ -11,6 +11,10 @@ export async function POST(req: Request) {
     const { routineId, profileId } = await req.json();
 
     if (!routineId || !profileId) {
+      console.error(
+        "/api/routine/favorite POST",
+        FAVORITE_MESSAGE.TOGGLE_ROUTINE
+      );
       return NextResponse.json({ error: FAVORITE_MESSAGE.TOGGLE_ROUTINE });
     }
 
@@ -25,6 +29,10 @@ export async function POST(req: Request) {
     });
 
     if (!fav) {
+      console.error(
+        "/api/routine/favorite POST",
+        ROUTINE_MESSAGE.EMPTY_ROUTINE
+      );
       return NextResponse.json(
         { error: ROUTINE_MESSAGE.EMPTY_ROUTINE },
         { status: 400 }
@@ -61,6 +69,10 @@ export async function GET(req: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
+      console.error(
+        "/api/routine/favorite GET",
+        AUTH_ERROR_MESSAGE.FAIL_AUTH
+      );
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.FAIL_AUTH },
         { status: 401 }
@@ -77,6 +89,10 @@ export async function GET(req: Request) {
     });
 
     if (!profiles) {
+      console.error(
+        "/api/routine/favorite GET",
+        FAVORITE_MESSAGE.EMPTY_PROFILEID
+      );
       return NextResponse.json({ error: FAVORITE_MESSAGE.EMPTY_PROFILEID });
     }
 
@@ -86,6 +102,10 @@ export async function GET(req: Request) {
     const profileId = profiles.find((p) => p.id === getId)?.id;
 
     if (!profileId) {
+      console.error(
+        "/api/routine/favorite GET",
+        FAVORITE_MESSAGE.EMPTY_PROFILEID
+      );
       return NextResponse.json({ error: FAVORITE_MESSAGE.EMPTY_PROFILEID });
     }
 

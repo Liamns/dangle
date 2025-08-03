@@ -7,6 +7,10 @@ export async function POST(req: Request) {
     const { profileId, subIds } = await req.json();
 
     if (!profileId || !subIds || !Array.isArray(subIds)) {
+      console.error(
+        "/api/schedule/favorite/sub POST",
+        COMMON_MESSAGE.WRONG_ACCESS
+      );
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }

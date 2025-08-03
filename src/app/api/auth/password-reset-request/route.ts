@@ -9,6 +9,10 @@ export async function POST(req: Request) {
     const supabase = await createClient();
     const { email } = await req.json();
     if (!email) {
+      console.error(
+        "/api/auth/password-reset-request POST",
+        AUTH_ERROR_MESSAGE.EMPTY_EMAIL
+      );
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.EMPTY_EMAIL },
         { status: 400 }

@@ -16,6 +16,7 @@ export async function GET(req: Request) {
     const profileId = searchParams.get("profileId");
 
     if (!profileId) {
+      console.error("/api/routine GET", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -48,6 +49,7 @@ export async function POST(req: Request) {
     const inputData = await req.json();
 
     if (!inputData) {
+      console.error("/api/routine POST", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -78,9 +80,9 @@ export async function POST(req: Request) {
             });
 
           if (error) {
-            console.error("Supabase 이미지 업로드 에러:", error);
-            throw new Error("이미지 업로드에 실패했습니다.");
-          }
+      console.error("/api/routine POST Supabase 이미지 업로드 에러:", error);
+      throw new Error("이미지 업로드에 실패했습니다.");
+    }
 
           // 업로드된 이미지의 공개 URL 가져오기
           const { data: publicUrlData } = supabase.storage
@@ -136,6 +138,7 @@ export async function PATCH(req: Request) {
     } = inputData;
 
     if (!routineId) {
+      console.error("/api/routine PATCH", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }

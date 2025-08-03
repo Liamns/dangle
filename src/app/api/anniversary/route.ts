@@ -8,6 +8,7 @@ export async function GET(req: Request) {
     const userId = searchParams.get("userId");
 
     if (!userId) {
+      console.error("/api/anniversary GET", COMMON_MESSAGE.UNKNOWN_USER);
       return NextResponse.json(
         { error: COMMON_MESSAGE.UNKNOWN_USER },
         { status: 400 }
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
     const { inputData } = await req.json();
 
     if (!inputData || !inputData.userId) {
+      console.error("/api/anniversary POST", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -64,6 +66,7 @@ export async function PATCH(req: Request) {
     const { inputData } = await req.json();
 
     if (!inputData || !inputData.id) {
+      console.error("/api/anniversary PATCH", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }

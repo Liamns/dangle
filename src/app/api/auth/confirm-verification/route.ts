@@ -9,6 +9,10 @@ export async function POST(req: Request) {
     const { email, code } = await req.json();
 
     if (!email || !code) {
+      console.error(
+        "comfirm-verification error",
+        AUTH_ERROR_MESSAGE.EMPTY_CODE
+      );
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.EMPTY_CODE },
         { status: 400 }
@@ -25,6 +29,10 @@ export async function POST(req: Request) {
     });
 
     if (!verificationToken || new Date() > verificationToken.expires) {
+      console.error(
+        "/api/auth/confirm-verification POST",
+        AUTH_ERROR_MESSAGE.EMPTY_CODE
+      );
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.EMPTY_CODE },
         { status: 400 }
@@ -34,6 +42,10 @@ export async function POST(req: Request) {
     const isCodeValid = await bcrypt.compare(code, verificationToken.token);
 
     if (!isCodeValid) {
+      console.error(
+        "/api/auth/confirm-verification POST",
+        AUTH_ERROR_MESSAGE.WRONG_CODE
+      );
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.WRONG_CODE },
         { status: 400 }

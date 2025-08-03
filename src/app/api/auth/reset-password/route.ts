@@ -9,6 +9,10 @@ export async function POST(req: Request) {
     const { email, password } = await req.json();
 
     if (!email || !password) {
+      console.error(
+        "/api/auth/reset-password POST",
+        "Email and password are required"
+      );
       return NextResponse.json(
         { error: "Email and password are required" },
         { status: 400 }
@@ -34,6 +38,10 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
+      console.error(
+        "/api/auth/reset-password POST",
+        AUTH_ERROR_MESSAGE.UNKNOWN_EMAIL
+      );
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.UNKNOWN_EMAIL },
         { status: 400 }
@@ -47,6 +55,7 @@ export async function POST(req: Request) {
       });
 
     if (updateError) {
+      console.error("/api/auth/reset-password POST", updateError.message);
       return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
 
