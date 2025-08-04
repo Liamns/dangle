@@ -7,6 +7,8 @@ import { decrypt } from "@/shared/lib/crypto";
 import {
   ScheduleWithItemsModel,
   ScheduleItemWithSubCategoryModel,
+  NewScheduleItem,
+  ExtendedCategorySubModel,
 } from "@/entities/schedule/model";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
@@ -15,13 +17,17 @@ import Image from "next/image";
 import cn from "classnames";
 import ChevronSvg from "@/shared/svgs/chevron.svg";
 import {
-  getSubCategoryImagePath,
   getSubCategoryImagePathById,
   getSubCategoryNameById,
   SubCategory,
 } from "@/entities/schedule/types";
 import { formatTime } from "@/shared/lib/date";
 import { EMPTY_PROFILE, useProfileStore } from "@/entities/profile/store";
+import { useSchedules } from "@/features/schedule/hooks/useSchedules";
+import { useFavorites } from "@/features/favorites/hooks/useFavorites";
+import { SCHEDULE_MESSAGE } from "@/features/schedule/consts";
+import { FavoriteScheduleFormData } from "@/entities/schedule/schema";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 function FavoriteScheduleViewer() {
   const [hydrated, setHydrated] = useState(false);
@@ -76,23 +82,72 @@ function FavoriteScheduleViewer() {
   }, [currentIndex, goToPage]);
 
   const profile = useProfileStore((state) => state.currentProfile);
+  const {
+    addSchedule,
+    isProcessing,
+    toggleScheduleFavorite,
+    isScheduleToggling,
+  } = useSchedules();
 
   const handleSave = useCallback(
-    (data: ScheduleWithItemsModel) => {
+    async (data: ScheduleWithItemsModel) => {
       if (!profile || profile === EMPTY_PROFILE) {
         alert("댕글 회원가입 후 이용해주세요.");
         return;
       }
 
-      alert("즐겨찾기에 일정 추가로직");
-      console.log("Saving schedule:", data);
+      if (profile.id === data.profileId) {
+        alert(SCHEDULE_MESSAGE.OWNED_SCHEDULE);
+        return;
+      }
+
+      const current = new Date();
+      const today = current.toLocaleDateString("en-CA");
+
+      type InputData = Partial<
+        Record<
+          SubCategory,
+          { startAt: Date; subCategory: ExtendedCategorySubModel }
+        >
+      >;
+
+      const inputData = data.items.reduce<InputData>((acc, item) => {
+        const key = getSubCategoryNameById(item.subCategoryId) as SubCategory;
+
+        const value = {
+          startAt: item.startAt,
+          subCategory: item.subCategory,
+        };
+
+        acc[key] = value;
+
+        return acc;
+      }, {});
+
+      await addSchedule({
+        profileId: profile.id,
+        date: today,
+        inputData: inputData,
+      });
+
+      const favoriteForm: FavoriteScheduleFormData = {
+        id: data.id,
+        alias: data.alias || `${currentIndex + 1}번째 일정`,
+        icon: data.icon || 0,
+      };
+
+      await toggleScheduleFavorite(favoriteForm);
+
+      alert(COMMON_MESSAGE.SUCCESS);
     },
-    [currentIndex, profile]
+    [currentIndex, profile, addSchedule, toggleScheduleFavorite]
   );
 
   return (
     <InnerWrapper>
-      {schedules.length > 0 ? (
+      {isProcessing && isScheduleToggling ? (
+        <LoadingOverlay isLoading />
+      ) : schedules.length > 0 ? (
         <div className={styles.container}>
           {/* Title */}
           <div className={styles.titleBox}>

@@ -188,14 +188,14 @@ const RoutineViewModal = memo(
           {/* End of Slider Wrapper */}
 
           {/* 공유 버튼 */}
-          <div className={styles.button}>
+          {/* <div className={styles.button}>
             <Text
               text="루틴 공유하기"
               color={Colors.white}
               fontSize="lg"
               fontWeight="bold"
             />
-          </div>
+          </div> */}
         </div>
       </Modal>
     );
