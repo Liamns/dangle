@@ -14,8 +14,8 @@ import { PROFILE_ERROR_MESSAGE } from "@/features/profile/consts";
 import { commonHeader } from "@/shared/consts/apis";
 import { COMMON_MESSAGE } from "@/shared/consts/messages";
 import { NextResponse } from "next/server";
-import { useEffect } from "react";
-import useSWR from "swr";
+import { useCallback, useEffect } from "react";
+import useSWR, { useSWRConfig } from "swr";
 import useSWRMutation from "swr/mutation";
 
 async function getSchedulesFetcher(
@@ -159,6 +159,7 @@ async function toggleScheduleFavoriteFetcher(
  */
 export function useSchedules(date?: string) {
   const profileId = useProfileStore((state) => state.currentProfile?.id);
+  const { mutate } = useSWRConfig();
 
   // Determine the target date: use provided date or today's date in 'YYYY-MM-DD'
   const targetDate = date ?? new Date().toLocaleDateString("en-CA");
@@ -173,12 +174,22 @@ export function useSchedules(date?: string) {
     data: schedule,
     error: fetchError,
     isLoading: isScheduleLoading,
-    mutate: revalidateSchedule,
+    mutate: revalidateSchedule, // This one is for the specific date
   } = useSWR<ScheduleWithItemsModel>(endPoint, getSchedulesFetcher, {
     revalidateOnFocus: false,
     keepPreviousData: true,
     dedupingInterval: 10000, // 10초 동안 중복 요청 방지
   });
+
+  // Function to revalidate all schedule-related caches
+  const revalidateAllSchedules = useCallback(() => {
+    mutate(
+      (key) =>
+        typeof key === "string" && key.startsWith("/api/schedule?profileId="),
+      undefined,
+      { revalidate: true }
+    );
+  }, [mutate]);
 
   const { currentSchedule, setCurrentSchedule } = useScheduleStore();
 
@@ -186,7 +197,7 @@ export function useSchedules(date?: string) {
     if (schedule) {
       setCurrentSchedule(schedule);
     }
-  }, [currentSchedule, setCurrentSchedule]);
+  }, [schedule, setCurrentSchedule]);
 
   const {
     trigger: addSchedule,
@@ -232,7 +243,8 @@ export function useSchedules(date?: string) {
   return {
     schedule,
     fetchError,
-    revalidateSchedule,
+    revalidateSchedule, // For specific date
+    revalidateAllSchedules, // For all dates
     addSchedule,
     addError,
     updateSchedule,

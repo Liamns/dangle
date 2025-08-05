@@ -74,18 +74,17 @@
 
 // 카드 뒤집기 컨테이너 스타일
 .cardFlipContainer {
-  perspective: 1500px;
-  width: 100%;
+  perspective: 500px;
   display: flex;
   justify-content: center;
   @include common.pt(48);
+  width: 100%;
 }
 
 // 플립 카드 전체를 감싸는 컨테이너
 .flipCard {
   transform-style: preserve-3d;
-  width: calc(100dvw / 360 * 300);
-  max-width: calc(1200px - (100dvw / 360 * 60));
+  width: common.rw(300);
   position: relative; /* 자식 요소의 absolute 포지셔닝 기준점 */
 }
 

@@ -45,7 +45,7 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
   isLoading,
 }) => {
   const router = useRouter();
-  const { toggleScheduleFavorite, isScheduleToggling, revalidateSchedule } =
+  const { toggleScheduleFavorite, isScheduleToggling, revalidateAllSchedules } =
     useSchedules();
 
   const handleEmptyClick = useCallback(() => {
@@ -103,12 +103,11 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
     (!schedule || !schedule.items || schedule.items.length === 0);
 
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false);
   useEffect(() => {
     // schedule이 변경될 때마다 즐겨찾기 상태 업데이트
     setIsFavorite(schedule?.isFavorite ?? false);
   }, [schedule]);
-
-  const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false);
 
   const handleRegisterFavorite = useCallback(
     async (alias: string, icon: number) => {
@@ -122,10 +121,10 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
       };
 
       const result: ScheduleModel = await toggleScheduleFavorite(favoriteData);
-      revalidateSchedule();
+      revalidateAllSchedules();
       alert(COMMON_MESSAGE.SUCCESS);
     },
-    [isFavorite, currentProfile]
+    [isFavorite, currentProfile, schedule, revalidateAllSchedules]
   );
 
   // 일반모드일 때 렌더링되는 컴포넌트

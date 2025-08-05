@@ -22,6 +22,7 @@ const OnboardingFourthPage = memo(({ onNext, onPrev }: OnboardingProps) => {
       <AnimatedChevron />
       <Spacer height="25" />
       <OnboardingNav
+        gap="30"
         onNext={onNext}
         onPrev={onPrev}
         content={

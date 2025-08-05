@@ -4,7 +4,12 @@
 }
 
 @function rw($value) {
-  @return calc(100dvw / 360 * #{$value});
+  // 500px일 때의 최대 크기 계산
+  $max-value: calc(500px / 360 * $value);
+  // 최소 크기는 320px 화면 기준으로 설정 (더 작아지는 것을 방지)
+  $min-value: calc(320px / 360 * $value);
+
+  @return clamp(#{$min-value}, calc(100dvw / 360 * #{$value}), #{$max-value});
 }
 
 @mixin spacing($mt: 0, $mr: 0, $mb: 0, $ml: 0, $pt: 0, $pr: 0, $pb: 0, $pl: 0) {

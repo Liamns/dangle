@@ -1,0 +1,54 @@
+@use "@/shared/styles/common" as *;
+
+.titleImg {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  @include height(458);
+}
+
+.belowTitle {
+  position: absolute;
+  @include width(237);
+  @include height(117);
+  // height: calc(100% / 458 * 117);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0 auto;
+}
+
+.bracket {
+  position: absolute;
+  width: 7px;
+  height: 12px;
+  right: 13px;
+}
+
+.welcome {
+  margin-top: rh(28);
+  font-size: 20px;
+  text-align: center;
+}
+
+.loginBtn {
+  @include width(300);
+  @include height(57);
+  border-radius: 10px;
+  background-color: var(--brown);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.onboardingBtn {
+  position: relative;
+  @include width(300);
+  @include height(57);
+  border-radius: 10px;
+  background-color: var(--background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}

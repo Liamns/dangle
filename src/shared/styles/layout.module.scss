@@ -1,7 +1,7 @@
 @use "./common.scss" as common;
 
 .wrapper {
-  max-width: 1200px;
+  max-width: 500px;
   margin: 0 auto;
   width: 100vw;
   height: 100dvh;
@@ -20,11 +20,11 @@
 }
 
 .card {
-  max-width: calc(1200px - (100dvw / 360 * 60));
+  // max-width: 500px;
   background-color: var(--card-color, var(--background));
   border-radius: var(--card-radius, 10px);
   box-shadow: 0px -6px 12px -6px rgba(0, 0, 0, 0.1);
-  width: calc(100dvw / 360 * var(--card-width, 300));
+  @include common.width(var(--card-width, 300));
   height: var(--card-height, auto);
   padding: 0;
   @include common.my(var(--card-my, 0));
@@ -53,12 +53,12 @@
 }
 
 .textFieldWrapper {
-  max-width: calc(1200px - (100dvw / 360 * 120));
+  // max-width: calc(1200px - (100dvw / 360 * 120));
   display: flex;
   flex-direction: column;
   justify-content: start;
   align-items: start;
-  width: calc(100dvw / 360 * var(--wrapper-width, 240));
+  @include common.width(var(--wrapper-width, 240));
   @include common.mt(var(--wrapper-mt, 0));
   @include common.mb(var(--wrapper-mb, 0));
   @include common.ml(var(--wrapper-ml, 0));

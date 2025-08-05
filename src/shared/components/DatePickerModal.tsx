@@ -73,7 +73,6 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
               {
                 "--rdp-accent-color": Colors.brown,
                 "--rdp-accent-backgroun-color": Colors.invalid,
-                "--rdp-day_button-width": "calc(100dvw / 360 * 32)",
                 "--rdp-day_button-height": "var(--rdp-day_button-width)",
               } as React.CSSProperties
             }

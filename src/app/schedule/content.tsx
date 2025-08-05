@@ -55,7 +55,7 @@ export default function Schedule() {
   const handleDateSelect = useCallback(
     (date: Date | undefined) => {
       if (date) {
-        // setSelectedDate(date);
+        setSelectedDate(date);
         if (datePickerCallback) datePickerCallback(date);
         setShowDatePicker(false);
       }
@@ -150,7 +150,7 @@ export default function Schedule() {
       <DatePickerModal
         isOpen={showDatePicker}
         onClose={() => setShowDatePicker(false)}
-        selectedDate={datePickerInitialDate}
+        selectedDate={selectedDate}
         onDateSelect={handleDateSelect}
         title="날짜 선택"
       />

@@ -12,6 +12,7 @@
   align-items: center;
   justify-content: center;
   min-height: calc(100dvh / 740 * 73);
+  cursor: pointer;
 }
 
 .addModalSection {
@@ -79,7 +80,9 @@
 
   &.selected {
     border: 2px solid var(--primary);
-    box-shadow: 0 0 0 2px rgba(255, 192, 203, 0.5), 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow:
+      0 0 0 2px rgba(255, 192, 203, 0.5),
+      0 4px 8px rgba(0, 0, 0, 0.2);
     transform: scale(1.05);
   }
 }

@@ -5,14 +5,18 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  @include width(360);
-  @include height(740);
+  width: 100%;
+  height: 100%;
   background-color: var(--darkGrey);
   overflow-x: hidden;
   position: relative;
 
   &.darker {
     background-color: var(--darkerGrey); // 배경색을 더 어둡게 설정
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 

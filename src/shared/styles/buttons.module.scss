@@ -14,9 +14,9 @@
   font-size: var(--btn-font-size, 16px);
   font-weight: var(--btn-font-weight, 700);
   margin-top: calc(100dvh / 740 * var(--btn-mt, 0));
-  margin-right: calc(100dvw / 360 * var(--btn-mr, 0));
   margin-bottom: calc(100dvh / 740 * var(--btn-mb, 0));
-  margin-left: calc(100dvw / 360 * var(--btn-ml, 0));
+  margin-right: common.rw(var(--btn-mr, 0));
+  margin-left: common.rw(var(--btn-ml, 0));
   position: relative;
 
   &:hover {

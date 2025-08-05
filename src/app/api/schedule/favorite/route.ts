@@ -14,10 +14,7 @@ export async function POST(req: Request) {
     const { id, alias, icon } = data;
 
     if (!data) {
-      console.error(
-        "/api/schedule/favorite POST",
-        COMMON_MESSAGE.WRONG_ACCESS
-      );
+      console.error("/api/schedule/favorite POST", COMMON_MESSAGE.WRONG_ACCESS);
       return NextResponse.json(
         { error: COMMON_MESSAGE.WRONG_ACCESS },
         { status: 400 }
@@ -68,6 +65,7 @@ export async function POST(req: Request) {
         isFavorite: true,
         alias: alias,
         icon: icon,
+        addedAt: new Date(),
       };
     }
     const updateSchedule = await prisma.schedule.update({
@@ -90,10 +88,7 @@ export async function GET(req: Request) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error(
-        "/api/schedule/favorite GET",
-        AUTH_ERROR_MESSAGE.FAIL_AUTH
-      );
+      console.error("/api/schedule/favorite GET", AUTH_ERROR_MESSAGE.FAIL_AUTH);
       return NextResponse.json(
         { error: AUTH_ERROR_MESSAGE.FAIL_AUTH },
         { status: 401 }

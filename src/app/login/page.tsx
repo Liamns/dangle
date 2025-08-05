@@ -72,7 +72,7 @@ export default function Login() {
       <Card height="570" justify="space-between">
         <span className={styles.title}>이메일 로그인</span>
         <InnerBox>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
             <EmailInput
               value={email}
               onChange={(value) => setEmail(value)}

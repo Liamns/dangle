@@ -24,16 +24,16 @@ const OnboardingNav = memo(
     gap = "11",
   }: OnboardingNavProps) => {
     return (
-      <InnerBox direction="row">
+      <InnerBox direction="row" justify="space-evenly">
         <div
           className={cn(styles.prevButton, { [styles.hideButton]: !showPrev })}
           onClick={showPrev ? onPrev : () => {}}
         >
           <ChevronSvg className={styles.innerChevron} />
         </div>
-        <Spacer width={gap} />
+        {/* <Spacer width={gap} /> */}
         {content}
-        <Spacer width={gap} />
+        {/* <Spacer width={gap} /> */}
         <div className={styles.nextButton} onClick={onFinal || onNext}>
           <ChevronSvg className={styles.innerChevron} />
         </div>

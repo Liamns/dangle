@@ -21,4 +21,8 @@
   justify-content: center;
   place-items: center;
   gap: rh(12) rw(12);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

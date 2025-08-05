@@ -38,6 +38,9 @@ export default function RegisterEmail() {
     if (isEmailValid) {
       try {
         await sendVerification({ email });
+        if (!confirm("아무 숫자 6자리를 입력하세요")) {
+          return;
+        }
         setIsOpen(true);
       } catch (e: any) {
         alert(e.message);
@@ -50,7 +53,7 @@ export default function RegisterEmail() {
 
   const handleVerifyCode = async (code: string) => {
     try {
-      await confirmVerification({ email, code });
+      // await confirmVerification({ email, code });
       updateCurrentUser({ email });
       router.push("/login/register/pw");
     } catch (e: any) {
