@@ -11,7 +11,6 @@ import {
 import prisma from "@/shared/lib/prisma";
 
 interface FavoriteScheduleViewerPageProps {
-  params: {};
   searchParams: Promise<{ ids?: string }>;
 }
 

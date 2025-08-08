@@ -12,7 +12,6 @@ import prisma from "@/shared/lib/prisma";
 import { RoutineCategory, RoutineType } from "@/entities/routine/types";
 
 interface FavoriteRoutineViewerPageProps {
-  params: {};
   searchParams: Promise<{ ids?: string }>;
 }
 
