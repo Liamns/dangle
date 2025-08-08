@@ -23,6 +23,7 @@ import {
   getAnniversaryIconByType,
 } from "@/entities/anniversary/model";
 import { annivIcon } from "@/shared/types/icon";
+import { COMMON_MESSAGE } from "@/shared/consts/messages";
 
 interface AnnivAddModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ interface AnnivAddModalProps {
   selectedDate: Date; // 선택된 날짜 추가
   // include optional id for edit mode
   onSubmit: (data: AnniversaryFormData & { id?: number }) => void;
+  onDelete?: (id: number) => void;
   tempFormData?: {
     content?: string;
     icon?: number;
@@ -55,6 +57,7 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
   onDatePickerOpen, // 폼 데이터 전달 함수로 수정됨
   selectedDate, // 새로 추가된 props
   onSubmit,
+  onDelete,
   tempFormData = null, // 임시 저장된 폼 데이터
   isHidden = false, // 숨김 상태 (DatePicker 표시 시)
 }) => {
@@ -153,6 +156,17 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
 
   const isIconSelected =
     selectedIcon !== undefined && selectedIcon !== null && selectedIcon >= 0;
+
+  const handleDelete = () => {
+    if (initialData && onDelete) {
+      const id = initialData.id;
+      onDelete!(id);
+      reset();
+    } else {
+      alert(COMMON_MESSAGE.WRONG_ACCESS);
+      return;
+    }
+  };
 
   return (
     <Modal
@@ -349,6 +363,16 @@ const AnnivAddModal: React.FC<AnnivAddModalProps> = ({
                 fontSize="md"
               />
             </Button>
+            {editMode && onDelete && (
+              <div className={styles.deleteBtn} onClick={handleDelete}>
+                <Text
+                  text="삭제하기"
+                  color={Colors.grey}
+                  fontWeight="bold"
+                  fontSize="md"
+                />
+              </div>
+            )}
           </form>
         </div>
       </div>

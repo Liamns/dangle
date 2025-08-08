@@ -62,6 +62,9 @@ export default function AnnivWidget() {
     registerError,
     updateAnniv,
     updateError,
+    deleteAnniv,
+    deleteError,
+    isAnnivDeleting,
   } = useAnniversaries();
 
   // 신규 모드로 모달 열기
@@ -120,6 +123,21 @@ export default function AnnivWidget() {
     } catch (e: any) {
       console.warn(e);
       console.log(updateError);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (confirm("해당 기념일을 삭제하시겠습니까?")) {
+      await deleteAnniv({ id: id });
+
+      setShowAddModal(false);
+      // 폼 제출 시 임시 데이터 초기화
+      setTempFormData(null);
+      mutate();
+
+      setTimeout(() => {
+        setShowListModal(true);
+      }, 100);
     }
   };
 
@@ -238,6 +256,7 @@ export default function AnnivWidget() {
         tempFormData={tempFormData}
         // 숨김 상태 전달
         isHidden={isAddModalHidden}
+        onDelete={handleDelete}
       />
 
       {/* 날짜 선택 모달 - AnnivWidget에서 관리 */}

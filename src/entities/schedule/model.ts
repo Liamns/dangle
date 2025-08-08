@@ -6,6 +6,7 @@
 import { z } from "zod";
 import { uuidSchema } from "@/entities/user/model";
 import { mainCategories } from "@/entities/schedule/types";
+import { profileModelSchema } from "@/entities/profile/model";
 
 // ===== 데이터베이스 모델 스키마 =====
 
@@ -39,9 +40,9 @@ export const scheduleModelSchema = z.object({
   profileId: uuidSchema,
   createdAt: z.date(),
   isFavorite: z.boolean().default(false),
-  alias: z.string().optional(),
-  icon: z.number().int().optional(),
-  addedAt: z.date().optional(),
+  alias: z.string().nullable().optional(),
+  icon: z.number().int().nullable().optional(),
+  addedAt: z.date().nullable().optional(),
 });
 
 export type ScheduleModel = z.infer<typeof scheduleModelSchema>;
@@ -103,6 +104,16 @@ export const scheduleWithItemsModelSchema = scheduleModelSchema.extend({
 
 export type ScheduleWithItemsModel = z.infer<
   typeof scheduleWithItemsModelSchema
+>;
+
+// 프로필 정보가 포함된 확장 일정 모델
+export const scheduleWithItemsAndProfileModelSchema =
+  scheduleWithItemsModelSchema.extend({
+    profile: profileModelSchema,
+  });
+
+export type ScheduleWithItemsAndProfileModel = z.infer<
+  typeof scheduleWithItemsAndProfileModelSchema
 >;
 
 // ===== 신규 생성 전용 DTO 타입 =====

@@ -118,11 +118,11 @@ export default function Profile() {
         height="57"
         onClick={async () => {
           if (isFlipped) {
-            const json = JSON.stringify(currentProfile);
+            const json = JSON.stringify(currentProfile?.id);
             const encrypted = await encrypt(json);
             const shareUrl = `${
               window.location.origin
-            }/profile/viewer?data=${encodeURIComponent(encrypted)}`;
+            }/profile/viewer?id=${encodeURIComponent(encrypted)}`;
             if (navigator.clipboard?.writeText) {
               navigator.clipboard.writeText(shareUrl).then(() => {
                 alert("공유용 링크가 복사되었습니다.");

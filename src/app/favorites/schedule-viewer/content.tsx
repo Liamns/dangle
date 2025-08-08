@@ -1,21 +1,12 @@
 "use client";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Card, Center, InnerWrapper } from "@/shared/components/layout";
 import styles from "./page.module.scss";
-import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { decrypt } from "@/shared/lib/crypto";
-import {
-  ScheduleWithItemsModel,
-  ScheduleItemWithSubCategoryModel,
-  NewScheduleItem,
-  ExtendedCategorySubModel,
-} from "@/entities/schedule/model";
-import { Text } from "@/shared/components/texts";
-import { Colors } from "@/shared/consts/colors";
-import LoadingOverlay from "@/shared/components/LoadingOverlay";
 import Image from "next/image";
 import cn from "classnames";
 import ChevronSvg from "@/shared/svgs/chevron.svg";
+import { Text } from "@/shared/components/texts";
+import { Colors } from "@/shared/consts/colors";
 import {
   getSubCategoryImagePathById,
   getSubCategoryNameById,
@@ -24,33 +15,25 @@ import {
 import { formatTime } from "@/shared/lib/date";
 import { EMPTY_PROFILE, useProfileStore } from "@/entities/profile/store";
 import { useSchedules } from "@/features/schedule/hooks/useSchedules";
-import { useFavorites } from "@/features/favorites/hooks/useFavorites";
 import { SCHEDULE_MESSAGE } from "@/features/schedule/consts";
 import { FavoriteScheduleFormData } from "@/entities/schedule/schema";
 import { COMMON_MESSAGE } from "@/shared/consts/messages";
+import LoadingOverlay from "@/shared/components/LoadingOverlay";
+import {
+  ExtendedCategorySubModel,
+  ScheduleItemWithSubCategoryModel,
+  ScheduleWithItemsModel,
+} from "@/entities/schedule/model";
 
-function FavoriteScheduleViewer() {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-  const searchParams = useSearchParams();
-  const dataParam = searchParams.get("data");
-  const [schedules, setSchedules] = useState<ScheduleWithItemsModel[]>([]);
+interface ScheduleViewerContentProps {
+  initialSchedulesData: ScheduleWithItemsModel[];
+}
 
-  useEffect(() => {
-    if (!dataParam) return;
-
-    try {
-      const decode = decodeURIComponent(dataParam);
-      const decryptedText = decrypt(decode);
-      const parsedData = JSON.parse(decryptedText);
-      setSchedules(parsedData as ScheduleWithItemsModel[]);
-      console.log("Decrypted and parsed data:", parsedData);
-    } catch (e) {
-      console.error("Error parsing data:", e);
-    }
-  }, [dataParam]);
+function FavoriteScheduleViewer({
+  initialSchedulesData,
+}: ScheduleViewerContentProps) {
+  const [schedules, setSchedules] =
+    useState<ScheduleWithItemsModel[]>(initialSchedulesData);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -331,7 +314,7 @@ function FavoriteScheduleViewer() {
           {/* End of Content */}
         </div>
       ) : (
-        <LoadingOverlay isLoading={!hydrated} />
+        <></>
       )}
     </InnerWrapper>
   );

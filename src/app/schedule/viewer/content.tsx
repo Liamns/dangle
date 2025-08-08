@@ -1,80 +1,32 @@
 "use client";
 import { Card, Center, InnerWrapper, Spacer } from "@/shared/components/layout";
-import { decrypt } from "@/shared/lib/crypto";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./page.module.scss";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import Image from "next/image";
-import {
-  ScheduleWithItemsModel,
-  ScheduleItemWithSubCategoryModel,
-} from "@/entities/schedule/model";
 import MaleSvg from "@/shared/svgs/male.svg";
 import FemaleSvg from "@/shared/svgs/female.svg";
 import { formatTime, getShortKoreanDayOfWeek } from "@/shared/lib/date";
-import { text } from "stream/consumers";
 import {
   getSubCategoryImagePath,
   SubCategory,
 } from "@/entities/schedule/types";
 import { COMMON_MESSAGE } from "@/shared/consts/messages";
+import { ScheduleWithItemsAndProfileModel } from "@/entities/schedule/model";
 
-interface SharedScheduleData {
-  petName: string;
-  petType: number;
-  petGender: { gender: string; isNeutered: boolean };
-  schedule: Omit<ScheduleWithItemsModel, "profileId">;
+interface ScheduleViewerContentProps {
+  initialScheduleData: ScheduleWithItemsAndProfileModel;
 }
 
-function ScheduleViewer() {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-  const searchParams = useSearchParams();
-  const dataParam = searchParams.get("data");
-  const [scheduleData, setScheduleData] = useState<SharedScheduleData | null>(
-    null
+function ScheduleViewerContent({
+  initialScheduleData,
+}: ScheduleViewerContentProps) {
+  const [scheduleData] = useState<ScheduleWithItemsAndProfileModel | null>(
+    initialScheduleData
   );
 
-  useEffect(() => {
-    if (!dataParam) return;
-    (async () => {
-      try {
-        let decryptedText: string;
-        try {
-          decryptedText = await decrypt(dataParam);
-        } catch (_e) {
-          const decoded = decodeURIComponent(dataParam);
-          decryptedText = await decrypt(decoded);
-        }
-        const parsed = JSON.parse(decryptedText) as SharedScheduleData;
-        setScheduleData(parsed);
-        // scheduleItems date consistency check (Asia/Seoul 기준)
-        const ymds = parsed.schedule.items.map(
-          (item: ScheduleItemWithSubCategoryModel) =>
-            new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(
-              new Date(item.startAt)
-            )
-        );
-        const firstYMD = ymds[0];
-        if (!ymds.every((date: string) => date === firstYMD)) {
-          console.warn(
-            "scheduleItems의 startAt 연·월·일이 일치하지 않습니다:",
-            ymds
-          );
-        }
-        console.log("Decrypted schedule data:", parsed);
-      } catch (err) {
-        console.error("Invalid schedule data", err);
-      }
-    })();
-  }, [dataParam]);
-
-  // render
-  if (!hydrated || !scheduleData) {
+  if (!scheduleData) {
     return (
       <InnerWrapper>
         <Center>
@@ -88,6 +40,8 @@ function ScheduleViewer() {
       </InnerWrapper>
     );
   }
+
+  const { profile, items, createdAt } = scheduleData;
 
   return (
     <InnerWrapper>
@@ -125,18 +79,18 @@ function ScheduleViewer() {
           <Image
             fill
             src={`/images/register/select-sp/${
-              scheduleData.petType === 0 ? "dog" : "cat"
+              profile.petSpec === 0 ? "dog" : "cat"
             }.png`}
             alt="반려동물 프로필 이미지"
           />
           <div className={styles.profileTitle}>
             <Text
-              text={scheduleData.petName}
+              text={profile.petname}
               color={Colors.brown}
               fontSize="lg"
               fontWeight="bold"
             />
-            {scheduleData.petGender.gender ? (
+            {profile.petGender ? (
               <MaleSvg width={15} height={15} color={Colors.male} />
             ) : (
               <FemaleSvg width={10} height={15} color={Colors.female} />
@@ -149,22 +103,18 @@ function ScheduleViewer() {
           py="12"
           px="25"
           align="center"
-          style={{
-            height: "calc((100dvh / 740 * 634.5) - (100dvw / 360 * 260))",
-          }}
+          outStyle={{ flex: "1", marginBottom: "calc(100dvh / 740 * 16)" }}
         >
           <Text
-            text={`${getShortKoreanDayOfWeek(
-              scheduleData.schedule.createdAt
-            )}요일 일정`}
+            text={`${getShortKoreanDayOfWeek(createdAt)}요일 일정`}
             fontSize="title"
             fontWeight="bold"
             color={Colors.brown}
           />
           <Spacer height="12" />
           <div className={styles.scheduleContainer}>
-            {scheduleData.schedule.items.length > 0 ? (
-              scheduleData.schedule.items.map((item) => {
+            {items.length > 0 ? (
+              items.map((item) => {
                 const url = getSubCategoryImagePath(
                   item.subCategory.name as SubCategory
                 );
@@ -209,5 +159,5 @@ function ScheduleViewer() {
   );
 }
 
-ScheduleViewer.displayName = "ScheduleViewer";
-export default ScheduleViewer;
+ScheduleViewerContent.displayName = "ScheduleViewerContent";
+export default ScheduleViewerContent;

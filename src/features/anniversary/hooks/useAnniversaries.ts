@@ -58,6 +58,23 @@ async function updateAnnivFetch(
   return response.json();
 }
 
+async function deleteAnnivFethcer(
+  url: string,
+  { arg }: { arg: { id: number } }
+) {
+  const response = await fetch(`${url}?id=${arg.id}`, {
+    headers: commonHeader,
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || ANNIV_ERROR_MESSAGE.FAIL_DELETE);
+  }
+
+  return response.json();
+}
+
 export function useAnniversaries() {
   const userId = useUserStore((state) => state.currentUser?.id);
 
@@ -93,6 +110,12 @@ export function useAnniversaries() {
 
   const isProcessing = isAnnivLoading || isAnnivRegistering || isAnnivUpdating;
 
+  const {
+    trigger: deleteAnniv,
+    isMutating: isAnnivDeleting,
+    error: deleteError,
+  } = useSWRMutation(`/api/anniversary`, deleteAnnivFethcer);
+
   return {
     annivsaries,
     fetchError,
@@ -102,5 +125,8 @@ export function useAnniversaries() {
     updateAnniv,
     updateError,
     isProcessing,
+    deleteAnniv,
+    isAnnivDeleting,
+    deleteError,
   };
 }

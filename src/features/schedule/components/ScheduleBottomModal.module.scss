@@ -83,7 +83,7 @@
 
   .itemDivider {
     width: 0.5px;
-    height: calc(100dvw / 360 * 26);
+    height: common.rh(25);
     background-color: var(--invalid);
     @include common.mx(8);
   }

@@ -1,40 +1,23 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import { decrypt } from "@/shared/lib/crypto";
+import { useState } from "react";
 import { InnerWrapper, Spacer } from "@/shared/components/layout";
 import { Button } from "@/shared/components/buttons";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import ProfileViewer from "@/features/profile/components/ProfileViewer";
 import styles from "./page.module.scss";
+import { ProfileModel } from "@/entities/profile/model";
 
-export default function ProfileViewerPage() {
-  const searchParams = useSearchParams();
-  const dataParam = searchParams.get("data");
-  const [profileData, setProfileData] = useState(null);
+interface ProfileViewerContentProps {
+  initialProfileData: ProfileModel;
+}
+
+export default function ProfileViewerContent({
+  initialProfileData,
+}: ProfileViewerContentProps) {
+  const [profileData] = useState<ProfileModel | null>(initialProfileData);
   const [isFlipped, setIsFlipped] = useState(false);
-
-  useEffect(() => {
-    if (!dataParam) return;
-    (async () => {
-      try {
-        // 복호화 시 자료 오류가 나는 경우 URI 디코딩된 형태도 시도
-        let decryptedText: string;
-        try {
-          decryptedText = await decrypt(dataParam);
-        } catch (_e) {
-          const decoded = decodeURIComponent(dataParam);
-          decryptedText = await decrypt(decoded);
-        }
-        const parsed = JSON.parse(decryptedText);
-        setProfileData(parsed);
-      } catch (err) {
-        console.error("Invalid profile data", err);
-      }
-    })();
-  }, [dataParam]);
 
   if (!profileData) {
     return (

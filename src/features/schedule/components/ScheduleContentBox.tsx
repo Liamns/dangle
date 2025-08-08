@@ -68,17 +68,12 @@ const ScheduleContentBox: React.FC<ScheduleContentProps> = ({
     try {
       // Exclude profileId and include pet info
       const { profileId: _, ...scheduleData } = schedule;
-      const payload = {
-        petName: currentProfile.petname,
-        petType: currentProfile.petSpec,
-        petGender: currentProfile.petGender,
-        schedule: scheduleData,
-      };
+      const payload = schedule.id;
       const json = JSON.stringify(payload);
       const encrypted = await encrypt(json);
       const shareUrl = `${
         window.location.origin
-      }/schedule/viewer?data=${encodeURIComponent(encrypted)}`;
+      }/schedule/viewer?id=${encodeURIComponent(encrypted)}`;
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareUrl);
       } else {

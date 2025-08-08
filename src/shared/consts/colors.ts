@@ -8,6 +8,7 @@ export const Colors = {
   grey: "rgba(48, 48, 48, 0.3)",
   darkGrey: "rgba(48, 48, 48, 0.5)",
   error: "#ff0000",
+  red: "#ff0000",
   white: "#ffffff",
   background: "#fff",
   halfBackground: "rgba(255, 255, 255, 0.5)",

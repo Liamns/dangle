@@ -18,7 +18,10 @@ import cn from "classnames";
 import ScheduleSvg from "@/shared/svgs/schedule.svg";
 import RoutineSvg from "@/shared/svgs/routine.svg";
 import FavoriteScheduleCard from "@/features/favorites/components/FavoriteScheduleCard";
-import { FavoriteScheduleModel } from "@/entities/schedule/model";
+import {
+  FavoriteScheduleModel,
+  ScheduleWithItemsModel,
+} from "@/entities/schedule/model";
 import FavoriteRoutineCard from "@/features/favorites/components/FavoriteRoutineCard";
 import { RoutineWithContentsModel } from "@/entities/routine/schema";
 import { encrypt } from "@/shared/lib/crypto";
@@ -52,12 +55,12 @@ export default function Favorites() {
   const handleShareClick = useCallback(
     async (data: FavoriteItem[]) => {
       // 공유 기능 구현
-      console.log("공유할 데이터:", data);
-      const json = JSON.stringify(data);
+      const ids = data.map((item) => item.id);
+      const json = JSON.stringify(ids);
       const encrypted = encrypt(json);
       const url = `${
         window.location.origin
-      }/favorites/${activeTab}-viewer?data=${encodeURIComponent(encrypted)}`;
+      }/favorites/${activeTab}-viewer?ids=${encodeURIComponent(encrypted)}`;
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
       } else {

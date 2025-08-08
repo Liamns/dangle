@@ -1,41 +1,25 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import styles from "./page.module.scss";
-import { useSearchParams } from "next/navigation";
-import { RoutineWithContentsModel } from "@/entities/routine/schema";
-import { decrypt } from "@/shared/lib/crypto";
-import { EMPTY_PROFILE, useProfileStore } from "@/entities/profile/store";
 import { InnerWrapper } from "@/shared/components/layout";
-import LoadingOverlay from "@/shared/components/LoadingOverlay";
 import Image from "next/image";
 import { Text } from "@/shared/components/texts";
 import { Colors } from "@/shared/consts/colors";
 import useEmblaCarousel from "embla-carousel-react";
 import cn from "classnames";
 import FavoriteRoutineViewerCard from "@/features/favorites/components/FavoriteRoutineViewerCard";
+import { RoutineWithContentsModel } from "@/entities/routine/schema";
+import { EMPTY_PROFILE, useProfileStore } from "@/entities/profile/store";
+import styles from "./page.module.scss";
 
-function FavoriteRoutineViewer() {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
+interface RoutineViewerContentProps {
+  initialRoutinesData: RoutineWithContentsModel[];
+}
 
-  const searchParams = useSearchParams();
-  const dataParam = searchParams.get("data");
-  const [routines, setRoutines] = useState<RoutineWithContentsModel[]>([]);
-
-  useEffect(() => {
-    if (!dataParam) return;
-
-    try {
-      const decode = decodeURIComponent(dataParam);
-      const decryptedText = decrypt(decode);
-      const parsedData = JSON.parse(decryptedText);
-      setRoutines(parsedData as RoutineWithContentsModel[]);
-    } catch (e) {
-      console.error("Error parsing data:", e);
-    }
-  }, [dataParam]);
+function FavoriteRoutineViewer({
+  initialRoutinesData,
+}: RoutineViewerContentProps) {
+  const [routines, setRoutines] =
+    useState<RoutineWithContentsModel[]>(initialRoutinesData);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -182,7 +166,7 @@ function FavoriteRoutineViewer() {
           {/* End of Content */}
         </div>
       ) : (
-        <LoadingOverlay isLoading={!hydrated} />
+        <></>
       )}
     </InnerWrapper>
   );

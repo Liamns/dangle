@@ -12,6 +12,17 @@
   @return clamp(#{$min-value}, calc(100dvw / 360 * #{$value}), #{$max-value});
 }
 
+/**
+ * 너비에 따라 비율을 유지하는 반응형 높이를 계산합니다.
+ * @param {number} $base-width - 디자인 시안에서의 기준 너비 (rw()에 전달할 값)
+ * @param {number} $ratio - 비율 (높이 / 너비). 예: 1:1 비율은 1, 16:9 비율은 9/16=0.5625
+ * @returns {string} - calc()를 사용한 높이 값
+ */
+@function aspect-height($base-width, $ratio) {
+  $responsive-width: rw($base-width);
+  @return calc(#{$responsive-width} * #{$ratio});
+}
+
 @mixin spacing($mt: 0, $mr: 0, $mb: 0, $ml: 0, $pt: 0, $pr: 0, $pb: 0, $pl: 0) {
   margin-top: rh($mt);
   margin-right: rw($mr);

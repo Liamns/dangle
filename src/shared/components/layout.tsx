@@ -64,6 +64,7 @@ export const Card = ({
   justify,
   align,
   style = {},
+  outStyle = {},
 }: {
   children: React.ReactNode;
   px?: string;
@@ -79,6 +80,7 @@ export const Card = ({
   justify?: justifyType;
   align?: alignType;
   style?: React.CSSProperties;
+  outStyle?: React.CSSProperties;
 }) => {
   const calculatedHeight = height
     ? `calc(100dvh / 740 * ${height})`
@@ -99,6 +101,7 @@ export const Card = ({
           "--card-direction": direction,
           "--card-justify": justify,
           "--card-align": align,
+          ...outStyle,
         } as React.CSSProperties
       }
     >
