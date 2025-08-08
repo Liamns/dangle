@@ -107,8 +107,8 @@ const RegisterFavoriteScheduleModal = memo(
         if (isEditMode && favorite) {
           // 수정 모드일 경우 기존 데이터로 폼 초기화
           reset({
-            alias: favorite.alias,
-            icon: favorite.icon,
+            alias: favorite.alias ?? "",
+            icon: favorite.icon ?? undefined,
           });
         } else {
           // 생성 모드일 경우 빈 값으로 초기화
