@@ -7,18 +7,17 @@ import prisma from "@/shared/lib/prisma";
 import { decrypt } from "@/shared/lib/crypto";
 import { ProfileModel } from "@/entities/profile/model"; // ProfileModel import
 
-export const dynamic = 'force-dynamic'; // 페이지를 동적으로 렌더링하도록 강제
+export const dynamic = "force-dynamic"; // 페이지를 동적으로 렌더링하도록 강제
 
 interface ProfileViewerPageProps {
-  params: {}; // 동적 라우트가 없으므로 빈 객체
-  searchParams: { id?: string };
+  searchParams: Promise<{ id?: string }>;
 }
 
 // 서버 컴포넌트는 async 함수가 될 수 있습니다.
 export default async function ProfileViewerPage({
   searchParams,
 }: ProfileViewerPageProps) {
-  const encryptedId = searchParams.id;
+  const { id: encryptedId } = await searchParams;
 
   if (!encryptedId) {
     return (
@@ -58,7 +57,7 @@ export default async function ProfileViewerPage({
     // ProfileModel에 맞게 변환 로직 추가
     const profileDataForComponent: ProfileModel = {
       ...profileDataFromDb,
-      petAge: new Date(profileDataFromDb.petAge).toISOString().split('T')[0],
+      petAge: new Date(profileDataFromDb.petAge).toISOString().split("T")[0],
       petGender: profileDataFromDb.petGender as any, // JsonValue를 적절한 타입으로 캐스팅
       vaccinations: profileDataFromDb.vaccinations as any, // JsonValue를 적절한 타입으로 캐스팅
       personalityScores: profileDataFromDb.personalityScores as any, // JsonValue를 적절한 타입으로 캐스팅

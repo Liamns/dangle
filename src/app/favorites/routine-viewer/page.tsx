@@ -11,17 +11,15 @@ import {
 import prisma from "@/shared/lib/prisma";
 import { RoutineCategory, RoutineType } from "@/entities/routine/types";
 
-export const dynamic = "force-dynamic";
-
 interface FavoriteRoutineViewerPageProps {
   params: {};
-  searchParams: { ids?: string };
+  searchParams: Promise<{ ids?: string }>;
 }
 
 export default async function FavoriteRoutineViewerPage({
   searchParams,
 }: FavoriteRoutineViewerPageProps) {
-  const encryptedIds = searchParams.ids;
+  const { ids: encryptedIds } = await searchParams;
 
   if (!encryptedIds) {
     return (

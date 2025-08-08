@@ -10,17 +10,15 @@ import {
 } from "@/entities/schedule/model";
 import prisma from "@/shared/lib/prisma";
 
-export const dynamic = "force-dynamic";
-
 interface FavoriteScheduleViewerPageProps {
   params: {};
-  searchParams: { ids?: string };
+  searchParams: Promise<{ ids?: string }>;
 }
 
 export default async function FavoriteScheduleViewerPage({
   searchParams,
 }: FavoriteScheduleViewerPageProps) {
-  const encryptedId = searchParams.ids;
+  const { ids: encryptedId } = await searchParams;
 
   if (!encryptedId) {
     return (
